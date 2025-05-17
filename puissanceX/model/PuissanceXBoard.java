@@ -25,6 +25,77 @@ public class PuissanceXBoard extends ContainerElement {
     }
 
     /**
+     * Vérifie si une colonne est pleine
+     * @param colonne Le numéro de la colonne à vérifier
+     * @return true si la colonne est pleine, false sinon
+     */
+    public boolean estColonnePleine(int colonne) {
+        // TODO: Implémenter la vérification
+        // - Vérifier si la case la plus haute de la colonne est occupée
+        return false;
+    }
+
+    /**
+     * Trouve la position la plus basse disponible dans une colonne
+     * @param colonne Le numéro de la colonne
+     * @return La position (ligne) la plus basse disponible, ou -1 si la colonne est pleine
+     */
+    public int trouverPositionLaPlusBasse(int colonne) {
+        // TODO: Implémenter la recherche
+        // - Parcourir la colonne de bas en haut
+        // - Retourner la première position vide trouvée
+        return -1;
+    }
+
+    /**
+     * Vérifie s'il y a une victoire horizontale
+     * @param playerNumber Le numéro du joueur à vérifier
+     * @return true si une victoire horizontale est trouvée
+     */
+    private boolean verifierVictoireHorizontale(int playerNumber) {
+        // TODO: Implémenter la vérification horizontale
+        // - Parcourir chaque ligne
+        // - Vérifier les alignements de nombrePionsAAligner pions
+        return false;
+    }
+
+    /**
+     * Vérifie s'il y a une victoire verticale
+     * @param playerNumber Le numéro du joueur à vérifier
+     * @return true si une victoire verticale est trouvée
+     */
+    private boolean verifierVictoireVerticale(int playerNumber) {
+        // TODO: Implémenter la vérification verticale
+        // - Parcourir chaque colonne
+        // - Vérifier les alignements de nombrePionsAAligner pions
+        return false;
+    }
+
+    /**
+     * Vérifie s'il y a une victoire diagonale (haut-gauche vers bas-droite)
+     * @param playerNumber Le numéro du joueur à vérifier
+     * @return true si une victoire diagonale est trouvée
+     */
+    private boolean verifierVictoireDiagonale1(int playerNumber) {
+        // TODO: Implémenter la vérification diagonale
+        // - Parcourir les diagonales possibles
+        // - Vérifier les alignements de nombrePionsAAligner pions
+        return false;
+    }
+
+    /**
+     * Vérifie s'il y a une victoire diagonale (haut-droite vers bas-gauche)
+     * @param playerNumber Le numéro du joueur à vérifier
+     * @return true si une victoire diagonale est trouvée
+     */
+    private boolean verifierVictoireDiagonale2(int playerNumber) {
+        // TODO: Implémenter la vérification diagonale
+        // - Parcourir les diagonales possibles
+        // - Vérifier les alignements de nombrePionsAAligner pions
+        return false;
+    }
+
+    /**
      * TODO: À modifier
      * - Ne permettre que les colonnes non pleines
      * - Implémenter la logique de gravité
