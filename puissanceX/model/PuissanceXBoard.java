@@ -42,9 +42,12 @@ public class PuissanceXBoard extends ContainerElement {
      */
     public int trouverPositionLaPlusBasse(int colonne) {
         // TODO: Implémenter la recherche
-        // - Parcourir la colonne de bas en haut
-        // - Retourner la première position vide trouvée
-        return -1;
+        for (int ligne = getHeight() - 1; ligne >= 0; ligne--) {
+            if (getElement(ligne, colonne) == null) {
+                return ligne; // première colonne vide trouvé
+            }
+        }
+        return -1; // colonne pleine
     }
 
     /**
@@ -117,9 +120,14 @@ public class PuissanceXBoard extends ContainerElement {
      */
     public List<Point> computeValidCells(int number) {
         List<Point> lst = new ArrayList<>();
-        // TODO: Implémenter la logique pour PuissanceX
-        // - Vérifier chaque colonne
-        // - Si la colonne n'est pas pleine, ajouter la position la plus basse disponible
+        for (int col = 0; col < getWidth(); col++) {
+            if (!estColonnePleine(col)) {
+                int ligne = trouverPositionLaPlusBasse(col);
+                if (ligne != -1) {
+                    lst.add(new Point(col, ligne));
+                }
+            }
+        }
         return lst;
     }
 
@@ -139,4 +147,4 @@ public class PuissanceXBoard extends ContainerElement {
     public int getNombrePionsAAligner() {
         return nombrePionsAAligner;
     }
-} 
+}
