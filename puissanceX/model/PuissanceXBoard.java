@@ -56,9 +56,26 @@ public class PuissanceXBoard extends ContainerElement {
      * @return true si une victoire horizontale est trouvée
      */
     private boolean verifierVictoireHorizontale(int playerNumber) {
-        // TODO: Implémenter la vérification horizontale
-        // - Parcourir chaque ligne
-        // - Vérifier les alignements de nombrePionsAAligner pions
+        // Parcourt chaque ligne du plateau
+        for (int row = 0; row < getHeight(); row++) { // - A modifier pour verticale
+            int count = 0; // Compteur de pions consécutifs du joueur
+            // Parcourt chaque colonne de la ligne courante
+            for (int col = 0; col < getWidth(); col++) { // - A modifier pour verticale
+                Object elem = getElement(row, col);
+                // Vérifie si la case contient un pion du joueur
+                if (elem != null && elem instanceof model.PuissanceXPion) {
+                    if (((model.PuissanceXPion) elem).getPlayer() == playerNumber) {
+                        count++;
+                        // Si le compteur atteint le nombre requis, victoire
+                        if (count >= nombrePionsAAligner) return true;
+                    } else {
+                        count = 0; // Réinitialise le compteur si ce n'est pas un pion du joueur
+                    }
+                } else {
+                    count = 0; // Réinitialise si la case est vide
+                }
+            }
+        }
         return false;
     }
 
@@ -132,16 +149,13 @@ public class PuissanceXBoard extends ContainerElement {
     }
 
     /**
-     * TODO: À implémenter
      * Vérifie s'il y a une victoire (X pions alignés)
      */
     public boolean checkVictory(int playerNumber) {
-        // TODO: Implémenter
-        // - Vérifier horizontalement
-        // - Vérifier verticalement
-        // - Vérifier diagonalement (deux directions)
-        // - Utiliser nombrePionsAAligner pour la vérification
-        return false;
+        return verifierVictoireHorizontale(playerNumber)
+            || verifierVictoireVerticale(playerNumber)
+            || verifierVictoireDiagonale1(playerNumber)
+            || verifierVictoireDiagonale2(playerNumber);
     }
 
     public int getNombrePionsAAligner() {
