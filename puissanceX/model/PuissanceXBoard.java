@@ -85,11 +85,28 @@ public class PuissanceXBoard extends ContainerElement {
      * @return true si une victoire verticale est trouvée
      */
     private boolean verifierVictoireVerticale(int playerNumber) {
-        // TODO: Implémenter la vérification verticale
-        // - Parcourir chaque colonne
-        // - Vérifier les alignements de nombrePionsAAligner pions
-        return false;
-    }
+            // Parcourt chaque ligne du plateau
+            for (int row = 0; row < getWidth(); row++) {
+                int count = 0; // Compteur de pions consécutifs du joueur
+                // Parcourt chaque colonne de la ligne courante
+                for (int col = 0; col < getHeight(); col++) {
+                    Object elem = getElement(row, col);
+                    // Vérifie si la case contient un pion du joueur
+                    if (elem != null && elem instanceof model.PuissanceXPion) {
+                        if (((model.PuissanceXPion) elem).getPlayer() == playerNumber) {
+                            count++;
+                            // Si le compteur atteint le nombre requis, victoire
+                            if (count >= nombrePionsAAligner) return true;
+                        } else {
+                            count = 0; // Réinitialise le compteur si ce n'est pas un pion du joueur
+                        }
+                    } else {
+                        count = 0; // Réinitialise si la case est vide
+                    }
+                }
+            }
+            return false;
+        }
 
     /**
      * Vérifie s'il y a une victoire diagonale (haut-gauche vers bas-droite)
