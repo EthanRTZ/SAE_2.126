@@ -34,20 +34,30 @@ public class HoleStageFactory extends StageElementsFactory {
     public void setup() {
         // Demander les dimensions du plateau
         Scanner scanner = new Scanner(System.in);
-        int dimensions;
+        int rows, cols;
         do {
-            System.out.print("Entrez la taille du plateau (minimum 3) : ");
-            dimensions = scanner.nextInt();
-            if (dimensions < 3) {
-                System.out.println("La taille doit être au moins 3x3");
+            System.out.print("Entrez le nombre de lignes (entre 5 et 10) : ");
+            rows = scanner.nextInt();
+            if (rows < 5 || rows > 10) {
+                System.out.println("Le nombre de lignes doit être entre 5 et 10");
             }
-        } while (dimensions < 3);
-        HoleBoard.setDimensions(dimensions);
+        } while (rows < 5 || rows > 10);
+
+        do {
+            System.out.print("Entrez le nombre de colonnes (entre 5 et 10) : ");
+            cols = scanner.nextInt();
+            if (cols < 5 || cols > 10) {
+                System.out.println("Le nombre de colonnes doit être entre 5 et 10");
+            }
+        } while (cols < 5 || cols > 10);
+
+        // Définir les dimensions du plateau
+        HoleBoard.setDimensions(rows, cols);
 
         // Calculer la position des pots en fonction de la taille du plateau
         // Le plateau commence à x=0, donc on place les pots après le plateau
         // On ajoute 2 pour avoir un espace entre le plateau et les pots
-        int boardEndX = dimensions * 4; // 4 est la largeur de chaque cellule
+        int boardEndX = cols * 4; // 4 est la largeur de chaque cellule
         int blackPotX = boardEndX + 3;
         int redPotX = blackPotX + 6; // 7 est la largeur du pot noir + 1 espace
 
