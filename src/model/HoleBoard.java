@@ -18,6 +18,7 @@ import java.awt.*;
 public class HoleBoard extends ContainerElement {
     private static int rows = 5; // Valeur par défaut minimale
     private static int cols = 5; // Valeur par défaut minimale
+    private static int tokensToWin = 3; // Valeur par défaut minimale
 
     public static void setDimensions(int nbRows, int nbCols) {
         if (nbRows < 5 || nbRows > 10) {
@@ -30,12 +31,23 @@ public class HoleBoard extends ContainerElement {
         cols = nbCols;
     }
 
+    public static void setTokensToWin(int nbTokens) {
+        if (nbTokens < 3 || nbTokens > Math.min(rows, cols)) {
+            throw new IllegalArgumentException("Le nombre de jetons doit être entre 3 et " + Math.min(rows, cols));
+        }
+        tokensToWin = nbTokens;
+    }
+
     public static int getRows() {
         return rows;
     }
 
     public static int getCols() {
         return cols;
+    }
+
+    public static int getTokensToWin() {
+        return tokensToWin;
     }
 
     public HoleBoard(int x, int y, GameStageModel gameStageModel) {

@@ -54,6 +54,21 @@ public class HoleStageFactory extends StageElementsFactory {
         // Définir les dimensions du plateau
         HoleBoard.setDimensions(rows, cols);
 
+        // Demander le nombre de jetons à aligner pour gagner
+        int minTokens = 3;
+        int maxTokens = Math.min(rows, cols);
+        int tokensToWin;
+        do {
+            System.out.print("Entrez le nombre de jetons à aligner pour gagner (entre " + minTokens + " et " + maxTokens + ") : ");
+            tokensToWin = scanner.nextInt();
+            if (tokensToWin < minTokens || tokensToWin > maxTokens) {
+                System.out.println("Le nombre de jetons doit être entre " + minTokens + " et " + maxTokens);
+            }
+        } while (tokensToWin < minTokens || tokensToWin > maxTokens);
+
+        // Définir le nombre de jetons à aligner pour gagner
+        HoleBoard.setTokensToWin(tokensToWin);
+
         // Calculer la position des pots en fonction de la taille du plateau
         // Le plateau commence à x=0, donc on place les pots après le plateau
         // On ajoute 2 pour avoir un espace entre le plateau et les pots

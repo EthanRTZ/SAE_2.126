@@ -134,58 +134,162 @@ public class HoleStageModel extends GameStageModel {
 
     private void computePartyResult() {
         int idWinner = -1;
-        // get the empty cell, which should be in 2D at [0,0], [0,2], [1,1], [2,0] or [2,2]
-        // i.e. or in 1D at index 0, 2, 4, 6 or 8
-        int i = 0;
         int nbBlack = 0;
         int nbRed = 0;
         int countBlack = 0;
         int countRed = 0;
         Pawn p = null;
         int row, col;
-        for (i = 0; i < 9; i+=2) {
-            if (board.isEmptyAt(i / 3, i % 3)) break;
-        }
-        // get the 4 adjacent cells (if they exist) starting by the upper one
-        row = (i / 3) - 1;
-        col = i % 3;
-        for (int j = 0; j < 4; j++) {
-            // skip invalid cells
-            if ((row >= 0) && (row <= 2) && (col >= 0) && (col <= 2)) {
-                p = (Pawn) (board.getElement(row, col));
-                if (p.getColor() == Pawn.PAWN_BLACK) {
-                    nbBlack++;
-                    countBlack += p.getNumber();
-                } else {
-                    nbRed++;
-                    countRed += p.getNumber();
+        int tokensToWin = HoleBoard.getTokensToWin();
+
+        // Vérifier les alignements horizontaux
+        for (int i = 0; i < HoleBoard.getRows(); i++) {
+            for (int j = 0; j <= HoleBoard.getCols() - tokensToWin; j++) {
+                int blackCount = 0;
+                int redCount = 0;
+                for (int k = 0; k < tokensToWin; k++) {
+                    p = (Pawn) board.getElement(i, j + k);
+                    if (p != null) {
+                        if (p.getColor() == Pawn.PAWN_BLACK) {
+                            blackCount++;
+                        } else {
+                            redCount++;
+                        }
+                    }
+                }
+                if (blackCount == tokensToWin) {
+                    idWinner = 0;
+                    break;
+                }
+                if (redCount == tokensToWin) {
+                    idWinner = 1;
+                    break;
                 }
             }
-            // change row & col to set them at the correct value for the next iteration
-            if ((j==0) || (j==2)) {
-                row++;
-                col--;
-            }
-            else if (j==1) {
-                col += 2;
+            if (idWinner != -1) break;
+        }
+
+        // Vérifier les alignements verticaux
+        if (idWinner == -1) {
+            for (int j = 0; j < HoleBoard.getCols(); j++) {
+                for (int i = 0; i <= HoleBoard.getRows() - tokensToWin; i++) {
+                    int blackCount = 0;
+                    int redCount = 0;
+                    for (int k = 0; k < tokensToWin; k++) {
+                        p = (Pawn) board.getElement(i + k, j);
+                        if (p != null) {
+                            if (p.getColor() == Pawn.PAWN_BLACK) {
+                                blackCount++;
+                            } else {
+                                redCount++;
+                            }
+                        }
+                    }
+                    if (blackCount == tokensToWin) {
+                        idWinner = 0;
+                        break;
+                    }
+                    if (redCount == tokensToWin) {
+                        idWinner = 1;
+                        break;
+                    }
+                }
+                if (idWinner != -1) break;
             }
         }
 
-        // decide whose winning
-        if (nbBlack < nbRed) {
-            idWinner = 0;
+        // Vérifier les alignements diagonaux (haut gauche vers bas droite)
+        if (idWinner == -1) {
+            for (int i = 0; i <= HoleBoard.getRows() - tokensToWin; i++) {
+                for (int j = 0; j <= HoleBoard.getCols() - tokensToWin; j++) {
+                    int blackCount = 0;
+                    int redCount = 0;
+                    for (int k = 0; k < tokensToWin; k++) {
+                        p = (Pawn) board.getElement(i + k, j + k);
+                        if (p != null) {
+                            if (p.getColor() == Pawn.PAWN_BLACK) {
+                                blackCount++;
+                            } else {
+                                redCount++;
+                            }
+                        }
+                    }
+                    if (blackCount == tokensToWin) {
+                        idWinner = 0;
+                        break;
+                    }
+                    if (redCount == tokensToWin) {
+                        idWinner = 1;
+                        break;
+                    }
+                }
+                if (idWinner != -1) break;
+            }
         }
-        else if (nbBlack > nbRed) {
-            idWinner = 1;
+
+        // Vérifier les alignements diagonaux (haut droite vers bas gauche)
+        if (idWinner == -1) {
+            for (int i = 0; i <= HoleBoard.getRows() - tokensToWin; i++) {
+                for (int j = tokensToWin - 1; j < HoleBoard.getCols(); j++) {
+                    int blackCount = 0;
+                    int redCount = 0;
+                    for (int k = 0; k < tokensToWin; k++) {
+                        p = (Pawn) board.getElement(i + k, j - k);
+                        if (p != null) {
+                            if (p.getColor() == Pawn.PAWN_BLACK) {
+                                blackCount++;
+                            } else {
+                                redCount++;
+                            }
+                        }
+                    }
+                    if (blackCount == tokensToWin) {
+                        idWinner = 0;
+                        break;
+                    }
+                    if (redCount == tokensToWin) {
+                        idWinner = 1;
+                        break;
+                    }
+                }
+                if (idWinner != -1) break;
+            }
         }
-        else {
-            if (countBlack < countRed) {
+
+        // Si aucun alignement n'est trouvé, compter les jetons restants
+        if (idWinner == -1) {
+            for (int i = 0; i < HoleBoard.getRows(); i++) {
+                for (int j = 0; j < HoleBoard.getCols(); j++) {
+                    p = (Pawn) board.getElement(i, j);
+                    if (p != null) {
+                        if (p.getColor() == Pawn.PAWN_BLACK) {
+                            nbBlack++;
+                            countBlack += p.getNumber();
+                        } else {
+                            nbRed++;
+                            countRed += p.getNumber();
+                        }
+                    }
+                }
+            }
+
+            // Décider du gagnant en fonction du nombre de jetons
+            if (nbBlack < nbRed) {
                 idWinner = 0;
             }
-            else if (countBlack > countRed) {
+            else if (nbBlack > nbRed) {
                 idWinner = 1;
             }
+            else {
+                if (countBlack < countRed) {
+                    idWinner = 0;
+                }
+                else if (countBlack > countRed) {
+                    idWinner = 1;
+                }
+            }
         }
+
         System.out.println("nb black: "+nbBlack+", nb red: "+nbRed+", count black: "+countBlack+", count red: "+countRed+", winner is player "+idWinner);
         // set the winner
         model.setIdWinner(idWinner);
