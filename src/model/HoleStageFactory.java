@@ -4,6 +4,7 @@ import boardifier.model.ContainerElement;
 import boardifier.model.GameStageModel;
 import boardifier.model.StageElementsFactory;
 import boardifier.model.TextElement;
+import java.util.Scanner;
 
 /**
  * HoleStageFactory must create the game elements that are defined in HoleStageModel
@@ -31,6 +32,24 @@ public class HoleStageFactory extends StageElementsFactory {
 
     @Override
     public void setup() {
+        // Demander les dimensions du plateau
+        Scanner scanner = new Scanner(System.in);
+        int dimensions;
+        do {
+            System.out.print("Entrez la taille du plateau (minimum 3) : ");
+            dimensions = scanner.nextInt();
+            if (dimensions < 3) {
+                System.out.println("La taille doit être au moins 3x3");
+            }
+        } while (dimensions < 3);
+        BoardDimensions.setDimensions(dimensions);
+
+        // Calculer la position des pots en fonction de la taille du plateau
+        // Le plateau commence à x=0, donc on place les pots après le plateau
+        // On ajoute 2 pour avoir un espace entre le plateau et les pots
+        int boardEndX = dimensions * 4; // 4 est la largeur de chaque cellule
+        int blackPotX = boardEndX + 3;
+        int redPotX = blackPotX + 6; // 7 est la largeur du pot noir + 1 espace
 
         // create the text that displays the player name and put it in 0,0 in the virtual space
         TextElement text = new TextElement(stageModel.getCurrentPlayerName(), stageModel);
@@ -42,12 +61,12 @@ public class HoleStageFactory extends StageElementsFactory {
         // assign the board to the game stage model
         stageModel.setBoard(board);
 
-        //create the black pot in 18,0 in the virtual space
-        HolePawnPot blackPot = new HolePawnPot(18,0, stageModel);
+        //create the black pot
+        HolePawnPot blackPot = new HolePawnPot(blackPotX, 0, stageModel);
         // assign the black pot to the game stage model
         stageModel.setBlackPot(blackPot);
-        //create the black pot in 25,0 in the virtual space
-        HolePawnPot redPot = new HolePawnPot(25,0, stageModel);
+        //create the red pot
+        HolePawnPot redPot = new HolePawnPot(redPotX, 0, stageModel);
         // assign the red pot to the game stage model
         stageModel.setRedPot(redPot);
 
