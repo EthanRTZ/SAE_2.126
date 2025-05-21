@@ -30,9 +30,8 @@ public class PuissanceXBoard extends ContainerElement {
      * @return true si la colonne est pleine, false sinon
      */
     public boolean estColonnePleine(int colonne) {
-        // TODO: Implémenter la vérification
-        // - Vérifier si la case la plus haute de la colonne est occupée
-        return false;
+        // Vérifier si la case la plus haute de la colonne est occupée
+        return getElement(0, colonne) != null;
     }
 
     /**
