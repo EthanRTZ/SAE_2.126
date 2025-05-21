@@ -36,12 +36,15 @@ public class HoleStageFactory extends StageElementsFactory {
         Scanner scanner = new Scanner(System.in);
         int dimensions;
         do {
-            System.out.print("Entrez la taille du plateau (minimum 3) : ");
+            System.out.print("Entrez la taille du plateau (minimum 5) : ");
             dimensions = scanner.nextInt();
-            if (dimensions < 3) {
-                System.out.println("La taille doit être au moins 3x3");
+            if (dimensions < 5) {
+                System.out.println("La taille doit être au moins 5x5");
             }
-        } while (dimensions < 3);
+            if (dimensions > 10) {
+                System.out.println("La taille doit être au maximum 10x10");
+            }
+        } while (dimensions < 5 || dimensions > 10);
         BoardDimensions.setDimensions(dimensions);
 
         // Calculer la position des pots en fonction de la taille du plateau
@@ -57,7 +60,14 @@ public class HoleStageFactory extends StageElementsFactory {
         stageModel.setPlayerName(text);
 
         // create the board, in 0,1 in the virtual space
-        HoleBoard board = new HoleBoard(0, 1, stageModel);
+        HoleBoard board = new HoleBoard(
+            0, // x
+            1, // y
+            dimensions, // largeur
+            dimensions, // hauteur
+            dimensions, // nombrePionsAAligner (ou adaptez selon la règle souhaitée)
+            stageModel // GameStageModel
+        );
         // assign the board to the game stage model
         stageModel.setBoard(board);
 
