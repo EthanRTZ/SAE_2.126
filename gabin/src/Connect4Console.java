@@ -86,14 +86,9 @@ public class Connect4Console {
         int minSize = Math.min(nbCols, nbRows);
         int nbAlign = readInt("Nombre de jetons à aligner (3-" + minSize + ") : ", 3, minSize);
         
-        // Définir les paramètres du jeu
-        model.setGameParameter("nbCols", nbCols);
-        model.setGameParameter("nbRows", nbRows);
-        model.setGameParameter("nbAlign", nbAlign);
-        
         // Initialiser la scène de jeu
         Connect4StageModel stageModel = new Connect4StageModel("main", model);
-        Connect4Board board = new Connect4Board(0, 0, stageModel);
+        Connect4Board board = new Connect4Board(0, 0, stageModel, nbRows, nbCols, nbAlign);
         stageModel.setBoard(board);
         model.startGame(stageModel);
         

@@ -2,8 +2,6 @@ package boardifier.model;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
 
 public class Model {
 
@@ -41,7 +39,6 @@ public class Model {
     // NB : the last key stroke is store in players (useful in case there are several players)
     protected Coord2D lastClick;
 
-    protected Map<String, Integer> gameParameters;
 
     public Model(long frameGap) {
         state = STATE_INIT;
@@ -54,7 +51,6 @@ public class Model {
         idWinner = -1;
         lastClick = new Coord2D(-1,-1);
         gameStageModel = null;
-        gameParameters = new HashMap<>();
 
         this.frameGap = frameGap;
     }
@@ -275,13 +271,5 @@ public class Model {
     public void unselectAll() {
         if (gameStageModel == null) return;
         gameStageModel.unselectAll();
-    }
-
-    public void setGameParameter(String name, int value) {
-        gameParameters.put(name, value);
-    }
-
-    public int getGameParameter(String name) {
-        return gameParameters.getOrDefault(name, 0);
     }
 }

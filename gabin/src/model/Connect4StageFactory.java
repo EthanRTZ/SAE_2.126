@@ -23,14 +23,13 @@ public class Connect4StageFactory extends StageElementsFactory {
         text.setLocation(0, 0);
         stageModel.setPlayerName(text);
 
-        // Créer le plateau
-        Connect4Board board = new Connect4Board(0, 1, stageModel);
+        // Créer le plateau avec les dimensions par défaut
+        Connect4Board board = new Connect4Board(0, 1, stageModel, 6, 7, 4);
         stageModel.setBoard(board);
 
         // Calculer le nombre total de pions nécessaires
-        Model model = stageModel.getModel();
-        int nbCols = model.getGameParameter("nbCols");
-        int nbRows = model.getGameParameter("nbRows");
+        int nbCols = board.getNbCols();
+        int nbRows = board.getNbRows();
         int totalPawns = nbCols * nbRows;
 
         // Créer les pions pour chaque joueur

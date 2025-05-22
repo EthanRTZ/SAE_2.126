@@ -10,11 +10,11 @@ public class Connect4Board extends ContainerElement {
     private int nbAlign;
     private int[][] grid;
 
-    public Connect4Board(int x, int y, GameStageModel gameStageModel) {
-        super("connect4board", x, y, gameStageModel.getModel().getGameParameter("nbRows"), gameStageModel.getModel().getGameParameter("nbCols"), gameStageModel);
-        nbCols = gameStageModel.getModel().getGameParameter("nbCols");
-        nbRows = gameStageModel.getModel().getGameParameter("nbRows");
-        nbAlign = gameStageModel.getModel().getGameParameter("nbAlign");
+    public Connect4Board(int x, int y, GameStageModel gameStageModel, int rows, int cols, int align) {
+        super("connect4board", x, y, rows, cols, gameStageModel);
+        nbCols = cols;
+        nbRows = rows;
+        nbAlign = align;
         grid = new int[nbRows][nbCols];
         for (int i = 0; i < nbRows; i++) {
             for (int j = 0; j < nbCols; j++) {
