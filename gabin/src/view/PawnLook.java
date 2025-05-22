@@ -1,4 +1,4 @@
-package view;
+package src.view;
 
 import boardifier.model.GameElement;
 import boardifier.view.ConsoleColor;
@@ -12,11 +12,14 @@ public class PawnLook extends ElementLook {
 
     @Override
     public void render() {
-        Pawn pawn = (Pawn) element;
+        Pawn pawn = (Pawn)element;
         if (pawn.getColor() == Pawn.PAWN_BLACK) {
-            shape[0][0] = ConsoleColor.WHITE + ConsoleColor.BLACK_BACKGROUND + "X" + ConsoleColor.RESET;
-        } else {
-            shape[0][0] = ConsoleColor.BLACK + ConsoleColor.RED_BACKGROUND + "O" + ConsoleColor.RESET;
+            // Pion noir : fond noir, X blanc
+            shape[0][0] = ConsoleColor.BLACK_BACKGROUND + ConsoleColor.WHITE + "X" + ConsoleColor.RESET;
+        }
+        else {
+            // Pion rouge : fond rouge, O noir
+            shape[0][0] = ConsoleColor.RED_BACKGROUND + ConsoleColor.BLACK + "O" + ConsoleColor.RESET;
         }
     }
 } 
