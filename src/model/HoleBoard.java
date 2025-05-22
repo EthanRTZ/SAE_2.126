@@ -3,6 +3,7 @@ package model;
 import boardifier.control.Logger;
 import boardifier.model.GameStageModel;
 import boardifier.model.ContainerElement;
+import boardifier.model.GameElement;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,16 +17,16 @@ import java.awt.*;
  * pawn with a given value.
  */
 public class HoleBoard extends ContainerElement {
-    private static int rows = 5; // Valeur par défaut minimale
-    private static int cols = 5; // Valeur par défaut minimale
-    private static int tokensToWin = 3; // Valeur par défaut minimale
+    private static int rows = 6; // Valeur par défaut pour Puissance 4
+    private static int cols = 7; // Valeur par défaut pour Puissance 4
+    private static int tokensToWin = 4; // Valeur par défaut pour Puissance 4
 
     public static void setDimensions(int nbRows, int nbCols) {
-        if (nbRows < 5 || nbRows > 10) {
-            throw new IllegalArgumentException("Le nombre de lignes doit être entre 5 et 10");
+        if (nbRows < 4 || nbRows > 10) {
+            throw new IllegalArgumentException("Le nombre de lignes doit être entre 4 et 10");
         }
-        if (nbCols < 5 || nbCols > 10) {
-            throw new IllegalArgumentException("Le nombre de colonnes doit être entre 5 et 10");
+        if (nbCols < 4 || nbCols > 10) {
+            throw new IllegalArgumentException("Le nombre de colonnes doit être entre 4 et 10");
         }
         rows = nbRows;
         cols = nbCols;
@@ -68,94 +69,99 @@ public class HoleBoard extends ContainerElement {
 
     public List<Point> computeValidCells(int number) {
         List<Point> lst = new ArrayList<>();
-        Pawn p = null;
-        // if the grid is empty, is it the first turn and thus, all cells are valid
-        if (isEmpty()) {
-            // i are rows
-            for(int i=0;i<rows;i++) {
-                // j are cols
-                for (int j = 0; j < cols; j++) {
-                    // cols is in x direction and rows are in y direction, so create a point in (j,i)
-                    lst.add(new Point(j,i));
-                }
-            }
-            return lst;
-        }
-        // else, take each empty cell and check if it is valid
-        for(int i=0;i<rows;i++) {
-            for(int j=0;j<cols;j++) {
-                if (isEmptyAt(i,j)) {
-                    // check adjacence in row-1
-                    if (i-1 >= 0) {
-                        if (j-1>=0) {
-                            p = (Pawn)getElement(i-1,j-1);
-
-                            // check if same parity
-                            if ((p != null) && ( p.getNumber()%2 == number%2)) {
-                                lst.add(new Point(j,i));
-                                continue; // go to the next point
-                            }
-                        }
-                        p = (Pawn)getElement(i-1,j);
-                        // check if different parity
-                        if ((p != null) && ( p.getNumber()%2 != number%2)) {
-                            lst.add(new Point(j,i));
-                            continue; // go to the next point
-                        }
-                        if (j+1<cols) {
-                            p = (Pawn)getElement(i-1,j+1);
-                            // check if same parity
-                            if ((p != null) && ( p.getNumber()%2 == number%2)) {
-                                lst.add(new Point(j,i));
-                                continue; // go to the next point
-                            }
-                        }
-                    }
-                    // check adjacence in row+1
-                    if (i+1 < rows) {
-                        if (j-1>=0) {
-                            p = (Pawn)getElement(i+1,j-1);
-                            // check if same parity
-                            if ((p != null) && ( p.getNumber()%2 == number%2)) {
-                                lst.add(new Point(j,i));
-                                continue; // go to the next point
-                            }
-                        }
-                        p = (Pawn)getElement(i+1,j);
-                        // check if different parity
-                        if ((p != null) && ( p.getNumber()%2 != number%2)) {
-                            lst.add(new Point(j,i));
-                            continue; // go to the next point
-                        }
-                        if (j+1<cols) {
-                            p = (Pawn)getElement(i+1,j+1);
-                            // check if same parity
-                            if ((p != null) && ( p.getNumber()%2 == number%2)) {
-                                lst.add(new Point(j,i));
-                                continue; // go to the next point
-                            }
-                        }
-                    }
-                    // check adjacence in row
-                    if (j-1>=0) {
-                        p = (Pawn)getElement(i,j-1);
-                        // check if different parity
-                        if ((p != null) && ( p.getNumber()%2 != number%2)) {
-                            lst.add(new Point(j,i));
-                            continue; // go to the next point
-                        }
-                    }
-                    if (j+1<cols) {
-                        p = (Pawn)getElement(i,j+1);
-                        // check if different parity
-                        if ((p != null) && ( p.getNumber()%2 != number%2)) {
-                            lst.add(new Point(j,i));
-                            continue; // go to the next point
-                        }
-                    }
+        
+        // Pour chaque colonne
+        for (int col = 0; col < cols; col++) {
+            // Trouver la première ligne vide en partant du bas
+            for (int row = rows - 1; row >= 0; row--) {
+                if (isEmptyAt(row, col)) {
+                    lst.add(new Point(col, row));
+                    break;
                 }
             }
         }
         return lst;
+    }
+
+    public boolean isColumnFull(int col) {
+        return !isEmptyAt(0, col);
+    }
+
+    public int getFirstEmptyRow(int col) {
+        for (int row = rows - 1; row >= 0; row--) {
+            if (isEmptyAt(row, col)) {
+                return row;
+            }
+        }
+        return -1;
+    }
+
+    public boolean isBoardFull() {
+        for (int col = 0; col < cols; col++) {
+            if (!isColumnFull(col)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean checkWin(int row, int col, int playerColor) {
+        // Vérifier horizontalement
+        int count = 0;
+        for (int j = 0; j < cols; j++) {
+            GameElement element = getElement(row, j);
+            if (element != null && ((Pawn)element).getColor() == playerColor) {
+                count++;
+                if (count == tokensToWin) return true;
+            } else {
+                count = 0;
+            }
+        }
+
+        // Vérifier verticalement
+        count = 0;
+        for (int i = 0; i < rows; i++) {
+            GameElement element = getElement(i, col);
+            if (element != null && ((Pawn)element).getColor() == playerColor) {
+                count++;
+                if (count == tokensToWin) return true;
+            } else {
+                count = 0;
+            }
+        }
+
+        // Vérifier diagonalement (haut gauche vers bas droite)
+        count = 0;
+        int startRow = row - Math.min(row, col);
+        int startCol = col - Math.min(row, col);
+        while (startRow < rows && startCol < cols) {
+            GameElement element = getElement(startRow, startCol);
+            if (element != null && ((Pawn)element).getColor() == playerColor) {
+                count++;
+                if (count == tokensToWin) return true;
+            } else {
+                count = 0;
+            }
+            startRow++;
+            startCol++;
+        }
+
+        // Vérifier diagonalement (haut droite vers bas gauche)
+        count = 0;
+        startRow = row - Math.min(row, cols - 1 - col);
+        startCol = col + Math.min(row, cols - 1 - col);
+        while (startRow < rows && startCol >= 0) {
+            GameElement element = getElement(startRow, startCol);
+            if (element != null && ((Pawn)element).getColor() == playerColor) {
+                count++;
+                if (count == tokensToWin) return true;
+            } else {
+                count = 0;
+            }
+            startRow++;
+            startCol--;
+        }
+
+        return false;
     }
 }

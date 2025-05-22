@@ -32,6 +32,7 @@ public class HoleStageModel extends GameStageModel {
     // define stage state variables
     private int blackPawnsToPlay;
     private int redPawnsToPlay;
+    private int winner;
 
     // define stage game elements
     private HoleBoard board;
@@ -47,6 +48,7 @@ public class HoleStageModel extends GameStageModel {
         super(name, model);
         blackPawnsToPlay = 4;
         redPawnsToPlay = 4;
+        winner = -1;
         setupCallbacks();
     }
 
@@ -114,6 +116,13 @@ public class HoleStageModel extends GameStageModel {
         addElement(playerName);
     }
 
+    public int getWinner() {
+        return winner;
+    }
+
+    public void setWinner(int winner) {
+        this.winner = winner;
+    }
 
     private void setupCallbacks() {
         onPutInContainer( (element, gridDest, rowDest, colDest) -> {
@@ -292,7 +301,7 @@ public class HoleStageModel extends GameStageModel {
 
         System.out.println("nb black: "+nbBlack+", nb red: "+nbRed+", count black: "+countBlack+", count red: "+countRed+", winner is player "+idWinner);
         // set the winner
-        model.setIdWinner(idWinner);
+        winner = idWinner;
         // stop de the game
         model.stopStage();
     }
