@@ -29,10 +29,6 @@ public class Connect4Controller extends Controller {
         firstPlayer = true;
         currentPawnIndex = 0;
         
-        // Ajouter les joueurs
-        model.addHumanPlayer("Joueur 1");
-        model.addHumanPlayer("Joueur 2");
-        
         // Initialiser la scène de jeu
         try {
             Connect4StageModel stageModel = (Connect4StageModel) StageFactory.createStageModel("main", model);

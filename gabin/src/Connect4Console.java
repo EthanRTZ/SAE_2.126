@@ -78,9 +78,25 @@ public class Connect4Console {
         Logger.setVerbosity(Logger.VERBOSE_HIGH);
         
         Model model = new Model();
-        // Ajouter les joueurs
-        model.addHumanPlayer("Joueur 1");
-        model.addHumanPlayer("Joueur 2");
+        
+        // Demander le mode de jeu
+        int gameMode = readInt("Choisissez le mode de jeu (0: Joueur vs Joueur, 1: Joueur vs Ordinateur, 2: Ordinateur vs Ordinateur) : ", 0, 2);
+        
+        // Ajouter les joueurs selon le mode choisi
+        switch (gameMode) {
+            case 0: // Joueur vs Joueur
+                model.addHumanPlayer("Joueur 1");
+                model.addHumanPlayer("Joueur 2");
+                break;
+            case 1: // Joueur vs Ordinateur
+                model.addHumanPlayer("Joueur 1");
+                model.addComputerPlayer("Ordinateur");
+                break;
+            case 2: // Ordinateur vs Ordinateur
+                model.addComputerPlayer("Ordinateur 1");
+                model.addComputerPlayer("Ordinateur 2");
+                break;
+        }
         
         // Demander les paramètres du jeu
         int nbCols = readInt("Nombre de colonnes (5-10) : ", 5, 10);
