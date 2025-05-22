@@ -1,5 +1,3 @@
-package src;
-
 import boardifier.control.Logger;
 import boardifier.model.GameException;
 import boardifier.model.Model;
@@ -52,9 +50,9 @@ public class Connect4Console {
                 int value = board.getGrid()[i][j];
                 String cell = "   ";
                 if (value == Pawn.PAWN_BLACK)
-                    cell = boardifier.view.ConsoleColor.BLACK + boardifier.view.ConsoleColor.YELLOW_BACKGROUND + " X " + boardifier.view.ConsoleColor.RESET;
+                    cell = boardifier.view.ConsoleColor.RED + boardifier.view.ConsoleColor.BLACK_BACKGROUND + " ● " + boardifier.view.ConsoleColor.RESET;
                 else if (value == Pawn.PAWN_RED)
-                    cell = boardifier.view.ConsoleColor.BLACK + boardifier.view.ConsoleColor.RED_BACKGROUND + " O " + boardifier.view.ConsoleColor.RESET;
+                    cell = boardifier.view.ConsoleColor.YELLOW + boardifier.view.ConsoleColor.BLACK_BACKGROUND + " ● " + boardifier.view.ConsoleColor.RESET;
                 System.out.print(cell + "║");
             }
             System.out.println();

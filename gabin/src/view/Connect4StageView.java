@@ -1,4 +1,4 @@
-package view;
+package src.view;
 
 import boardifier.control.Logger;
 import boardifier.model.GameStageModel;
@@ -7,6 +7,7 @@ import boardifier.view.GameStageView;
 import boardifier.view.TextLook;
 import model.Connect4StageModel;
 import model.Pawn;
+import src.view.PawnLook;
 
 public class Connect4StageView extends GameStageView {
     public Connect4StageView(String name, GameStageModel gameStageModel) {
@@ -35,4 +36,4 @@ public class Connect4StageView extends GameStageView {
     public void addLook(boardifier.view.ElementLook look) {
         super.addLook(look);
     }
-} 
+}
