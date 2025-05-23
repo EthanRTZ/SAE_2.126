@@ -7,9 +7,6 @@ import boardifier.view.GameStageView;
 import boardifier.view.TextLook;
 import model.Connect4StageModel;
 import model.Pawn;
-import view.YellowPawnPotLook;
-import view.RedPawnPotLook;
-import view.PawnLook;
 
 public class Connect4StageView extends GameStageView {
     public Connect4StageView(String name, GameStageModel gameStageModel) {

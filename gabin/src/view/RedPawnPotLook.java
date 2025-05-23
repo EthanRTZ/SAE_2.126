@@ -12,7 +12,7 @@ import boardifier.view.TableLook;
  */
 public class RedPawnPotLook extends TableLook {
 
-    public RedPawnPotLook(int x, int y, ContainerElement containerElement) {
+    public RedPawnPotLook(int cellHeight, int cellWidth, ContainerElement containerElement) {
         super(containerElement, -1, 1);
     }
 }
