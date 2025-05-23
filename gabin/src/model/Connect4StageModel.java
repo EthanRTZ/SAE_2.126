@@ -2,8 +2,8 @@ package model;
 
 import boardifier.model.GameStageModel;
 import boardifier.model.Model;
-import boardifier.model.TextElement;
 import boardifier.model.StageElementsFactory;
+import boardifier.model.TextElement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,6 +13,9 @@ public class Connect4StageModel extends GameStageModel {
     private boolean gameOver;
     private List<Pawn> pawns;
     private int winner;
+    // Ajout des pots pour les pions jaunes et rouges
+    private Connect4PawnPot yellowPot;
+    private Connect4PawnPot redPot;
 
     public Connect4StageModel(String name, Model model) {
         super(name, model);
@@ -49,6 +52,25 @@ public class Connect4StageModel extends GameStageModel {
         for (Pawn pawn : pawns) {
             addElement(pawn);
         }
+    }
+
+    // Accesseurs pour les pots de pions
+    public Connect4PawnPot getYellowPot() {
+        return yellowPot;
+    }
+
+    public void setYellowPot(Connect4PawnPot yellowPot) {
+        this.yellowPot = yellowPot;
+        addContainer(yellowPot);
+    }
+
+    public Connect4PawnPot getRedPot() {
+        return redPot;
+    }
+
+    public void setRedPot(Connect4PawnPot redPot) {
+        this.redPot = redPot;
+        addContainer(redPot);
     }
 
     private void setupCallbacks() {

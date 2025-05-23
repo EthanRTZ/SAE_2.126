@@ -1,10 +1,10 @@
 import boardifier.control.Logger;
-import boardifier.model.GameException;
+import boardifier.model.GameElement;
 import boardifier.model.Model;
-import control.Connect4Controller;
 import java.util.Scanner;
-import model.Connect4StageModel;
 import model.Connect4Board;
+import model.Connect4PawnPot;
+import model.Connect4StageModel;
 import model.Pawn;
 
 public class Connect4Console {
@@ -26,7 +26,15 @@ public class Connect4Console {
         return value;
     }
 
-    private static void displayBoard(Connect4Board board) {
+    private static void displayPawnPots(Connect4StageModel stageModel) {
+        System.out.println("\nPots de pions :");
+        System.out.println("Joueur 1 (Rouge) : " + boardifier.view.ConsoleColor.RED + " ● ".repeat(stageModel.getRedPot().getRemainingPawns()) + boardifier.view.ConsoleColor.RESET);
+        System.out.println("Joueur 2 (Jaune) : " + boardifier.view.ConsoleColor.YELLOW + " ● ".repeat(stageModel.getYellowPot().getRemainingPawns()) + boardifier.view.ConsoleColor.RESET);
+        System.out.println();
+    }
+
+    private static void displayBoard(Connect4Board board, Connect4StageModel stageModel) {
+        displayPawnPots(stageModel);
         int nbCols = board.getNbCols();
         int nbRows = board.getNbRows();
         // Afficher les numéros de colonnes
@@ -50,9 +58,9 @@ public class Connect4Console {
                 int value = board.getGrid()[i][j];
                 String cell = "   ";
                 if (value == Pawn.PAWN_BLACK)
-                    cell = boardifier.view.ConsoleColor.RED + boardifier.view.ConsoleColor.BLACK_BACKGROUND + " ● " + boardifier.view.ConsoleColor.RESET;
+                    cell = boardifier.view.ConsoleColor.YELLOW + " ● " + boardifier.view.ConsoleColor.RESET;
                 else if (value == Pawn.PAWN_RED)
-                    cell = boardifier.view.ConsoleColor.YELLOW + boardifier.view.ConsoleColor.BLACK_BACKGROUND + " ● " + boardifier.view.ConsoleColor.RESET;
+                    cell = boardifier.view.ConsoleColor.RED + " ● " + boardifier.view.ConsoleColor.RESET;
                 System.out.print(cell + "║");
             }
             System.out.println();
@@ -108,6 +116,10 @@ public class Connect4Console {
         Connect4StageModel stageModel = new Connect4StageModel("main", model);
         Connect4Board board = new Connect4Board(0, 0, stageModel, nbRows, nbCols, nbAlign);
         stageModel.setBoard(board);
+        
+        // Initialiser tous les éléments du jeu (pots de pions inclus)
+        stageModel.getDefaultElementFactory().setup();
+        
         model.startGame(stageModel);
         
         // Boucle principale du jeu
@@ -116,7 +128,7 @@ public class Connect4Console {
         
         while (!gameOver) {
             // Afficher le plateau
-            displayBoard(board);
+            displayBoard(board, stageModel);
             
             // Afficher le joueur actuel
             String currentPlayer = model.getCurrentPlayer().getName();
@@ -138,13 +150,32 @@ public class Connect4Console {
             int color = model.getIdPlayer() == 0 ? Pawn.PAWN_BLACK : Pawn.PAWN_RED;
             board.getGrid()[row][col] = color;
             
+            // Retirer un pion du pot correspondant
+            if (color == Pawn.PAWN_BLACK) {
+                Connect4PawnPot pot = stageModel.getYellowPot();
+                if (pot.getRemainingPawns() > 0) {
+                    GameElement pawn = pot.getLastElement(pot.getRemainingPawns() - 1, 0);
+                    if (pawn != null) {
+                        pot.removeElement(pawn);
+                    }
+                }
+            } else {
+                Connect4PawnPot pot = stageModel.getRedPot();
+                if (pot.getRemainingPawns() > 0) {
+                    GameElement pawn = pot.getLastElement(pot.getRemainingPawns() - 1, 0);
+                    if (pawn != null) {
+                        pot.removeElement(pawn);
+                    }
+                }
+            }
+            
             // Vérifier la victoire
             if (board.checkWin(row, col, color)) {
-                displayBoard(board);
+                displayBoard(board, stageModel);
                 System.out.println(currentPlayer + " a gagné !");
                 gameOver = true;
             } else if (board.isBoardFull()) {
-                displayBoard(board);
+                displayBoard(board, stageModel);
                 System.out.println("Match nul !");
                 gameOver = true;
             } else {

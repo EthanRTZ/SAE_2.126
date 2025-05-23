@@ -12,22 +12,21 @@ import boardifier.model.action.ActionList;
 import boardifier.view.View;
 import model.Connect4Board;
 import model.Connect4StageModel;
+import model.Connect4PawnPot;
 import model.Pawn;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.List;
 
 public class Connect4Controller extends Controller {
     private BufferedReader consoleIn;
     private boolean firstPlayer;
-    private int currentPawnIndex;
 
     public Connect4Controller(Model model, View view) {
         super(model, view);
         firstPlayer = true;
-        currentPawnIndex = 0;
+        consoleIn = new BufferedReader(new InputStreamReader(System.in));
         
         // Initialiser la scène de jeu
         try {
@@ -39,7 +38,6 @@ public class Connect4Controller extends Controller {
     }
 
     public void stageLoop() {
-        consoleIn = new BufferedReader(new InputStreamReader(System.in));
         update();
         while (!model.isEndStage()) {
             playTurn();
@@ -84,6 +82,14 @@ public class Connect4Controller extends Controller {
     private boolean analyseAndPlay(String line) {
         Connect4StageModel gameStage = (Connect4StageModel) model.getGameStage();
         Connect4Board board = gameStage.getBoard();
+        Connect4PawnPot pot;
+        
+        // Sélectionner le bon pot selon le joueur courant
+        if (model.getIdPlayer() == 0) {
+            pot = gameStage.getYellowPot();
+        } else {
+            pot = gameStage.getRedPot();
+        }
 
         // Convertir le numéro de la colonne en index
         int col;
@@ -100,15 +106,11 @@ public class Connect4Controller extends Controller {
         // Trouver la première ligne vide dans la colonne
         int row = board.getFirstEmptyRow(col);
 
-        // Récupérer la liste des pions
-        List<Pawn> pawns = gameStage.getPawns();
-        
-        // Trouver un pion disponible pour le joueur actuel
-        Pawn pawn = null;
-        int color = model.getIdPlayer() == 0 ? Pawn.PAWN_BLACK : Pawn.PAWN_RED;
-        for (Pawn p : pawns) {
-            if (p.getColor() == color && !board.contains(p)) {
-                pawn = p;
+        // Trouver un pion disponible dans le pot
+        GameElement pawn = null;
+        for (int i = 0; i < pot.getNbCols(); i++) {
+            if (!pot.isEmptyAt(i, 0)) {
+                pawn = pot.getElement(i, 0);
                 break;
             }
         }
@@ -134,7 +136,7 @@ public class Connect4Controller extends Controller {
         } else if (winner == Pawn.PAWN_RED) {
             System.out.println("Joueur 2 a gagné !");
         } else {
-            System.out.println("Match nul (égalité)");
+            System.out.println("Match nul !");
         }
     }
-} 
+}

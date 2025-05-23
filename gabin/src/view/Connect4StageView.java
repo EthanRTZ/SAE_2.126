@@ -1,4 +1,4 @@
-package src.view;
+package view;
 
 import boardifier.control.Logger;
 import boardifier.model.GameStageModel;
@@ -7,7 +7,9 @@ import boardifier.view.GameStageView;
 import boardifier.view.TextLook;
 import model.Connect4StageModel;
 import model.Pawn;
-import src.view.PawnLook;
+import view.YellowPawnPotLook;
+import view.RedPawnPotLook;
+import view.PawnLook;
 
 public class Connect4StageView extends GameStageView {
     public Connect4StageView(String name, GameStageModel gameStageModel) {
@@ -23,6 +25,10 @@ public class Connect4StageView extends GameStageView {
 
         // Créer l'affichage du plateau avec des bordures et colonnes numérotées de 1 à 7, sans numéros de lignes
         addLook(new ClassicBoardLook(2, 4, model.getBoard(), 0, 1, false));
+        
+        // Ajouter les vues pour les pots de pions
+        addLook(new YellowPawnPotLook(model.getYellowPot()));
+        addLook(new RedPawnPotLook(2, 4, model.getRedPot()));
 
         // Créer l'affichage des pions déjà existants
         for (Pawn pawn : model.getPawns()) {
@@ -30,10 +36,5 @@ public class Connect4StageView extends GameStageView {
         }
 
         Logger.debug("finished creating game stage looks", this);
-    }
-
-    @Override
-    public void addLook(boardifier.view.ElementLook look) {
-        super.addLook(look);
     }
 }
