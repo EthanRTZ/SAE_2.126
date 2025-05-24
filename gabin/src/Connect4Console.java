@@ -6,6 +6,10 @@ import model.Connect4Board;
 import model.Connect4PawnPot;
 import model.Connect4StageModel;
 import model.Pawn;
+import control.Connect4Decider;
+import control.Connect4SmartDecider;
+import boardifier.model.action.ActionList;
+import boardifier.model.action.GameAction;
 
 public class Connect4Console {
     private static int readInt(String prompt, int min, int max) {
@@ -90,6 +94,10 @@ public class Connect4Console {
         // Demander le mode de jeu
         int gameMode = readInt("Choisissez le mode de jeu (0: Joueur vs Joueur, 1: Joueur vs Ordinateur, 2: Ordinateur vs Ordinateur) : ", 0, 2);
         
+        // Variables pour stocker les types d'IA choisis
+        int typeIA1 = 0;
+        int typeIA2 = 0;
+        
         // Ajouter les joueurs selon le mode choisi
         switch (gameMode) {
             case 0: // Joueur vs Joueur
@@ -98,9 +106,14 @@ public class Connect4Console {
                 break;
             case 1: // Joueur vs Ordinateur
                 model.addHumanPlayer("Joueur 1");
+                // Demander le type d'IA pour l'ordinateur
+                typeIA1 = readInt("Choisissez le type d'IA (0: Aléatoire, 1: Intelligente) : ", 0, 1);
                 model.addComputerPlayer("Ordinateur");
                 break;
             case 2: // Ordinateur vs Ordinateur
+                // Demander le type d'IA pour chaque ordinateur
+                typeIA1 = readInt("Choisissez le type d'IA pour l'Ordinateur 1 (0: Aléatoire, 1: Intelligente) : ", 0, 1);
+                typeIA2 = readInt("Choisissez le type d'IA pour l'Ordinateur 2 (0: Aléatoire, 1: Intelligente) : ", 0, 1);
                 model.addComputerPlayer("Ordinateur 1");
                 model.addComputerPlayer("Ordinateur 2");
                 break;
@@ -143,10 +156,44 @@ public class Connect4Console {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                // L'ordinateur choisit une colonne aléatoire non pleine
-                do {
-                    col = (int)(Math.random() * nbCols);
-                } while (board.isColumnFull(col));
+
+                // Déterminer quel type d'IA utiliser
+                int typeIA;
+                if (currentPlayer.equals("Ordinateur")) {
+                    typeIA = typeIA1;
+                } else if (currentPlayer.equals("Ordinateur 1")) {
+                    typeIA = typeIA1;
+                } else {
+                    typeIA = typeIA2;
+                }
+
+                // Utiliser l'IA appropriée
+                if (typeIA == 0) {
+                    // IA aléatoire
+                    do {
+                        col = (int)(Math.random() * nbCols);
+                    } while (board.isColumnFull(col));
+                } else {
+                    // IA intelligente
+                    Connect4SmartDecider smartDecider = new Connect4SmartDecider(model, null);
+                    ActionList actions = smartDecider.decide();
+                    if (actions != null && !actions.getActions().isEmpty()) {
+                        GameAction action = actions.getActions().get(0).get(0);
+                        if (action instanceof boardifier.model.action.PutInContainerAction) {
+                            col = ((boardifier.model.action.PutInContainerAction)action).getColDest();
+                        } else {
+                            // Fallback sur l'IA aléatoire si l'action n'est pas du bon type
+                            do {
+                                col = (int)(Math.random() * nbCols);
+                            } while (board.isColumnFull(col));
+                        }
+                    } else {
+                        // Fallback sur l'IA aléatoire si l'IA intelligente échoue
+                        do {
+                            col = (int)(Math.random() * nbCols);
+                        } while (board.isColumnFull(col));
+                    }
+                }
                 System.out.println(currentPlayer + " joue dans la colonne " + (col + 1));
             }
             else {
