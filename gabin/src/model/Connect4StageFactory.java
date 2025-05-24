@@ -8,19 +8,10 @@ import java.util.List;
 
 public class Connect4StageFactory extends StageElementsFactory {
     private Connect4StageModel stageModel;
-    private int userRows;
-    private int userCols;
-    private int userNbAlign;
 
     public Connect4StageFactory(GameStageModel gameStageModel) {
         super(gameStageModel);
         stageModel = (Connect4StageModel) gameStageModel;
-    }
-
-    public void setDimensions(int rows, int cols, int nbAlign) {
-        this.userRows = rows;
-        this.userCols = cols;
-        this.userNbAlign = nbAlign;
     }
 
     @Override
@@ -30,13 +21,16 @@ public class Connect4StageFactory extends StageElementsFactory {
         text.setLocation(0, 0);
         stageModel.setPlayerName(text);
 
-        // Créer le plateau avec les dimensions spécifiées par l'utilisateur
-        Connect4Board board = new Connect4Board(0, 1, stageModel, userRows, userCols, userNbAlign);
+        // Récupérer les dimensions choisies par l'utilisateur depuis le modèle
+        Connect4Board board = new Connect4Board(0, 1, stageModel, 
+                                             stageModel.getNbRows(), 
+                                             stageModel.getNbCols(), 
+                                             stageModel.getNbToAlign());
         stageModel.setBoard(board);
 
         // Calculer le nombre total de pions nécessaires
-        int nbCols = board.getNbCols();
-        int nbRows = board.getNbRows();
+        int nbCols = stageModel.getNbCols();
+        int nbRows = stageModel.getNbRows();
         int totalPawns = nbCols * nbRows;
         
         // Calculer la position des pots en fonction de la taille du plateau

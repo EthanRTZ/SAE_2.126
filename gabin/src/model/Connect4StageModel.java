@@ -16,6 +16,9 @@ public class Connect4StageModel extends GameStageModel {
     // Ajout des pots pour les pions jaunes et rouges
     private Connect4PawnPot yellowPot;
     private Connect4PawnPot redPot;
+    private int nbRows;
+    private int nbCols;
+    private int nbToAlign;
 
     public Connect4StageModel(String name, Model model) {
         super(name, model);
@@ -23,6 +26,24 @@ public class Connect4StageModel extends GameStageModel {
         pawns = new ArrayList<>();
         winner = -1;
         setupCallbacks();
+    }
+
+    public void setDimensions(int nbRows, int nbCols, int nbToAlign) {
+        this.nbRows = nbRows;
+        this.nbCols = nbCols;
+        this.nbToAlign = nbToAlign;
+    }
+
+    public int getNbRows() {
+        return nbRows;
+    }
+
+    public int getNbCols() {
+        return nbCols;
+    }
+
+    public int getNbToAlign() {
+        return nbToAlign;
     }
 
     public Connect4Board getBoard() {

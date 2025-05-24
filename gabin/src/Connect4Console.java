@@ -4,7 +4,6 @@ import boardifier.model.Model;
 import java.util.Scanner;
 import model.Connect4Board;
 import model.Connect4PawnPot;
-import model.Connect4StageFactory;
 import model.Connect4StageModel;
 import model.Pawn;
 
@@ -124,29 +123,29 @@ public class Connect4Console {
         }
         
         // Demander les paramètres du jeu
-        int nbRows = readInt("Nombre de lignes (5-10) : ", 5, 10);
         int nbCols = readInt("Nombre de colonnes (5-10) : ", 5, 10);
+        int nbRows = readInt("Nombre de lignes (5-10) : ", 5, 10);
         int minSize = Math.min(nbCols, nbRows);
         int nbAlign = readInt("Nombre de jetons à aligner (3-" + minSize + ") : ", 3, minSize);
         
         // Initialiser la scène de jeu
         Connect4StageModel stageModel = new Connect4StageModel("main", model);
+        // Définir les dimensions du jeu
+        stageModel.setDimensions(nbRows, nbCols, nbAlign);
         
-        // Créer la factory et configurer les dimensions
-        Connect4StageFactory factory = new Connect4StageFactory(stageModel);
-        factory.setDimensions(nbRows, nbCols, nbAlign);
+        // Initialiser tous les éléments du jeu (pots de pions inclus)
+        stageModel.getDefaultElementFactory().setup();
         
-        // Initialiser le jeu avec la factory
-        factory.setup();
         model.startGame(stageModel);
         
         // Boucle principale du jeu
         Scanner scanner = new Scanner(System.in);
         boolean gameOver = false;
+        Connect4Board board = stageModel.getBoard();
         
         while (!gameOver) {
             // Afficher le plateau
-            displayBoard(stageModel.getBoard(), stageModel);
+            displayBoard(board, stageModel);
             
             // Afficher le joueur actuel
             String currentPlayer = model.getCurrentPlayer().getName();
@@ -164,7 +163,7 @@ public class Connect4Console {
                 // L'ordinateur choisit une colonne aléatoire non pleine
                 do {
                     col = (int)(Math.random() * nbCols);
-                } while (stageModel.getBoard().isColumnFull(col));
+                } while (board.isColumnFull(col));
                 System.out.println(currentPlayer + " joue dans la colonne " + (col + 1));
             }
             else {
@@ -173,17 +172,17 @@ public class Connect4Console {
             }
             
             // Vérifier si la colonne est pleine
-            if (stageModel.getBoard().isColumnFull(col)) {
+            if (board.isColumnFull(col)) {
                 System.out.println("Cette colonne est pleine ! Choisissez une autre colonne.");
                 continue;
             }
             
             // Trouver la première ligne vide
-            int row = stageModel.getBoard().getFirstEmptyRow(col);
+            int row = board.getFirstEmptyRow(col);
             
             // Placer le pion
             int color = model.getIdPlayer() == 0 ? Pawn.PAWN_RED : Pawn.PAWN_BLACK;
-            stageModel.getBoard().getGrid()[row][col] = color;
+            board.getGrid()[row][col] = color;
             
             // Retirer un pion du pot correspondant
             if (color == Pawn.PAWN_BLACK) {
@@ -211,12 +210,12 @@ public class Connect4Console {
             }
             
             // Vérifier la victoire
-            if (stageModel.getBoard().checkWin(row, col, color)) {
-                displayBoard(stageModel.getBoard(), stageModel);
+            if (board.checkWin(row, col, color)) {
+                displayBoard(board, stageModel);
                 System.out.println(currentPlayer + " a gagné !");
                 gameOver = true;
-            } else if (stageModel.getBoard().isBoardFull()) {
-                displayBoard(stageModel.getBoard(), stageModel);
+            } else if (board.isBoardFull()) {
+                displayBoard(board, stageModel);
                 System.out.println("Match nul !");
                 gameOver = true;
             } else {
