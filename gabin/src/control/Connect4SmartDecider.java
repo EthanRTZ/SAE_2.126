@@ -48,7 +48,12 @@ public class Connect4SmartDecider extends Decider {
                 
                 // Simuler le coup
                 int[][] grid = board.getGrid();
-                int couleurJoueur = model.getIdPlayer() == 0 ? Pawn.PAWN_BLACK : Pawn.PAWN_RED;
+                int couleurJoueur;
+                if (model.getIdPlayer() == 0) {
+                    couleurJoueur = Pawn.PAWN_BLACK;
+                } else {
+                    couleurJoueur = Pawn.PAWN_RED;
+                }
                 grid[row][col] = couleurJoueur;
                 
                 // Vérifier si ce coup fait gagner
@@ -66,7 +71,12 @@ public class Connect4SmartDecider extends Decider {
 
         // ÉTAPE 2: Si on ne peut pas gagner, vérifier si l'adversaire peut gagner
         if (!coupTrouve) {
-            int couleurAdversaire = model.getIdPlayer() == 0 ? Pawn.PAWN_RED : Pawn.PAWN_BLACK;
+            int couleurAdversaire;
+            if (model.getIdPlayer() == 0) {
+                couleurAdversaire = Pawn.PAWN_RED;
+            } else {
+                couleurAdversaire = Pawn.PAWN_BLACK;
+            }
             
             for (int col = 0; col < board.getNbCols(); col++) {
                 if (!board.isColumnFull(col)) {
