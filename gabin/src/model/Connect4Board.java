@@ -1,8 +1,7 @@
 package model;
 
-import boardifier.model.GameStageModel;
 import boardifier.model.ContainerElement;
-import boardifier.model.Model;
+import boardifier.model.GameStageModel;
 
 public class Connect4Board extends ContainerElement {
     private int nbCols;

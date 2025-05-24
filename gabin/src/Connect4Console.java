@@ -134,8 +134,25 @@ public class Connect4Console {
             String currentPlayer = model.getCurrentPlayer().getName();
             System.out.println("C'est au tour de " + currentPlayer);
             
-            // Demander la colonne
-            int col = readInt("Entrez le numéro de la colonne (1-" + nbCols + ") : ", 1, nbCols) - 1;
+            int col;
+            // Vérifier si c'est un joueur ordinateur
+            if (currentPlayer.toLowerCase().contains("ordinateur")) {
+                // Simuler un délai de réflexion pour l'ordinateur
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                // L'ordinateur choisit une colonne aléatoire non pleine
+                do {
+                    col = (int)(Math.random() * nbCols);
+                } while (board.isColumnFull(col));
+                System.out.println(currentPlayer + " joue dans la colonne " + (col + 1));
+            }
+            else {
+                // Tour d'un joueur humain
+                col = readInt("Entrez le numéro de la colonne (1-" + nbCols + ") : ", 1, nbCols) - 1;
+            }
             
             // Vérifier si la colonne est pleine
             if (board.isColumnFull(col)) {

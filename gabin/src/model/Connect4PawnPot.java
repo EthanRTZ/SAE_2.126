@@ -10,7 +10,7 @@ import boardifier.model.GameStageModel;
 public class Connect4PawnPot extends ContainerElement {
 
     public Connect4PawnPot(int x, int y, GameStageModel gameStageModel) {
-        super("connect4pawnpot", x, y, 21, 1, gameStageModel);
+        super("connect4pawnpot", x, y, 1, 21, gameStageModel);
     }
 
     /**
@@ -20,7 +20,7 @@ public class Connect4PawnPot extends ContainerElement {
     public int getRemainingPawns() {
         int count = 0;
         for (int i = 0; i < getNbRows(); i++) {
-            if (!isEmptyAt(i, 0)) count++;
+            if (!isEmptyAt(0, i)) count++;
         }
         return count;
     }

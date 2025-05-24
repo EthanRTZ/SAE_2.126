@@ -61,10 +61,10 @@ public class Connect4StageFactory extends StageElementsFactory {
             pawns.add(redPawn);
             
             // Ajouter les pions aux pots
-            yellowPot.addElement(yellowPawn, i, 0);
-            redPot.addElement(redPawn, i, 0);
+            yellowPot.addElement(yellowPawn, 0, i);  // Correction: inverser les coordonnées
+            redPot.addElement(redPawn, 0, i);  // Correction: inverser les coordonnées
         }
         
         stageModel.setPawns(pawns);
     }
-} 
+}

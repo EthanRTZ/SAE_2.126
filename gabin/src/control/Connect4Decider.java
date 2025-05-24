@@ -32,7 +32,7 @@ public class Connect4Decider extends Decider {
         int colDest = 0; // the dest. col in board
         
         // Sélectionner le pot correspondant au joueur actuel
-        if (model.getIdPlayer() == Pawn.PAWN_BLACK) {
+        if (model.getIdPlayer() == 0) {  // Correction: utiliser 0 au lieu de Pawn.PAWN_BLACK
             pot = stage.getYellowPot();
         } else {
             pot = stage.getRedPot();
@@ -48,9 +48,9 @@ public class Connect4Decider extends Decider {
         int row = board.getFirstEmptyRow(col);
 
         // Trouver un pion disponible dans le pot
-        for (int i = 0; i < pot.getNbCols(); i++) {
-            if (!pot.isEmptyAt(i, 0)) {
-                pawn = pot.getElement(i, 0);
+        for (int i = 0; i < pot.getNbRows(); i++) {  // Correction: utiliser getNbRows() au lieu de getNbCols()
+            if (!pot.isEmptyAt(0, i)) {  // Correction: inverser les coordonnées (0, i) au lieu de (i, 0)
+                pawn = pot.getElement(0, i);
                 rowDest = row;
                 colDest = col;
                 break;

@@ -10,14 +10,13 @@ import boardifier.model.Model;
 import boardifier.model.Player;
 import boardifier.model.action.ActionList;
 import boardifier.view.View;
-import model.Connect4Board;
-import model.Connect4StageModel;
-import model.Connect4PawnPot;
-import model.Pawn;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import model.Connect4Board;
+import model.Connect4PawnPot;
+import model.Connect4StageModel;
+import model.Pawn;
 
 public class Connect4Controller extends Controller {
     private BufferedReader consoleIn;
@@ -54,6 +53,13 @@ public class Connect4Controller extends Controller {
             Connect4Decider decider = new Connect4Decider(model, this);
             ActionPlayer play = new ActionPlayer(model, this, decider, null);
             play.start();
+            
+            // Ajouter un petit délai pour laisser le temps à l'action de s'exécuter
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         } else {
             boolean ok = false;
             while (!ok) {
@@ -67,16 +73,19 @@ public class Connect4Controller extends Controller {
                         System.out.println("Instruction incorrecte. Réessayez !");
                     }
                 } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
         }
     }
 
     public void endOfTurn() {
-        model.setNextPlayer();
-        Player p = model.getCurrentPlayer();
-        Connect4StageModel stageModel = (Connect4StageModel) model.getGameStage();
-        stageModel.getPlayerName().setText(p.getName());
+        // Ne pas changer le joueur si l'action le fait déjà
+        if (!model.isEndStage()) {
+            Player p = model.getCurrentPlayer();
+            Connect4StageModel stageModel = (Connect4StageModel) model.getGameStage();
+            stageModel.getPlayerName().setText(p.getName());
+        }
     }
 
     private boolean analyseAndPlay(String line) {
@@ -108,9 +117,9 @@ public class Connect4Controller extends Controller {
 
         // Trouver un pion disponible dans le pot
         GameElement pawn = null;
-        for (int i = 0; i < pot.getNbCols(); i++) {
-            if (!pot.isEmptyAt(i, 0)) {
-                pawn = pot.getElement(i, 0);
+        for (int i = 0; i < pot.getNbRows(); i++) {
+            if (!pot.isEmptyAt(0, i)) {
+                pawn = pot.getElement(0, i);
                 break;
             }
         }
