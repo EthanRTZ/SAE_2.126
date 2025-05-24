@@ -2,6 +2,10 @@ package view;
 
 import boardifier.model.ContainerElement;
 import boardifier.view.TableLook;
+import model.Connect4PawnPot;
+import java.awt.Graphics;
+import java.awt.Color;
+import java.awt.Font;
 
 /**
  * Red pot inherits from TableLook, using the constructor for
@@ -14,5 +18,27 @@ public class RedPawnPotLook extends TableLook {
 
     public RedPawnPotLook(int cellHeight, int cellWidth, ContainerElement containerElement) {
         super(containerElement, -1, 1);
+    }
+    
+    // Supprimer l'annotation @Override car ce n'est pas une méthode de la superclasse
+    public void paintComponent(Graphics g) {
+        // super.paintComponent(g); // Ne pas appeler super car la méthode n'existe pas dans le parent
+        
+        // Afficher le nombre de pions restants
+        Connect4PawnPot pot = (Connect4PawnPot) element;
+        int count = pot.getRemainingPawns();
+        
+        // Position du texte - conversion explicite de double à int
+        int x = (int)(element.getX() * 40);
+        int y = (int)(element.getY() * 40) - 20;
+        
+        // Dessiner un fond pour le texte
+        g.setColor(new Color(255, 200, 200));
+        g.fillRect(x, y, 110, 20);
+        
+        // Dessiner le texte
+        g.setColor(Color.BLACK);
+        g.setFont(new Font("Arial", Font.BOLD, 12));
+        g.drawString("Rouges: " + count + " pions", x + 5, y + 15);
     }
 }

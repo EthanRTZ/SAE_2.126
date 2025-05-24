@@ -38,12 +38,16 @@ public class Connect4StageFactory extends StageElementsFactory {
         int yellowPotX = -4; // Position à gauche du plateau
         int redPotX = boardEndX + 3; // Position à droite du plateau
 
-        // Chaque joueur reçoit un nombre de pions égal au nombre de cases dans la grille
-        int pawnsPerPlayer = totalPawns;
+        // Calculer le nombre de pions pour chaque joueur
+        int pawnsPerPlayerYellow = totalPawns / 2;
+        int pawnsPerPlayerRed = pawnsPerPlayerYellow;
+        if (totalPawns % 2 != 0) {
+            pawnsPerPlayerRed++; // Rouge a 1 pion de plus si impair
+        }
 
         // Créer les pots de pions avec la capacité maximale
-        Connect4PawnPot yellowPot = new Connect4PawnPot(yellowPotX, 1, stageModel, pawnsPerPlayer);
-        Connect4PawnPot redPot = new Connect4PawnPot(redPotX, 1, stageModel, pawnsPerPlayer);
+        Connect4PawnPot yellowPot = new Connect4PawnPot(yellowPotX, 1, stageModel, pawnsPerPlayerYellow);
+        Connect4PawnPot redPot = new Connect4PawnPot(redPotX, 1, stageModel, pawnsPerPlayerRed);
         
         // Assigner les pots au modèle
         stageModel.setYellowPot(yellowPot);
@@ -52,18 +56,17 @@ public class Connect4StageFactory extends StageElementsFactory {
         // Créer les pions pour chaque joueur et les ajouter dans leur pot
         List<Pawn> pawns = new ArrayList<>();
         
-        // Créer et ajouter les pions pour chaque joueur
-        for (int i = 0; i < pawnsPerPlayer; i++) {
-            // Créer les pions
+        // Créer et ajouter les pions jaunes
+        for (int i = 0; i < pawnsPerPlayerYellow; i++) {
             Pawn yellowPawn = new Pawn(i + 1, Pawn.PAWN_BLACK, stageModel);
-            Pawn redPawn = new Pawn(i + 1, Pawn.PAWN_RED, stageModel);
-            
-            // Ajouter les pions à la liste générale
             pawns.add(yellowPawn);
-            pawns.add(redPawn);
-            
-            // Ajouter les pions aux pots
             yellowPot.addElement(yellowPawn, 0, i);
+        }
+
+        // Créer et ajouter les pions rouges (peut avoir un pion de plus)
+        for (int i = 0; i < pawnsPerPlayerRed; i++) {
+            Pawn redPawn = new Pawn(i + 1, Pawn.PAWN_RED, stageModel);
+            pawns.add(redPawn);
             redPot.addElement(redPawn, 0, i);
         }
         
