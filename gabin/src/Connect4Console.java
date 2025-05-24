@@ -4,12 +4,9 @@ import boardifier.model.Model;
 import java.util.Scanner;
 import model.Connect4Board;
 import model.Connect4PawnPot;
+import model.Connect4StageFactory;
 import model.Connect4StageModel;
 import model.Pawn;
-import control.Connect4Decider;
-import control.Connect4SmartDecider;
-import boardifier.model.action.ActionList;
-import boardifier.model.action.GameAction;
 
 public class Connect4Console {
     private static int readInt(String prompt, int min, int max) {
@@ -32,8 +29,24 @@ public class Connect4Console {
 
     private static void displayPawnPots(Connect4StageModel stageModel) {
         System.out.println("\nPots de pions :");
-        System.out.println("Joueur 1 (Rouge) : " + boardifier.view.ConsoleColor.RED + " ● ".repeat(stageModel.getRedPot().getRemainingPawns()) + boardifier.view.ConsoleColor.RESET);
-        System.out.println("Joueur 2 (Jaune) : " + boardifier.view.ConsoleColor.YELLOW + " ● ".repeat(stageModel.getYellowPot().getRemainingPawns()) + boardifier.view.ConsoleColor.RESET);
+        
+        // Afficher les pions rouges
+        Connect4PawnPot redPot = stageModel.getRedPot();
+        System.out.print("Joueur 1 (Rouge) : ");
+        System.out.print(boardifier.view.ConsoleColor.RED);
+        for (int i = 0; i < redPot.getRemainingPawns(); i++) {
+            System.out.print(" ● ");
+        }
+        System.out.println(boardifier.view.ConsoleColor.RESET);
+        
+        // Afficher les pions jaunes
+        Connect4PawnPot yellowPot = stageModel.getYellowPot();
+        System.out.print("Joueur 2 (Jaune) : ");
+        System.out.print(boardifier.view.ConsoleColor.YELLOW);
+        for (int i = 0; i < yellowPot.getRemainingPawns(); i++) {
+            System.out.print(" ● ");
+        }
+        System.out.println(boardifier.view.ConsoleColor.RESET);
         System.out.println();
     }
 
@@ -94,10 +107,6 @@ public class Connect4Console {
         // Demander le mode de jeu
         int gameMode = readInt("Choisissez le mode de jeu (0: Joueur vs Joueur, 1: Joueur vs Ordinateur, 2: Ordinateur vs Ordinateur) : ", 0, 2);
         
-        // Variables pour stocker les types d'IA choisis
-        int typeIA1 = 0;
-        int typeIA2 = 0;
-        
         // Ajouter les joueurs selon le mode choisi
         switch (gameMode) {
             case 0: // Joueur vs Joueur
@@ -106,33 +115,29 @@ public class Connect4Console {
                 break;
             case 1: // Joueur vs Ordinateur
                 model.addHumanPlayer("Joueur 1");
-                // Demander le type d'IA pour l'ordinateur
-                typeIA1 = readInt("Choisissez le type d'IA (0: Aléatoire, 1: Intelligente) : ", 0, 1);
                 model.addComputerPlayer("Ordinateur");
                 break;
             case 2: // Ordinateur vs Ordinateur
-                // Demander le type d'IA pour chaque ordinateur
-                typeIA1 = readInt("Choisissez le type d'IA pour l'Ordinateur 1 (0: Aléatoire, 1: Intelligente) : ", 0, 1);
-                typeIA2 = readInt("Choisissez le type d'IA pour l'Ordinateur 2 (0: Aléatoire, 1: Intelligente) : ", 0, 1);
                 model.addComputerPlayer("Ordinateur 1");
                 model.addComputerPlayer("Ordinateur 2");
                 break;
         }
         
         // Demander les paramètres du jeu
-        int nbCols = readInt("Nombre de colonnes (5-10) : ", 5, 10);
         int nbRows = readInt("Nombre de lignes (5-10) : ", 5, 10);
+        int nbCols = readInt("Nombre de colonnes (5-10) : ", 5, 10);
         int minSize = Math.min(nbCols, nbRows);
         int nbAlign = readInt("Nombre de jetons à aligner (3-" + minSize + ") : ", 3, minSize);
         
         // Initialiser la scène de jeu
         Connect4StageModel stageModel = new Connect4StageModel("main", model);
-        Connect4Board board = new Connect4Board(0, 0, stageModel, nbRows, nbCols, nbAlign);
-        stageModel.setBoard(board);
         
-        // Initialiser tous les éléments du jeu (pots de pions inclus)
-        stageModel.getDefaultElementFactory().setup();
+        // Créer la factory et configurer les dimensions
+        Connect4StageFactory factory = new Connect4StageFactory(stageModel);
+        factory.setDimensions(nbRows, nbCols, nbAlign);
         
+        // Initialiser le jeu avec la factory
+        factory.setup();
         model.startGame(stageModel);
         
         // Boucle principale du jeu
@@ -141,7 +146,7 @@ public class Connect4Console {
         
         while (!gameOver) {
             // Afficher le plateau
-            displayBoard(board, stageModel);
+            displayBoard(stageModel.getBoard(), stageModel);
             
             // Afficher le joueur actuel
             String currentPlayer = model.getCurrentPlayer().getName();
@@ -156,44 +161,10 @@ public class Connect4Console {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-
-                // Déterminer quel type d'IA utiliser
-                int typeIA;
-                if (currentPlayer.equals("Ordinateur")) {
-                    typeIA = typeIA1;
-                } else if (currentPlayer.equals("Ordinateur 1")) {
-                    typeIA = typeIA1;
-                } else {
-                    typeIA = typeIA2;
-                }
-
-                // Utiliser l'IA appropriée
-                if (typeIA == 0) {
-                    // IA aléatoire
-                    do {
-                        col = (int)(Math.random() * nbCols);
-                    } while (board.isColumnFull(col));
-                } else {
-                    // IA intelligente
-                    Connect4SmartDecider smartDecider = new Connect4SmartDecider(model, null);
-                    ActionList actions = smartDecider.decide();
-                    if (actions != null && !actions.getActions().isEmpty()) {
-                        GameAction action = actions.getActions().get(0).get(0);
-                        if (action instanceof boardifier.model.action.PutInContainerAction) {
-                            col = ((boardifier.model.action.PutInContainerAction)action).getColDest();
-                        } else {
-                            // Fallback sur l'IA aléatoire si l'action n'est pas du bon type
-                            do {
-                                col = (int)(Math.random() * nbCols);
-                            } while (board.isColumnFull(col));
-                        }
-                    } else {
-                        // Fallback sur l'IA aléatoire si l'IA intelligente échoue
-                        do {
-                            col = (int)(Math.random() * nbCols);
-                        } while (board.isColumnFull(col));
-                    }
-                }
+                // L'ordinateur choisit une colonne aléatoire non pleine
+                do {
+                    col = (int)(Math.random() * nbCols);
+                } while (stageModel.getBoard().isColumnFull(col));
                 System.out.println(currentPlayer + " joue dans la colonne " + (col + 1));
             }
             else {
@@ -202,44 +173,50 @@ public class Connect4Console {
             }
             
             // Vérifier si la colonne est pleine
-            if (board.isColumnFull(col)) {
+            if (stageModel.getBoard().isColumnFull(col)) {
                 System.out.println("Cette colonne est pleine ! Choisissez une autre colonne.");
                 continue;
             }
             
             // Trouver la première ligne vide
-            int row = board.getFirstEmptyRow(col);
+            int row = stageModel.getBoard().getFirstEmptyRow(col);
             
             // Placer le pion
-            int color = model.getIdPlayer() == 0 ? Pawn.PAWN_BLACK : Pawn.PAWN_RED;
-            board.getGrid()[row][col] = color;
+            int color = model.getIdPlayer() == 0 ? Pawn.PAWN_RED : Pawn.PAWN_BLACK;
+            stageModel.getBoard().getGrid()[row][col] = color;
             
             // Retirer un pion du pot correspondant
             if (color == Pawn.PAWN_BLACK) {
                 Connect4PawnPot pot = stageModel.getYellowPot();
                 if (pot.getRemainingPawns() > 0) {
-                    GameElement pawn = pot.getLastElement(pot.getRemainingPawns() - 1, 0);
-                    if (pawn != null) {
-                        pot.removeElement(pawn);
+                    for (int i = pot.getNbCols() - 1; i >= 0; i--) {
+                        GameElement pawn = pot.getElement(i, 0);
+                        if (pawn != null) {
+                            pot.removeElement(pawn);
+                            break;
+                        }
                     }
                 }
             } else {
                 Connect4PawnPot pot = stageModel.getRedPot();
                 if (pot.getRemainingPawns() > 0) {
-                    GameElement pawn = pot.getLastElement(pot.getRemainingPawns() - 1, 0);
-                    if (pawn != null) {
-                        pot.removeElement(pawn);
+                    for (int i = pot.getNbCols() - 1; i >= 0; i--) {
+                        GameElement pawn = pot.getElement(i, 0);
+                        if (pawn != null) {
+                            pot.removeElement(pawn);
+                            break;
+                        }
                     }
                 }
             }
             
             // Vérifier la victoire
-            if (board.checkWin(row, col, color)) {
-                displayBoard(board, stageModel);
+            if (stageModel.getBoard().checkWin(row, col, color)) {
+                displayBoard(stageModel.getBoard(), stageModel);
                 System.out.println(currentPlayer + " a gagné !");
                 gameOver = true;
-            } else if (board.isBoardFull()) {
-                displayBoard(board, stageModel);
+            } else if (stageModel.getBoard().isBoardFull()) {
+                displayBoard(stageModel.getBoard(), stageModel);
                 System.out.println("Match nul !");
                 gameOver = true;
             } else {
