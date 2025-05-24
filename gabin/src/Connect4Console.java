@@ -185,26 +185,14 @@ public class Connect4Console {
             board.getGrid()[row][col] = color;
             
             // Retirer un pion du pot correspondant
-            if (color == Pawn.PAWN_BLACK) {
-                Connect4PawnPot pot = stageModel.getYellowPot();
-                if (pot.getRemainingPawns() > 0) {
-                    for (int i = pot.getNbCols() - 1; i >= 0; i--) {
-                        GameElement pawn = pot.getElement(i, 0);
-                        if (pawn != null) {
-                            pot.removeElement(pawn);
-                            break;
-                        }
-                    }
-                }
-            } else {
-                Connect4PawnPot pot = stageModel.getRedPot();
-                if (pot.getRemainingPawns() > 0) {
-                    for (int i = pot.getNbCols() - 1; i >= 0; i--) {
-                        GameElement pawn = pot.getElement(i, 0);
-                        if (pawn != null) {
-                            pot.removeElement(pawn);
-                            break;
-                        }
+            Connect4PawnPot pot = (color == Pawn.PAWN_BLACK) ? stageModel.getYellowPot() : stageModel.getRedPot();
+            if (pot.getRemainingPawns() > 0) {
+                // Chercher le premier pion disponible dans le pot
+                for (int i = 0; i < pot.getNbCols(); i++) {
+                    GameElement pawn = pot.getElement(0, i);
+                    if (pawn != null) {
+                        pot.removeElement(pawn);
+                        break;
                     }
                 }
             }

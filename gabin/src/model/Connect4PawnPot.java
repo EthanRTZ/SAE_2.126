@@ -9,11 +9,11 @@ import boardifier.model.GameStageModel;
  * Ce conteneur stocke les pions disponibles pour un joueur du jeu Connect4.
  */
 public class Connect4PawnPot extends ContainerElement {
-    private int totalPawns;
+    private int remainingPawns;
 
     public Connect4PawnPot(int x, int y, GameStageModel gameStageModel, int nbPawns) {
-        super("connect4pawnpot", x, y, nbPawns, 1, gameStageModel);
-        this.totalPawns = nbPawns;
+        super("connect4pawnpot", x, y, 1, nbPawns, gameStageModel);
+        this.remainingPawns = nbPawns;
     }
 
     /**
@@ -21,12 +21,12 @@ public class Connect4PawnPot extends ContainerElement {
      * @return nombre de pions restants
      */
     public int getRemainingPawns() {
-        return totalPawns;
+        return remainingPawns;
     }
 
     @Override
     public void removeElement(GameElement element) {
         super.removeElement(element);
-        totalPawns--;
+        remainingPawns--;
     }
 }

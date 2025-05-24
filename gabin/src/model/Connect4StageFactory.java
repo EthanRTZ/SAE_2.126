@@ -62,7 +62,7 @@ public class Connect4StageFactory extends StageElementsFactory {
             pawns.add(yellowPawn);
             pawns.add(redPawn);
             
-            // Ajouter les pions aux pots (un pion par colonne)
+            // Ajouter les pions aux pots
             yellowPot.addElement(yellowPawn, 0, i);
             redPot.addElement(redPawn, 0, i);
         }
