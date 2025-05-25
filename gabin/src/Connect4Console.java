@@ -23,22 +23,9 @@ public class Connect4Console {
     private static boolean useFileInput = false;
 
     private static void initScanner() {
-        try {
-            File inputFile = new File("in.txt");
-            if (inputFile.exists()) {
-                scanner = new Scanner(inputFile);
-                useFileInput = true;
-                System.out.println("Lecture des paramètres depuis in.txt activée");
-            } else {
-                scanner = new Scanner(System.in);
-                useFileInput = false;
-                System.out.println("Fichier in.txt non trouvé, utilisation de la console");
-            }
-        } catch (FileNotFoundException e) {
-            scanner = new Scanner(System.in);
-            useFileInput = false;
-            System.out.println("Erreur lors de l'ouverture du fichier in.txt : " + e.getMessage());
-        }
+        scanner = new Scanner(System.in);
+        useFileInput = false;
+        System.out.println("Utilisation de la console");
     }
 
     private static int readInt(String prompt, int min, int max) {
