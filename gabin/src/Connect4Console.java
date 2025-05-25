@@ -15,20 +15,51 @@ import boardifier.control.Decider;
 import boardifier.model.action.GameAction;
 import boardifier.control.ActionFactory;
 import boardifier.control.ActionPlayer;
+import java.io.File;
+import java.io.FileNotFoundException;
 
 public class Connect4Console {
+    private static Scanner scanner;
+    private static boolean useFileInput = false;
+
+    private static void initScanner() {
+        try {
+            File inputFile = new File("in.txt");
+            if (inputFile.exists()) {
+                scanner = new Scanner(inputFile);
+                useFileInput = true;
+                System.out.println("Lecture des paramètres depuis in.txt activée");
+            } else {
+                scanner = new Scanner(System.in);
+                useFileInput = false;
+                System.out.println("Fichier in.txt non trouvé, utilisation de la console");
+            }
+        } catch (FileNotFoundException e) {
+            scanner = new Scanner(System.in);
+            useFileInput = false;
+            System.out.println("Erreur lors de l'ouverture du fichier in.txt : " + e.getMessage());
+        }
+    }
+
     private static int readInt(String prompt, int min, int max) {
-        Scanner scanner = new Scanner(System.in);
+        if (scanner == null) {
+            initScanner();
+        }
+
         int value;
         do {
-            System.out.print(prompt);
-            while (!scanner.hasNextInt()) {
-                System.out.println("Veuillez entrer un nombre entier valide.");
+            if (!useFileInput) {
                 System.out.print(prompt);
+            }
+            while (!scanner.hasNextInt()) {
+                if (!useFileInput) {
+                    System.out.println("Veuillez entrer un nombre entier valide.");
+                    System.out.print(prompt);
+                }
                 scanner.next();
             }
             value = scanner.nextInt();
-            if (value < min || value > max) {
+            if (!useFileInput && (value < min || value > max)) {
                 System.out.println("La valeur doit être comprise entre " + min + " et " + max + ".");
             }
         } while (value < min || value > max);
@@ -110,6 +141,9 @@ public class Connect4Console {
         Logger.setLevel(Logger.LOGGER_TRACE);
         Logger.setVerbosity(Logger.VERBOSE_HIGH);
         
+        // Initialiser le scanner
+        initScanner();
+        
         Model model = new Model();
         
         // Demander le mode de jeu
@@ -143,6 +177,12 @@ public class Connect4Console {
         int minSize = Math.min(nbCols, nbRows);
         int nbAlign = readInt("Nombre de jetons à aligner (3-" + minSize + ") : ", 3, minSize);
         
+        // Si on utilisait le fichier pour les paramètres, on ferme le scanner et on en crée un nouveau pour les coups
+        if (useFileInput) {
+            scanner.close();
+            useFileInput = false;
+        }
+        
         // Initialiser la scène de jeu
         Connect4StageModel stageModel = new Connect4StageModel("main", model);
         // Définir les dimensions du jeu
@@ -157,7 +197,6 @@ public class Connect4Console {
         Connect4Controller controller = new Connect4Controller(model, null);
         
         // Boucle principale du jeu
-        Scanner scanner = new Scanner(System.in);
         boolean gameOver = false;
         Connect4Board board = stageModel.getBoard();
         
@@ -253,6 +292,11 @@ public class Connect4Console {
             } else {
                 model.setNextPlayer();
             }
+        }
+        
+        // Fermer le scanner à la fin du jeu
+        if (scanner != null) {
+            scanner.close();
         }
     }
 }

@@ -11,6 +11,7 @@ import boardifier.model.Player;
 import boardifier.model.action.ActionList;
 import boardifier.view.View;
 import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import model.Connect4Board;
@@ -20,12 +21,25 @@ import model.Pawn;
 
 public class Connect4Controller extends Controller {
     private BufferedReader consoleIn;
+    private BufferedReader fileIn;
+    private boolean useFileInput;
     private boolean firstPlayer;
 
     public Connect4Controller(Model model, View view) {
         super(model, view);
         firstPlayer = true;
         consoleIn = new BufferedReader(new InputStreamReader(System.in));
+        useFileInput = false;
+        
+        // Essayer d'ouvrir le fichier in.txt
+        try {
+            fileIn = new BufferedReader(new FileReader("in.txt"));
+            useFileInput = true;
+            System.out.println("Lecture des coups depuis in.txt activée");
+        } catch (IOException e) {
+            System.out.println("Fichier in.txt non trouvé, utilisation de la console");
+            useFileInput = false;
+        }
         
         // Initialiser la scène de jeu
         try {
@@ -65,15 +79,29 @@ public class Connect4Controller extends Controller {
             while (!ok) {
                 System.out.print(p.getName() + " > ");
                 try {
-                    String line = consoleIn.readLine();
-                    if (line.length() == 1) {
+                    String line;
+                    if (useFileInput) {
+                        line = fileIn.readLine();
+                        if (line == null) {
+                            System.out.println("Fin du fichier in.txt atteinte, passage à la console");
+                            useFileInput = false;
+                            line = consoleIn.readLine();
+                        } else {
+                            System.out.println("Coup lu depuis in.txt : " + line);
+                        }
+                    } else {
+                        line = consoleIn.readLine();
+                    }
+                    
+                    if (line != null && line.length() == 1) {
                         ok = analyseAndPlay(line);
                     }
                     if (!ok) {
                         System.out.println("Instruction incorrecte. Réessayez !");
                     }
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    System.out.println("Erreur de lecture : " + e.getMessage());
+                    useFileInput = false;
                 }
             }
         }
