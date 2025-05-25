@@ -3,14 +3,14 @@ package model;
 import boardifier.model.ContainerElement;
 import boardifier.model.GameStageModel;
 
-public class Connect4Board extends ContainerElement {
+public class PuissanceXBoard extends ContainerElement {
     private int nbCols;
     private int nbRows;
     private int nbAlign;
     private int[][] grid;
 
-    public Connect4Board(int x, int y, GameStageModel gameStageModel, int rows, int cols, int align) {
-        super("connect4board", x, y, rows, cols, gameStageModel);
+    public PuissanceXBoard(int x, int y, GameStageModel gameStageModel, int rows, int cols, int align) {
+        super("PuissanceXboard", x, y, rows, cols, gameStageModel);
         nbCols = cols;
         nbRows = rows;
         nbAlign = align;

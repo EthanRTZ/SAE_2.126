@@ -2,9 +2,9 @@ package ConnectX;
 
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
-import model.Connect4Board;
+import model.PuissanceXBoard;
 import model.Pawn;
-import model.Connect4StageModel;
+import model.PuissanceXStageModel;
 import boardifier.model.Model;
 
 class ConnectXBoardTest {
@@ -12,8 +12,8 @@ class ConnectXBoardTest {
     @Test
     void testInitialBoardIsEmpty() {
         Model model = new Model();
-        Connect4StageModel stageModel = new Connect4StageModel("test", model);
-        Connect4Board board = new Connect4Board(0, 0, stageModel, 6, 7, 4);
+        PuissanceXStageModel stageModel = new PuissanceXStageModel("test", model);
+        PuissanceXBoard board = new PuissanceXBoard(0, 0, stageModel, 6, 7, 4);
         
         // Check that all cells are empty (-1)
         for (int row = 0; row < board.getNbRows(); row++) {
@@ -26,8 +26,8 @@ class ConnectXBoardTest {
     @Test
     void testAddPawn() {
         Model model = new Model();
-        Connect4StageModel stageModel = new Connect4StageModel("test", model);
-        Connect4Board board = new Connect4Board(0, 0, stageModel, 6, 7, 4);
+        PuissanceXStageModel stageModel = new PuissanceXStageModel("test", model);
+        PuissanceXBoard board = new PuissanceXBoard(0, 0, stageModel, 6, 7, 4);
         Pawn pawn = new Pawn(1, Pawn.PAWN_BLACK, stageModel);
         
         // Check that an empty column can receive a pawn
@@ -43,8 +43,8 @@ class ConnectXBoardTest {
     @Test
     void testColumnIsFull() {
         Model model = new Model();
-        Connect4StageModel stageModel = new Connect4StageModel("test", model);
-        Connect4Board board = new Connect4Board(0, 0, stageModel, 6, 7, 4);
+        PuissanceXStageModel stageModel = new PuissanceXStageModel("test", model);
+        PuissanceXBoard board = new PuissanceXBoard(0, 0, stageModel, 6, 7, 4);
         
         // Fill the first column
         for (int row = board.getNbRows() - 1; row >= 0; row--) {
@@ -58,8 +58,8 @@ class ConnectXBoardTest {
     @Test
     void testCheckWin() {
         Model model = new Model();
-        Connect4StageModel stageModel = new Connect4StageModel("test", model);
-        Connect4Board board = new Connect4Board(0, 0, stageModel, 6, 7, 4);
+        PuissanceXStageModel stageModel = new PuissanceXStageModel("test", model);
+        PuissanceXBoard board = new PuissanceXBoard(0, 0, stageModel, 6, 7, 4);
         
         // Test vertical win
         for (int row = 5; row >= 2; row--) {
@@ -68,7 +68,7 @@ class ConnectXBoardTest {
         assertTrue(board.checkWin(2, 0, Pawn.PAWN_BLACK));
         
         // Test horizontal win
-        board = new Connect4Board(0, 0, stageModel, 6, 7, 4);
+        board = new PuissanceXBoard(0, 0, stageModel, 6, 7, 4);
         for (int col = 0; col < 4; col++) {
             board.getGrid()[5][col] = Pawn.PAWN_RED;
         }

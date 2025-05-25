@@ -4,16 +4,16 @@ import boardifier.control.Logger;
 import boardifier.model.GameElement;
 import boardifier.model.Model;
 import boardifier.model.action.ActionList;
-import control.Connect4Controller;
-import control.Connect4Decider;
-import control.Connect4SmartDecider;
+import control.PuissanceXController;
+import control.PuissanceXDecider;
+import control.PuissanceXSmartDecider;
 import java.util.Scanner;
-import model.Connect4Board;
-import model.Connect4PawnPot;
-import model.Connect4StageModel;
+import model.PuissanceXBoard;
+import model.PuissanceXPawnPot;
+import model.PuissanceXStageModel;
 import model.Pawn;
 
-public class Connect4Console {
+public class PuissanceXConsole {
     private static Scanner scanner;
     private static boolean useFileInput = false;
 
@@ -48,11 +48,11 @@ public class Connect4Console {
         return value;
     }
 
-    private static void displayPawnPots(Connect4StageModel stageModel) {
+    private static void displayPawnPots(PuissanceXStageModel stageModel) {
         System.out.println("\nPawn pots:");
         
         // Display red pawns
-        Connect4PawnPot redPot = stageModel.getRedPot();
+        PuissanceXPawnPot redPot = stageModel.getRedPot();
         System.out.print("Player 1 (Red): ");
         System.out.print(boardifier.view.ConsoleColor.RED);
         for (int i = 0; i < redPot.getRemainingPawns(); i++) {
@@ -61,7 +61,7 @@ public class Connect4Console {
         System.out.println(boardifier.view.ConsoleColor.RESET);
         
         // Display yellow pawns
-        Connect4PawnPot yellowPot = stageModel.getYellowPot();
+        PuissanceXPawnPot yellowPot = stageModel.getYellowPot();
         System.out.print("Player 2 (Yellow): ");
         System.out.print(boardifier.view.ConsoleColor.YELLOW);
         for (int i = 0; i < yellowPot.getRemainingPawns(); i++) {
@@ -71,7 +71,7 @@ public class Connect4Console {
         System.out.println();
     }
 
-    private static void displayBoard(Connect4Board board, Connect4StageModel stageModel) {
+    private static void displayBoard(PuissanceXBoard board, PuissanceXStageModel stageModel) {
         displayPawnPots(stageModel);
         int nbCols = board.getNbCols();
         int nbRows = board.getNbRows();
@@ -166,7 +166,7 @@ public class Connect4Console {
         }
         
         // Initialize game scene
-        Connect4StageModel stageModel = new Connect4StageModel("main", model);
+        PuissanceXStageModel stageModel = new PuissanceXStageModel("main", model);
         // Set game dimensions
         stageModel.setDimensions(nbRows, nbCols, nbAlign);
         
@@ -176,11 +176,11 @@ public class Connect4Console {
         model.startGame(stageModel);
         
         // Create controller
-        Connect4Controller controller = new Connect4Controller(model, null);
+        PuissanceXController controller = new PuissanceXController(model, null);
         
         // Main game loop
         boolean gameOver = false;
-        Connect4Board board = stageModel.getBoard();
+        PuissanceXBoard board = stageModel.getBoard();
         
         while (!gameOver) {
             // Display board
@@ -204,13 +204,13 @@ public class Connect4Console {
                 Decider decider;
                 switch (computerLevel) {
                     case 0:
-                        decider = new Connect4Decider(model, controller);
+                        decider = new PuissanceXDecider(model, controller);
                         break;
                     case 1:
-                        decider = new Connect4SmartDecider(model, controller);
+                        decider = new PuissanceXSmartDecider(model, controller);
                         break;
                     default:
-                        decider = new Connect4Decider(model, controller);
+                        decider = new PuissanceXDecider(model, controller);
                 }
                 
                 // Get decider's decision
@@ -247,7 +247,7 @@ public class Connect4Console {
             board.getGrid()[row][col] = color;
             
             // Remove a pawn from corresponding pot
-            Connect4PawnPot pot = (color == Pawn.PAWN_BLACK) ? stageModel.getYellowPot() : stageModel.getRedPot();
+            PuissanceXPawnPot pot = (color == Pawn.PAWN_BLACK) ? stageModel.getYellowPot() : stageModel.getRedPot();
             if (pot.getRemainingPawns() > 0) {
                 // Find first available pawn in pot
                 for (int i = 0; i < pot.getNbCols(); i++) {

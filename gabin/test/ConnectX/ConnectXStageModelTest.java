@@ -2,8 +2,8 @@ package ConnectX;
 
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
-import model.Connect4StageModel;
-import model.Connect4Board;
+import model.PuissanceXStageModel;
+import model.PuissanceXBoard;
 import boardifier.model.Model;
 
 class ConnectXStageModelTest {
@@ -11,9 +11,9 @@ class ConnectXStageModelTest {
     @Test
     void testInitialState() {
         Model model = new Model();
-        Connect4StageModel stageModel = new Connect4StageModel("test", model);
+        PuissanceXStageModel stageModel = new PuissanceXStageModel("test", model);
         stageModel.setDimensions(6, 7, 4);
-        Connect4Board board = new Connect4Board(0, 0, stageModel, 6, 7, 4);
+        PuissanceXBoard board = new PuissanceXBoard(0, 0, stageModel, 6, 7, 4);
         stageModel.setBoard(board);
         
         assertNotNull(stageModel.getBoard());
@@ -24,9 +24,9 @@ class ConnectXStageModelTest {
     @Test
     void testBoardDimensions() {
         Model model = new Model();
-        Connect4StageModel stageModel = new Connect4StageModel("test", model);
+        PuissanceXStageModel stageModel = new PuissanceXStageModel("test", model);
         stageModel.setDimensions(6, 7, 4);
-        Connect4Board board = new Connect4Board(0, 0, stageModel, 6, 7, 4);
+        PuissanceXBoard board = new PuissanceXBoard(0, 0, stageModel, 6, 7, 4);
         stageModel.setBoard(board);
         
         assertEquals(6, stageModel.getNbRows());
@@ -37,7 +37,7 @@ class ConnectXStageModelTest {
     @Test
     void testGameNotOverAtStart() {
         Model model = new Model();
-        Connect4StageModel stageModel = new Connect4StageModel("test", model);
+        PuissanceXStageModel stageModel = new PuissanceXStageModel("test", model);
         assertFalse(stageModel.isGameOver());
         assertEquals(-1, stageModel.getWinner());
     }
@@ -45,9 +45,9 @@ class ConnectXStageModelTest {
     @Test
     void testBoardState() {
         Model model = new Model();
-        Connect4StageModel stageModel = new Connect4StageModel("test", model);
+        PuissanceXStageModel stageModel = new PuissanceXStageModel("test", model);
         stageModel.setDimensions(6, 7, 4);
-        Connect4Board board = new Connect4Board(0, 0, stageModel, 6, 7, 4);
+        PuissanceXBoard board = new PuissanceXBoard(0, 0, stageModel, 6, 7, 4);
         stageModel.setBoard(board);
         
         // Check that the board is empty at the start

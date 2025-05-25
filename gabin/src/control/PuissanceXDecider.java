@@ -8,12 +8,12 @@ import boardifier.model.Model;
 import boardifier.model.action.ActionList;
 import java.util.Calendar;
 import java.util.Random;
-import model.Connect4Board;
-import model.Connect4PawnPot;
-import model.Connect4StageModel;
+import model.PuissanceXBoard;
+import model.PuissanceXPawnPot;
+import model.PuissanceXStageModel;
 import model.Pawn;
 
-public class Connect4Decider extends Decider {
+public class PuissanceXDecider extends Decider {
     private static final Random random = new Random(Calendar.getInstance().getTimeInMillis());
     private static final int WIN_SCORE = 10000;
     private static final int BLOCK_SCORE = 8000;
@@ -23,11 +23,11 @@ public class Connect4Decider extends Decider {
     private static final int THREAT_SCORE = 2000;
     private static final int DEPTH = 3;
 
-    public Connect4Decider(Model model, Controller control) {
+    public PuissanceXDecider(Model model, Controller control) {
         super(model, control);
     }
 
-    private int evaluateColumn(Connect4Board board, int col, int playerId) {
+    private int evaluateColumn(PuissanceXBoard board, int col, int playerId) {
         if (board.isColumnFull(col)) return Integer.MIN_VALUE;
         
         int row = board.getFirstEmptyRow(col);
@@ -61,7 +61,7 @@ public class Connect4Decider extends Decider {
         return score;
     }
 
-    private int evaluateSequences(Connect4Board board, int row, int col, int playerColor) {
+    private int evaluateSequences(PuissanceXBoard board, int row, int col, int playerColor) {
         int score = 0;
         int[][] directions = {{1,0}, {0,1}, {1,1}, {1,-1}};
         int[][] grid = board.getGrid();
@@ -93,7 +93,7 @@ public class Connect4Decider extends Decider {
         return score;
     }
 
-    private int evaluateOpponentOpportunities(Connect4Board board, int row, int col, int playerColor) {
+    private int evaluateOpponentOpportunities(PuissanceXBoard board, int row, int col, int playerColor) {
         int score = 0;
         int opponentColor = (playerColor == Pawn.PAWN_BLACK) ? Pawn.PAWN_RED : Pawn.PAWN_BLACK;
         int[][] grid = board.getGrid();
@@ -118,7 +118,7 @@ public class Connect4Decider extends Decider {
         return score;
     }
 
-    private int evaluateThreats(Connect4Board board, int row, int col, int playerColor) {
+    private int evaluateThreats(PuissanceXBoard board, int row, int col, int playerColor) {
         int score = 0;
         int[][] grid = board.getGrid();
         
@@ -167,9 +167,9 @@ public class Connect4Decider extends Decider {
 
     @Override
     public ActionList decide() {
-        Connect4StageModel stage = (Connect4StageModel) model.getGameStage();
-        Connect4Board board = stage.getBoard();
-        Connect4PawnPot pot = (model.getIdPlayer() == 0) ? stage.getYellowPot() : stage.getRedPot();
+        PuissanceXStageModel stage = (PuissanceXStageModel) model.getGameStage();
+        PuissanceXBoard board = stage.getBoard();
+        PuissanceXPawnPot pot = (model.getIdPlayer() == 0) ? stage.getYellowPot() : stage.getRedPot();
 
         GameElement pawn = null;
         int rowDest = 0;
@@ -239,13 +239,13 @@ public class Connect4Decider extends Decider {
 
         if (pawn == null) return null;
 
-        ActionList actions = ActionFactory.generatePutInContainer(model, pawn, "connect4board", rowDest, colDest);
+        ActionList actions = ActionFactory.generatePutInContainer(model, pawn, "PuissanceXboard", rowDest, colDest);
         actions.setDoEndOfTurn(true);
         return actions;
     }
 
 
-    private int evaluateColumnWithDepth(Connect4Board board, int col, int playerId, int depth) {
+    private int evaluateColumnWithDepth(PuissanceXBoard board, int col, int playerId, int depth) {
         if (depth == 0) {
             return evaluateColumn(board, col, playerId);
         }

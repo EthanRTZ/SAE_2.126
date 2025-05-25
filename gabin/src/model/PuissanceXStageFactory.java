@@ -6,12 +6,12 @@ import boardifier.model.TextElement;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Connect4StageFactory extends StageElementsFactory {
-    private Connect4StageModel stageModel;
+public class PuissanceXStageFactory extends StageElementsFactory {
+    private PuissanceXStageModel stageModel;
 
-    public Connect4StageFactory(GameStageModel gameStageModel) {
+    public PuissanceXStageFactory(GameStageModel gameStageModel) {
         super(gameStageModel);
-        stageModel = (Connect4StageModel) gameStageModel;
+        stageModel = (PuissanceXStageModel) gameStageModel;
     }
 
     @Override
@@ -22,7 +22,7 @@ public class Connect4StageFactory extends StageElementsFactory {
         stageModel.setPlayerName(text);
 
         // Récupérer les dimensions choisies par l'utilisateur depuis le modèle
-        Connect4Board board = new Connect4Board(0, 1, stageModel, 
+        PuissanceXBoard board = new PuissanceXBoard(0, 1, stageModel,
                                              stageModel.getNbRows(), 
                                              stageModel.getNbCols(), 
                                              stageModel.getNbToAlign());
@@ -46,8 +46,8 @@ public class Connect4StageFactory extends StageElementsFactory {
         }
 
         // Créer les pots de pions avec la capacité maximale
-        Connect4PawnPot yellowPot = new Connect4PawnPot(yellowPotX, 1, stageModel, pawnsPerPlayerYellow);
-        Connect4PawnPot redPot = new Connect4PawnPot(redPotX, 1, stageModel, pawnsPerPlayerRed);
+        PuissanceXPawnPot yellowPot = new PuissanceXPawnPot(yellowPotX, 1, stageModel, pawnsPerPlayerYellow);
+        PuissanceXPawnPot redPot = new PuissanceXPawnPot(redPotX, 1, stageModel, pawnsPerPlayerRed);
         
         // Assigner les pots au modèle
         stageModel.setYellowPot(yellowPot);

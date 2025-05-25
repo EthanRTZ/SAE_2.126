@@ -7,20 +7,20 @@ import boardifier.model.TextElement;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Connect4StageModel extends GameStageModel {
-    private Connect4Board board;
+public class PuissanceXStageModel extends GameStageModel {
+    private PuissanceXBoard board;
     private TextElement playerName;
     private boolean gameOver;
     private List<Pawn> pawns;
     private int winner;
     // Ajout des pots pour les pions jaunes et rouges
-    private Connect4PawnPot yellowPot;
-    private Connect4PawnPot redPot;
+    private PuissanceXPawnPot yellowPot;
+    private PuissanceXPawnPot redPot;
     private int nbRows;
     private int nbCols;
     private int nbToAlign;
 
-    public Connect4StageModel(String name, Model model) {
+    public PuissanceXStageModel(String name, Model model) {
         super(name, model);
         gameOver = false;
         pawns = new ArrayList<>();
@@ -46,11 +46,11 @@ public class Connect4StageModel extends GameStageModel {
         return nbToAlign;
     }
 
-    public Connect4Board getBoard() {
+    public PuissanceXBoard getBoard() {
         return board;
     }
 
-    public void setBoard(Connect4Board board) {
+    public void setBoard(PuissanceXBoard board) {
         this.board = board;
         addContainer(board);
     }
@@ -76,20 +76,20 @@ public class Connect4StageModel extends GameStageModel {
     }
 
     // Accesseurs pour les pots de pions
-    public Connect4PawnPot getYellowPot() {
+    public PuissanceXPawnPot getYellowPot() {
         return yellowPot;
     }
 
-    public void setYellowPot(Connect4PawnPot yellowPot) {
+    public void setYellowPot(PuissanceXPawnPot yellowPot) {
         this.yellowPot = yellowPot;
         addContainer(yellowPot);
     }
 
-    public Connect4PawnPot getRedPot() {
+    public PuissanceXPawnPot getRedPot() {
         return redPot;
     }
 
-    public void setRedPot(Connect4PawnPot redPot) {
+    public void setRedPot(PuissanceXPawnPot redPot) {
         this.redPot = redPot;
         addContainer(redPot);
     }
@@ -122,6 +122,6 @@ public class Connect4StageModel extends GameStageModel {
 
     @Override
     public StageElementsFactory getDefaultElementFactory() {
-        return new Connect4StageFactory(this);
+        return new PuissanceXStageFactory(this);
     }
 } 

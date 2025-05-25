@@ -2,7 +2,7 @@ package view;
 
 import boardifier.model.ContainerElement;
 import boardifier.view.TableLook;
-import model.Connect4PawnPot;
+import model.PuissanceXPawnPot;
 import java.awt.Graphics;
 import java.awt.Color;
 import java.awt.Font;
@@ -25,7 +25,7 @@ public class RedPawnPotLook extends TableLook {
         // super.paintComponent(g); // Ne pas appeler super car la méthode n'existe pas dans le parent
         
         // Afficher le nombre de pions restants
-        Connect4PawnPot pot = (Connect4PawnPot) element;
+        PuissanceXPawnPot pot = (PuissanceXPawnPot) element;
         int count = pot.getRemainingPawns();
         
         // Position du texte - conversion explicite de double à int

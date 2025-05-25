@@ -5,17 +5,17 @@ import boardifier.model.GameStageModel;
 import boardifier.view.ClassicBoardLook;
 import boardifier.view.GameStageView;
 import boardifier.view.TextLook;
-import model.Connect4StageModel;
+import model.PuissanceXStageModel;
 import model.Pawn;
 
-public class Connect4StageView extends GameStageView {
-    public Connect4StageView(String name, GameStageModel gameStageModel) {
+public class PuissanceXStageView extends GameStageView {
+    public PuissanceXStageView(String name, GameStageModel gameStageModel) {
         super(name, gameStageModel);
     }
 
     @Override
     public void createLooks() {
-        Connect4StageModel model = (Connect4StageModel) gameStageModel;
+        PuissanceXStageModel model = (PuissanceXStageModel) gameStageModel;
 
         // Créer l'affichage du nom du joueur
         addLook(new TextLook(model.getPlayerName()));

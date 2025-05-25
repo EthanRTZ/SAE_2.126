@@ -13,18 +13,18 @@ import boardifier.view.View;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import model.Connect4Board;
-import model.Connect4PawnPot;
-import model.Connect4StageModel;
+import model.PuissanceXBoard;
+import model.PuissanceXPawnPot;
+import model.PuissanceXStageModel;
 import model.Pawn;
 
-public class Connect4Controller extends Controller {
+public class PuissanceXController extends Controller {
     private BufferedReader consoleIn;
     private BufferedReader fileIn;
     private boolean useFileInput;
     private boolean firstPlayer;
 
-    public Connect4Controller(Model model, View view) {
+    public PuissanceXController(Model model, View view) {
         super(model, view);
         firstPlayer = true;
         consoleIn = new BufferedReader(new InputStreamReader(System.in));
@@ -34,7 +34,7 @@ public class Connect4Controller extends Controller {
 
         // Initialize game scene
         try {
-            Connect4StageModel stageModel = (Connect4StageModel) StageFactory.createStageModel("main", model);
+            PuissanceXStageModel stageModel = (PuissanceXStageModel) StageFactory.createStageModel("main", model);
             model.startGame(stageModel);
         } catch (GameException e) {
             System.out.println("Error during scene initialization: " + e.getMessage());
@@ -55,7 +55,7 @@ public class Connect4Controller extends Controller {
         Player p = model.getCurrentPlayer();
         if (p.getType() == Player.COMPUTER) {
             System.out.println("COMPUTER IS PLAYING");
-            Connect4Decider decider = new Connect4Decider(model, this);
+            PuissanceXDecider decider = new PuissanceXDecider(model, this);
             ActionPlayer play = new ActionPlayer(model, this, decider, null);
             play.start();
             
@@ -102,15 +102,15 @@ public class Connect4Controller extends Controller {
         // Don't change player if the action already does it
         if (!model.isEndStage()) {
             Player p = model.getCurrentPlayer();
-            Connect4StageModel stageModel = (Connect4StageModel) model.getGameStage();
+            PuissanceXStageModel stageModel = (PuissanceXStageModel) model.getGameStage();
             stageModel.getPlayerName().setText(p.getName());
         }
     }
 
     private boolean analyseAndPlay(String line) {
-        Connect4StageModel gameStage = (Connect4StageModel) model.getGameStage();
-        Connect4Board board = gameStage.getBoard();
-        Connect4PawnPot pot;
+        PuissanceXStageModel gameStage = (PuissanceXStageModel) model.getGameStage();
+        PuissanceXBoard board = gameStage.getBoard();
+        PuissanceXPawnPot pot;
         
         // Select the right pot based on current player
         if (model.getIdPlayer() == 0) {
@@ -146,7 +146,7 @@ public class Connect4Controller extends Controller {
         if (pawn == null) return false;
 
         // Create action to place the pawn
-        ActionList actions = ActionFactory.generatePutInContainer(model, pawn, "connect4board", row, col);
+        ActionList actions = ActionFactory.generatePutInContainer(model, pawn, "PuissanceXboard", row, col);
         actions.setDoEndOfTurn(true);
         
         // Execute the action
@@ -157,7 +157,7 @@ public class Connect4Controller extends Controller {
     }
 
     public void endGame() {
-        Connect4StageModel stageModel = (Connect4StageModel) model.getGameStage();
+        PuissanceXStageModel stageModel = (PuissanceXStageModel) model.getGameStage();
         int winner = stageModel.getWinner();
         if (winner == Pawn.PAWN_BLACK) {
             System.out.println("Player 1 wins!");

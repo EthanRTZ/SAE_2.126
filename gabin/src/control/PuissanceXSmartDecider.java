@@ -8,24 +8,24 @@ import boardifier.model.Model;
 import boardifier.model.action.ActionList;
 import java.util.Calendar;
 import java.util.Random;
-import model.Connect4Board;
-import model.Connect4PawnPot;
-import model.Connect4StageModel;
+import model.PuissanceXBoard;
+import model.PuissanceXPawnPot;
+import model.PuissanceXStageModel;
 import model.Pawn;
 
-public class Connect4SmartDecider extends Decider {
+public class PuissanceXSmartDecider extends Decider {
     private static final Random random = new Random(Calendar.getInstance().getTimeInMillis());
 
-    public Connect4SmartDecider(Model model, Controller control) {
+    public PuissanceXSmartDecider(Model model, Controller control) {
         super(model, control);
     }
 
     @Override
     public ActionList decide() {
         // Get game elements
-        Connect4StageModel stage = (Connect4StageModel)model.getGameStage();
-        Connect4Board board = stage.getBoard();
-        Connect4PawnPot pot = null;
+        PuissanceXStageModel stage = (PuissanceXStageModel)model.getGameStage();
+        PuissanceXBoard board = stage.getBoard();
+        PuissanceXPawnPot pot = null;
         GameElement pawn = null;
         int rowDest = 0;
         int colDest = 0;
@@ -120,7 +120,7 @@ public class Connect4SmartDecider extends Decider {
         if (pawn == null) return null;
 
         // Create and return action to place the pawn
-        ActionList actions = ActionFactory.generatePutInContainer(model, pawn, "connect4board", rowDest, colDest);
+        ActionList actions = ActionFactory.generatePutInContainer(model, pawn, "PuissanceXboard", rowDest, colDest);
         actions.setDoEndOfTurn(true);
         return actions;
     }

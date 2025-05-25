@@ -3,7 +3,7 @@ package ConnectX;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 import model.Pawn;
-import model.Connect4StageModel;
+import model.PuissanceXStageModel;
 import boardifier.model.Model;
 
 class PawnTest {
@@ -11,7 +11,7 @@ class PawnTest {
     @Test
     void testPawnCreation() {
         Model model = new Model();
-        Connect4StageModel stageModel = new Connect4StageModel("test", model);
+        PuissanceXStageModel stageModel = new PuissanceXStageModel("test", model);
         Pawn pawn = new Pawn(1, Pawn.PAWN_BLACK, stageModel);
         assertEquals(Pawn.PAWN_BLACK, pawn.getColor());
         assertEquals(1, pawn.getNumber());
@@ -20,7 +20,7 @@ class PawnTest {
     @Test
     void testPawnEquality() {
         Model model = new Model();
-        Connect4StageModel stageModel = new Connect4StageModel("test", model);
+        PuissanceXStageModel stageModel = new PuissanceXStageModel("test", model);
         Pawn pawn1 = new Pawn(1, Pawn.PAWN_BLACK, stageModel);
         Pawn pawn2 = new Pawn(1, Pawn.PAWN_BLACK, stageModel);
         Pawn pawn3 = new Pawn(1, Pawn.PAWN_RED, stageModel);
