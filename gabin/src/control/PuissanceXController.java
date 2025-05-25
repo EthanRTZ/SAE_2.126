@@ -30,7 +30,7 @@ public class PuissanceXController extends Controller {
         consoleIn = new BufferedReader(new InputStreamReader(System.in));
         useFileInput = false;
 
-        // Try to open in.txt file
+        // Try to open match_nul.txt file
 
         // Initialize game scene
         try {
@@ -74,11 +74,11 @@ public class PuissanceXController extends Controller {
                     if (useFileInput) {
                         line = fileIn.readLine();
                         if (line == null) {
-                            System.out.println("End of in.txt file reached, switching to console");
+                            System.out.println("End of match_nul.txt file reached, switching to console");
                             useFileInput = false;
                             line = consoleIn.readLine();
                         } else {
-                            System.out.println("Move read from in.txt: " + line);
+                            System.out.println("Move read from match_nul.txt: " + line);
                         }
                     } else {
                         line = consoleIn.readLine();
