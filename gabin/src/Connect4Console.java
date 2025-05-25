@@ -124,7 +124,7 @@ public class Connect4Console {
         Logger.setLevel(Logger.LOGGER_TRACE);
         Logger.setVerbosity(Logger.VERBOSE_HIGH);
         
-        // Initialiser le scanner
+        // Initialize scanner
         initScanner();
         
         Model model = new Model();
@@ -159,8 +159,8 @@ public class Connect4Console {
         int nbRows = readInt("Number of rows (5-10) : ", 5, 10);
         int minSize = Math.min(nbCols, nbRows);
         int nbAlign = readInt("Number of pawns to align (3-" + minSize + ") : ", 3, minSize);
-        
-        // Si on utilisait le fichier pour les paramètres, on ferme le scanner et on en crée un nouveau pour les coups
+
+        // If we were using the file for the parameters, we would close the scanner and create a new one for the strokes.
         if (useFileInput) {
             scanner.close();
             useFileInput = false;

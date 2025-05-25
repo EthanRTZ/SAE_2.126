@@ -26,10 +26,10 @@ class Connect4PawnPotTest {
         Connect4PawnPot pot = new Connect4PawnPot(0, 0, stageModel, 21);
         Pawn pawn = new Pawn(1, Pawn.PAWN_BLACK, stageModel);
         
-        // Ajoute d'abord le pion au pot
+        // First add the pawn to the pot
         pot.addElement(pawn, 0, 0);
         
-        // Retire le pion et vérifie que le nombre de pions restants diminue
+        // Remove the pawn and check that the number of remaining pawns decreases
         pot.removeElement(pawn);
         assertEquals(20, pot.getRemainingPawns());
     }
@@ -40,13 +40,13 @@ class Connect4PawnPotTest {
         Connect4StageModel stageModel = new Connect4StageModel("test", model);
         Connect4PawnPot pot = new Connect4PawnPot(0, 0, stageModel, 21);
         
-        // Crée et ajoute plusieurs pions
+        // Create and add multiple pawns
         for(int i = 0; i < 5; i++) {
             Pawn pawn = new Pawn(i, Pawn.PAWN_BLACK, stageModel);
             pot.addElement(pawn, 0, i);
         }
         
-        // Retire quelques pions
+        // Remove some pawns
         for(int i = 0; i < 3; i++) {
             pot.removeElement(pot.getElement(0, i));
         }
@@ -60,7 +60,7 @@ class Connect4PawnPotTest {
         Connect4StageModel stageModel = new Connect4StageModel("test", model);
         Connect4PawnPot pot = new Connect4PawnPot(0, 0, stageModel, 21);
         
-        // Vérifie que le pot a les bonnes dimensions (1 ligne, 21 colonnes)
+        // Check that the pot has the correct dimensions (1 row, 21 columns)
         assertEquals(1, pot.getNbRows());
         assertEquals(21, pot.getNbCols());
     }

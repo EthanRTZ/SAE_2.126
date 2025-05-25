@@ -50,14 +50,14 @@ class ConnectXStageModelTest {
         Connect4Board board = new Connect4Board(0, 0, stageModel, 6, 7, 4);
         stageModel.setBoard(board);
         
-        // Vérifie que le plateau est vide au début
+        // Check that the board is empty at the start
         for (int row = 0; row < board.getNbRows(); row++) {
             for (int col = 0; col < board.getNbCols(); col++) {
                 assertEquals(-1, board.getGrid()[row][col]);
             }
         }
         
-        // Vérifie qu'aucune colonne n'est pleine au début
+        // Check that no column is full at the start
         for (int col = 0; col < board.getNbCols(); col++) {
             assertFalse(board.isColumnFull(col));
         }

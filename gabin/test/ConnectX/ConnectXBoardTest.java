@@ -15,7 +15,7 @@ class ConnectXBoardTest {
         Connect4StageModel stageModel = new Connect4StageModel("test", model);
         Connect4Board board = new Connect4Board(0, 0, stageModel, 6, 7, 4);
         
-        // Vérifie que toutes les cases sont vides (-1)
+        // Check that all cells are empty (-1)
         for (int row = 0; row < board.getNbRows(); row++) {
             for (int col = 0; col < board.getNbCols(); col++) {
                 assertEquals(-1, board.getGrid()[row][col]);
@@ -30,12 +30,12 @@ class ConnectXBoardTest {
         Connect4Board board = new Connect4Board(0, 0, stageModel, 6, 7, 4);
         Pawn pawn = new Pawn(1, Pawn.PAWN_BLACK, stageModel);
         
-        // Vérifie qu'une colonne vide peut recevoir un pion
+        // Check that an empty column can receive a pawn
         assertFalse(board.isColumnFull(0));
         int row = board.getFirstEmptyRow(0);
         assertTrue(row >= 0);
         
-        // Place le pion dans la grille
+        // Place the pawn in the grid
         board.getGrid()[row][0] = Pawn.PAWN_BLACK;
         assertEquals(Pawn.PAWN_BLACK, board.getGrid()[row][0]);
     }
@@ -46,7 +46,7 @@ class ConnectXBoardTest {
         Connect4StageModel stageModel = new Connect4StageModel("test", model);
         Connect4Board board = new Connect4Board(0, 0, stageModel, 6, 7, 4);
         
-        // Remplit la première colonne
+        // Fill the first column
         for (int row = board.getNbRows() - 1; row >= 0; row--) {
             board.getGrid()[row][0] = Pawn.PAWN_BLACK;
         }
@@ -61,13 +61,13 @@ class ConnectXBoardTest {
         Connect4StageModel stageModel = new Connect4StageModel("test", model);
         Connect4Board board = new Connect4Board(0, 0, stageModel, 6, 7, 4);
         
-        // Test victoire verticale
+        // Test vertical win
         for (int row = 5; row >= 2; row--) {
             board.getGrid()[row][0] = Pawn.PAWN_BLACK;
         }
         assertTrue(board.checkWin(2, 0, Pawn.PAWN_BLACK));
         
-        // Test victoire horizontale
+        // Test horizontal win
         board = new Connect4Board(0, 0, stageModel, 6, 7, 4);
         for (int col = 0; col < 4; col++) {
             board.getGrid()[5][col] = Pawn.PAWN_RED;

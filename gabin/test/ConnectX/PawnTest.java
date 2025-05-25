@@ -25,9 +25,9 @@ class PawnTest {
         Pawn pawn2 = new Pawn(1, Pawn.PAWN_BLACK, stageModel);
         Pawn pawn3 = new Pawn(1, Pawn.PAWN_RED, stageModel);
         
-        // Test que deux pions de même couleur sont considérés différents
+        // Test that two pawns of the same color are considered different
         assertNotEquals(pawn1, pawn2);
-        // Test que deux pions de couleurs différentes sont différents
+        // Test that two pawns of different colors are different
         assertNotEquals(pawn1, pawn3);
     }
 } 
