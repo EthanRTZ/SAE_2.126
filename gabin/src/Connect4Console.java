@@ -6,6 +6,15 @@ import model.Connect4Board;
 import model.Connect4PawnPot;
 import model.Connect4StageModel;
 import model.Pawn;
+import control.Connect4Controller;
+import control.Connect4Decider;
+import control.Connect4SmartDecider;
+import control.Connect4GeniusDecider;
+import boardifier.model.action.ActionList;
+import boardifier.control.Decider;
+import boardifier.model.action.GameAction;
+import boardifier.control.ActionFactory;
+import boardifier.control.ActionPlayer;
 
 public class Connect4Console {
     private static int readInt(String prompt, int min, int max) {
@@ -106,6 +115,12 @@ public class Connect4Console {
         // Demander le mode de jeu
         int gameMode = readInt("Choisissez le mode de jeu (0: Joueur vs Joueur, 1: Joueur vs Ordinateur, 2: Ordinateur vs Ordinateur) : ", 0, 2);
         
+        // Demander le niveau de l'ordinateur
+        int computerLevel = 0;
+        if (gameMode > 0) {
+            computerLevel = readInt("Choisissez le niveau de l'ordinateur (0: Facile, 1: Moyen, 2: Difficile) : ", 0, 2);
+        }
+        
         // Ajouter les joueurs selon le mode choisi
         switch (gameMode) {
             case 0: // Joueur vs Joueur
@@ -138,6 +153,9 @@ public class Connect4Console {
         
         model.startGame(stageModel);
         
+        // Créer le contrôleur
+        Connect4Controller controller = new Connect4Controller(model, null);
+        
         // Boucle principale du jeu
         Scanner scanner = new Scanner(System.in);
         boolean gameOver = false;
@@ -160,11 +178,37 @@ public class Connect4Console {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                // L'ordinateur choisit une colonne aléatoire non pleine
-                do {
-                    col = (int)(Math.random() * nbCols);
-                } while (board.isColumnFull(col));
-                System.out.println(currentPlayer + " joue dans la colonne " + (col + 1));
+                
+                // Créer le décideur approprié selon le niveau
+                Decider decider;
+                switch (computerLevel) {
+                    case 0:
+                        decider = new Connect4Decider(model, controller);
+                        break;
+                    case 1:
+                        decider = new Connect4SmartDecider(model, controller);
+                        break;
+                    case 2:
+                        decider = new Connect4GeniusDecider(model, controller);
+                        break;
+                    default:
+                        decider = new Connect4Decider(model, controller);
+                }
+                
+                // Obtenir la décision du décideur
+                ActionList actions = decider.decide();
+                if (actions != null && !actions.getActions().isEmpty() && !actions.getActions().get(0).isEmpty()) {
+                    // Exécuter l'action
+                    ActionPlayer play = new ActionPlayer(model, controller, actions);
+                    play.start();
+                    continue;
+                } else {
+                    // Fallback sur une colonne aléatoire si le décideur échoue
+                    do {
+                        col = (int)(Math.random() * nbCols);
+                    } while (board.isColumnFull(col));
+                    System.out.println(currentPlayer + " joue dans la colonne " + (col + 1));
+                }
             }
             else {
                 // Tour d'un joueur humain
