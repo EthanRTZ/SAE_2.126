@@ -23,9 +23,22 @@ public class Connect4Console {
     private static boolean useFileInput = false;
 
     private static void initScanner() {
-        scanner = new Scanner(System.in);
-        useFileInput = false;
-        System.out.println("Utilisation de la console");
+        try {
+            File inputFile = new File("in.txt");
+            if (inputFile.exists()) {
+                scanner = new Scanner(inputFile);
+                useFileInput = true;
+                System.out.println("Lecture des paramètres depuis in.txt activée");
+            } else {
+                scanner = new Scanner(System.in);
+                useFileInput = false;
+                System.out.println("Fichier in.txt non trouvé, utilisation de la console");
+            }
+        } catch (FileNotFoundException e) {
+            scanner = new Scanner(System.in);
+            useFileInput = false;
+            System.out.println("Erreur lors de l'ouverture du fichier in.txt : " + e.getMessage());
+        }
     }
 
     private static int readInt(String prompt, int min, int max) {
@@ -131,23 +144,6 @@ public class Connect4Console {
         // Initialiser le scanner
         initScanner();
         
-        // Vérifier si on doit utiliser le fichier in.txt
-        if (args.length > 0 && args[0].equals("--file")) {
-            try {
-                File inputFile = new File("in.txt");
-                if (inputFile.exists()) {
-                    scanner.close();
-                    scanner = new Scanner(inputFile);
-                    useFileInput = true;
-                    System.out.println("Lecture des paramètres depuis in.txt activée");
-                } else {
-                    System.out.println("Fichier in.txt non trouvé, utilisation de la console");
-                }
-            } catch (FileNotFoundException e) {
-                System.out.println("Erreur lors de l'ouverture du fichier in.txt : " + e.getMessage());
-            }
-        }
-        
         Model model = new Model();
         
         // Demander le mode de jeu
@@ -180,6 +176,12 @@ public class Connect4Console {
         int nbRows = readInt("Nombre de lignes (5-10) : ", 5, 10);
         int minSize = Math.min(nbCols, nbRows);
         int nbAlign = readInt("Nombre de jetons à aligner (3-" + minSize + ") : ", 3, minSize);
+        
+        // Si on utilisait le fichier pour les paramètres, on ferme le scanner et on en crée un nouveau pour les coups
+        if (useFileInput) {
+            scanner.close();
+            useFileInput = false;
+        }
         
         // Initialiser la scène de jeu
         Connect4StageModel stageModel = new Connect4StageModel("main", model);
