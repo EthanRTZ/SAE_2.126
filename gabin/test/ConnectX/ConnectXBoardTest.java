@@ -7,7 +7,7 @@ import model.Pawn;
 import model.Connect4StageModel;
 import boardifier.model.Model;
 
-class Connect4BoardTest {
+class ConnectXBoardTest {
     
     @Test
     void testInitialBoardIsEmpty() {

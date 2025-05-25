@@ -6,7 +6,7 @@ import model.Connect4StageModel;
 import model.Connect4Board;
 import boardifier.model.Model;
 
-class Connect4StageModelTest {
+class ConnectXStageModelTest {
     
     @Test
     void testInitialState() {
