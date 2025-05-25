@@ -6,7 +6,6 @@ import boardifier.model.Model;
 import boardifier.model.action.ActionList;
 import control.Connect4Controller;
 import control.Connect4Decider;
-import control.Connect4GeniusDecider;
 import control.Connect4SmartDecider;
 import java.util.Scanner;
 import model.Connect4Board;
@@ -135,7 +134,7 @@ public class Connect4Console {
         // Ask for computer level
         int computerLevel = 0;
         if (gameMode > 0) {
-            computerLevel = readInt("Choose computer level (0: Easy, 1: Medium, 2: Hard) : ", 0, 2);
+            computerLevel = readInt("Choose computer level (0: Easy, 1: Medium) : ", 0, 1);
         }
         
         // Add players according to chosen mode
@@ -209,9 +208,6 @@ public class Connect4Console {
                         break;
                     case 1:
                         decider = new Connect4SmartDecider(model, controller);
-                        break;
-                    case 2:
-                        decider = new Connect4GeniusDecider(model, controller);
                         break;
                     default:
                         decider = new Connect4Decider(model, controller);
