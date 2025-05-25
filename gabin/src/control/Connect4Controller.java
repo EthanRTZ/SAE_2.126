@@ -11,7 +11,6 @@ import boardifier.model.Player;
 import boardifier.model.action.ActionList;
 import boardifier.view.View;
 import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import model.Connect4Board;
@@ -31,14 +30,14 @@ public class Connect4Controller extends Controller {
         consoleIn = new BufferedReader(new InputStreamReader(System.in));
         useFileInput = false;
 
-        // Essayer d'ouvrir le fichier in.txt
+        // Try to open in.txt file
 
-        // Initialiser la scène de jeu
+        // Initialize game scene
         try {
             Connect4StageModel stageModel = (Connect4StageModel) StageFactory.createStageModel("main", model);
             model.startGame(stageModel);
         } catch (GameException e) {
-            System.out.println("Erreur lors de l'initialisation de la scène : " + e.getMessage());
+            System.out.println("Error during scene initialization: " + e.getMessage());
         }
     }
 
@@ -55,12 +54,12 @@ public class Connect4Controller extends Controller {
     private void playTurn() {
         Player p = model.getCurrentPlayer();
         if (p.getType() == Player.COMPUTER) {
-            System.out.println("L'ORDINATEUR JOUE");
+            System.out.println("COMPUTER IS PLAYING");
             Connect4Decider decider = new Connect4Decider(model, this);
             ActionPlayer play = new ActionPlayer(model, this, decider, null);
             play.start();
             
-            // Ajouter un petit délai pour laisser le temps à l'action de s'exécuter
+            // Add a small delay to let the action execute
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {
@@ -75,11 +74,11 @@ public class Connect4Controller extends Controller {
                     if (useFileInput) {
                         line = fileIn.readLine();
                         if (line == null) {
-                            System.out.println("Fin du fichier in.txt atteinte, passage à la console");
+                            System.out.println("End of in.txt file reached, switching to console");
                             useFileInput = false;
                             line = consoleIn.readLine();
                         } else {
-                            System.out.println("Coup lu depuis in.txt : " + line);
+                            System.out.println("Move read from in.txt: " + line);
                         }
                     } else {
                         line = consoleIn.readLine();
@@ -89,10 +88,10 @@ public class Connect4Controller extends Controller {
                         ok = analyseAndPlay(line);
                     }
                     if (!ok) {
-                        System.out.println("Instruction incorrecte. Réessayez !");
+                        System.out.println("Invalid instruction. Try again!");
                     }
                 } catch (IOException e) {
-                    System.out.println("Erreur de lecture : " + e.getMessage());
+                    System.out.println("Read error: " + e.getMessage());
                     useFileInput = false;
                 }
             }
@@ -100,7 +99,7 @@ public class Connect4Controller extends Controller {
     }
 
     public void endOfTurn() {
-        // Ne pas changer le joueur si l'action le fait déjà
+        // Don't change player if the action already does it
         if (!model.isEndStage()) {
             Player p = model.getCurrentPlayer();
             Connect4StageModel stageModel = (Connect4StageModel) model.getGameStage();
@@ -113,14 +112,14 @@ public class Connect4Controller extends Controller {
         Connect4Board board = gameStage.getBoard();
         Connect4PawnPot pot;
         
-        // Sélectionner le bon pot selon le joueur courant
+        // Select the right pot based on current player
         if (model.getIdPlayer() == 0) {
             pot = gameStage.getYellowPot();
         } else {
             pot = gameStage.getRedPot();
         }
 
-        // Convertir le numéro de la colonne en index
+        // Convert column number to index
         int col;
         try {
             col = Integer.parseInt(line) - 1;
@@ -129,13 +128,13 @@ public class Connect4Controller extends Controller {
         }
         if ((col < 0) || (col >= board.getNbCols())) return false;
 
-        // Vérifier si la colonne est pleine
+        // Check if column is full
         if (board.isColumnFull(col)) return false;
 
-        // Trouver la première ligne vide dans la colonne
+        // Find first empty row in column
         int row = board.getFirstEmptyRow(col);
 
-        // Trouver un pion disponible dans le pot
+        // Find an available pawn in the pot
         GameElement pawn = null;
         for (int i = 0; i < pot.getNbRows(); i++) {
             if (!pot.isEmptyAt(0, i)) {
@@ -146,11 +145,11 @@ public class Connect4Controller extends Controller {
         
         if (pawn == null) return false;
 
-        // Créer l'action pour placer le pion
+        // Create action to place the pawn
         ActionList actions = ActionFactory.generatePutInContainer(model, pawn, "connect4board", row, col);
         actions.setDoEndOfTurn(true);
         
-        // Exécuter l'action
+        // Execute the action
         ActionPlayer play = new ActionPlayer(model, this, actions);
         play.start();
         
@@ -161,11 +160,11 @@ public class Connect4Controller extends Controller {
         Connect4StageModel stageModel = (Connect4StageModel) model.getGameStage();
         int winner = stageModel.getWinner();
         if (winner == Pawn.PAWN_BLACK) {
-            System.out.println("Joueur 1 a gagné !");
+            System.out.println("Player 1 wins!");
         } else if (winner == Pawn.PAWN_RED) {
-            System.out.println("Joueur 2 a gagné !");
+            System.out.println("Player 2 wins!");
         } else {
-            System.out.println("Match nul !");
+            System.out.println("It's a draw!");
         }
     }
 }

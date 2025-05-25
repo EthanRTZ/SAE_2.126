@@ -6,13 +6,12 @@ import boardifier.control.Decider;
 import boardifier.model.GameElement;
 import boardifier.model.Model;
 import boardifier.model.action.ActionList;
-import model.Connect4Board;
-import model.Connect4StageModel;
-import model.Connect4PawnPot;
-import model.Pawn;
-
 import java.util.Calendar;
 import java.util.Random;
+import model.Connect4Board;
+import model.Connect4PawnPot;
+import model.Connect4StageModel;
+import model.Pawn;
 
 public class Connect4SmartDecider extends Decider {
     private static final Random random = new Random(Calendar.getInstance().getTimeInMillis());
@@ -23,7 +22,7 @@ public class Connect4SmartDecider extends Decider {
 
     @Override
     public ActionList decide() {
-        // Récupérer les éléments du jeu
+        // Get game elements
         Connect4StageModel stage = (Connect4StageModel)model.getGameStage();
         Connect4Board board = stage.getBoard();
         Connect4PawnPot pot = null;
@@ -31,77 +30,77 @@ public class Connect4SmartDecider extends Decider {
         int rowDest = 0;
         int colDest = 0;
         
-        // Choisir le bon pot de pions selon le joueur
+        // Choose the right pawn pot based on the player
         if (model.getIdPlayer() == 0) {
             pot = stage.getYellowPot();
         } else {
             pot = stage.getRedPot();
         }
 
-        // ÉTAPE 1: Vérifier si on peut gagner
-        boolean coupTrouve = false;
+        // STEP 1: Check if we can win
+        boolean moveFound = false;
         for (int col = 0; col < board.getNbCols(); col++) {
-            // Vérifier si la colonne n'est pas pleine
+            // Check if the column is not full
             if (!board.isColumnFull(col)) {
-                // Trouver la première ligne vide dans cette colonne
+                // Find the first empty row in this column
                 int row = board.getFirstEmptyRow(col);
                 
-                // Simuler le coup
+                // Simulate the move
                 int[][] grid = board.getGrid();
-                int couleurJoueur;
+                int playerColor;
                 if (model.getIdPlayer() == 0) {
-                    couleurJoueur = Pawn.PAWN_BLACK;
+                    playerColor = Pawn.PAWN_BLACK;
                 } else {
-                    couleurJoueur = Pawn.PAWN_RED;
+                    playerColor = Pawn.PAWN_RED;
                 }
-                grid[row][col] = couleurJoueur;
+                grid[row][col] = playerColor;
                 
-                // Vérifier si ce coup fait gagner
-                if (board.checkWin(row, col, couleurJoueur)) {
+                // Check if this move wins
+                if (board.checkWin(row, col, playerColor)) {
                     rowDest = row;
                     colDest = col;
-                    coupTrouve = true;
+                    moveFound = true;
                     break;
                 }
                 
-                // Annuler le coup simulé
+                // Undo simulated move
                 grid[row][col] = -1;
             }
         }
 
-        // ÉTAPE 2: Si on ne peut pas gagner, vérifier si l'adversaire peut gagner
-        if (!coupTrouve) {
-            int couleurAdversaire;
+        // STEP 2: If we can't win, check if opponent can win
+        if (!moveFound) {
+            int opponentColor;
             if (model.getIdPlayer() == 0) {
-                couleurAdversaire = Pawn.PAWN_RED;
+                opponentColor = Pawn.PAWN_RED;
             } else {
-                couleurAdversaire = Pawn.PAWN_BLACK;
+                opponentColor = Pawn.PAWN_BLACK;
             }
             
             for (int col = 0; col < board.getNbCols(); col++) {
                 if (!board.isColumnFull(col)) {
                     int row = board.getFirstEmptyRow(col);
                     
-                    // Simuler le coup de l'adversaire
+                    // Simulate opponent's move
                     int[][] grid = board.getGrid();
-                    grid[row][col] = couleurAdversaire;
+                    grid[row][col] = opponentColor;
                     
-                    // Vérifier si l'adversaire peut gagner
-                    if (board.checkWin(row, col, couleurAdversaire)) {
+                    // Check if opponent can win
+                    if (board.checkWin(row, col, opponentColor)) {
                         rowDest = row;
                         colDest = col;
-                        coupTrouve = true;
+                        moveFound = true;
                         break;
                     }
                     
-                    // Annuler le coup simulé
+                    // Undo simulated move
                     grid[row][col] = -1;
                 }
             }
         }
 
-        // ÉTAPE 3: Si aucun coup stratégique n'est trouvé, jouer aléatoirement
-        if (!coupTrouve) {
+        // STEP 3: If no strategic move is found, play randomly
+        if (!moveFound) {
             int col;
             do {
                 col = random.nextInt(board.getNbCols());
@@ -110,7 +109,7 @@ public class Connect4SmartDecider extends Decider {
             colDest = col;
         }
 
-        // Trouver un pion disponible dans le pot
+        // Find an available pawn in the pot
         for (int i = 0; i < pot.getNbRows(); i++) {
             if (!pot.isEmptyAt(0, i)) {
                 pawn = pot.getElement(0, i);
@@ -120,7 +119,7 @@ public class Connect4SmartDecider extends Decider {
         
         if (pawn == null) return null;
 
-        // Créer et retourner l'action pour placer le pion
+        // Create and return action to place the pawn
         ActionList actions = ActionFactory.generatePutInContainer(model, pawn, "connect4board", rowDest, colDest);
         actions.setDoEndOfTurn(true);
         return actions;

@@ -6,13 +6,11 @@ import boardifier.control.Decider;
 import boardifier.model.GameElement;
 import boardifier.model.Model;
 import boardifier.model.action.ActionList;
-import model.Connect4Board;
-import model.Connect4StageModel;
-import model.Connect4PawnPot;
-import model.Pawn;
-
 import java.util.Calendar;
 import java.util.Random;
+import model.Connect4Board;
+import model.Connect4PawnPot;
+import model.Connect4StageModel;
 
 public class Connect4GeniusDecider extends Decider {
     private static final Random random = new Random(Calendar.getInstance().getTimeInMillis());
@@ -23,7 +21,7 @@ public class Connect4GeniusDecider extends Decider {
 
     @Override
     public ActionList decide() {
-        // Récupérer les éléments du jeu
+        // Get game elements
         Connect4StageModel stage = (Connect4StageModel)model.getGameStage();
         Connect4Board board = stage.getBoard();
         Connect4PawnPot pot = null;
@@ -31,21 +29,21 @@ public class Connect4GeniusDecider extends Decider {
         int rowDest = 0;
         int colDest = 0;
         
-        // Choisir le bon pot de pions selon le joueur
+        // Choose the right pawn pot based on the player
         if (model.getIdPlayer() == 0) {
             pot = stage.getYellowPot();
         } else {
             pot = stage.getRedPot();
         }
 
-        // TODO: Implémenter la stratégie avancée
-        // 1. Évaluation de la position
-        // 2. Détection des alignements partiels
-        // 3. Prévention des pièges
-        // 4. Stratégie de centre
-        // 5. MinMax avec profondeur limitée
+        // TODO: Implement advanced strategy
+        // 1. Position evaluation
+        // 2. Partial alignment detection
+        // 3. Trap prevention
+        // 4. Center strategy
+        // 5. MinMax with limited depth
 
-        // Pour l'instant, on utilise une stratégie aléatoire
+        // For now, using a random strategy
         int col;
         do {
             col = random.nextInt(board.getNbCols());
@@ -53,7 +51,7 @@ public class Connect4GeniusDecider extends Decider {
         rowDest = board.getFirstEmptyRow(col);
         colDest = col;
 
-        // Trouver un pion disponible dans le pot
+        // Find an available pawn in the pot
         for (int i = 0; i < pot.getNbRows(); i++) {
             if (!pot.isEmptyAt(0, i)) {
                 pawn = pot.getElement(0, i);
@@ -63,7 +61,7 @@ public class Connect4GeniusDecider extends Decider {
         
         if (pawn == null) return null;
 
-        // Créer et retourner l'action pour placer le pion
+        // Create and return action to place the pawn
         ActionList actions = ActionFactory.generatePutInContainer(model, pawn, "connect4board", rowDest, colDest);
         actions.setDoEndOfTurn(true);
         return actions;

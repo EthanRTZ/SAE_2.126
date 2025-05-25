@@ -6,13 +6,12 @@ import boardifier.control.Decider;
 import boardifier.model.GameElement;
 import boardifier.model.Model;
 import boardifier.model.action.ActionList;
-import model.Connect4Board;
-import model.Connect4StageModel;
-import model.Connect4PawnPot;
-import model.Pawn;
-
 import java.util.Calendar;
 import java.util.Random;
+import model.Connect4Board;
+import model.Connect4PawnPot;
+import model.Connect4StageModel;
+import model.Pawn;
 
 public class Connect4Decider extends Decider {
     private static final Random random = new Random(Calendar.getInstance().getTimeInMillis());
@@ -180,7 +179,7 @@ public class Connect4Decider extends Decider {
         int playerColor = (model.getIdPlayer() == 0) ? Pawn.PAWN_BLACK : Pawn.PAWN_RED;
         int opponentColor = (playerColor == Pawn.PAWN_BLACK) ? Pawn.PAWN_RED : Pawn.PAWN_BLACK;
 
-        // 1. Vérifier si l'IA peut gagner immédiatement
+        // 1. Check if AI can win immediately
         for (int col = 0; col < board.getNbCols(); col++) {
             if (!board.isColumnFull(col)) {
                 int row = board.getFirstEmptyRow(col);
@@ -194,7 +193,7 @@ public class Connect4Decider extends Decider {
             }
         }
 
-        // 2. Sinon, vérifier si l'adversaire peut gagner au prochain coup, et le bloquer
+        // 2. Otherwise, check if opponent can win next turn, and block them
         if (bestCol == -1) {
             for (int col = 0; col < board.getNbCols(); col++) {
                 if (!board.isColumnFull(col)) {
@@ -210,7 +209,7 @@ public class Connect4Decider extends Decider {
             }
         }
 
-        // 3. Sinon, évaluer les colonnes avec l'heuristique
+        // 3. Otherwise, evaluate columns with heuristic
         if (bestCol == -1) {
             int bestScore = Integer.MIN_VALUE;
             for (int col = 0; col < board.getNbCols(); col++) {
@@ -224,10 +223,10 @@ public class Connect4Decider extends Decider {
             }
         }
 
-        // Si aucun coup trouvé (très rare sauf si grille pleine), retourner null
+        // If no move found (very rare except if board is full), return null
         if (bestCol == -1) return null;
 
-        // Trouver la première pièce disponible dans le pot du joueur
+        // Find first available piece in player's pot
         int row = board.getFirstEmptyRow(bestCol);
         for (int i = 0; i < pot.getNbRows(); i++) {
             if (!pot.isEmptyAt(0, i)) {
