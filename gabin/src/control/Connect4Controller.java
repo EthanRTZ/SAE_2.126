@@ -30,17 +30,9 @@ public class Connect4Controller extends Controller {
         firstPlayer = true;
         consoleIn = new BufferedReader(new InputStreamReader(System.in));
         useFileInput = false;
-        
+
         // Essayer d'ouvrir le fichier in.txt
-        try {
-            fileIn = new BufferedReader(new FileReader("in.txt"));
-            useFileInput = true;
-            System.out.println("Lecture des coups depuis in.txt activée");
-        } catch (IOException e) {
-            System.out.println("Fichier in.txt non trouvé, utilisation de la console");
-            useFileInput = false;
-        }
-        
+
         // Initialiser la scène de jeu
         try {
             Connect4StageModel stageModel = (Connect4StageModel) StageFactory.createStageModel("main", model);
