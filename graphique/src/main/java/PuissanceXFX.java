@@ -1,8 +1,6 @@
 import boardifier.control.ActionPlayer;
-import boardifier.control.Controller;
 import boardifier.control.Decider;
 import boardifier.model.Model;
-import boardifier.model.StageElementsFactory;
 import boardifier.view.RootPane;
 import boardifier.view.View;
 import control.PuissanceXController;
@@ -22,7 +20,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import model.PuissanceXBoard;
@@ -30,8 +27,6 @@ import model.PuissanceXStageModel;
 import model.Pawn;
 import model.PuissanceXPawnPot;
 import boardifier.model.action.ActionList;
-import view.RedPawnPotLook;
-import view.YellowPawnPotLook;
 
 public class PuissanceXFX extends Application {
     private Model model;
