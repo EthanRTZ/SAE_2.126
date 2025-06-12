@@ -184,6 +184,10 @@ public class PuissanceXFX extends Application {
     }
 
     private void initializeGame(String gameMode, String level1, String level2) {
+        // Réinitialiser complètement le jeu
+        resetGame();
+        resetStaticResources();
+        
         model = new Model();
         gameStage = new Stage();
         RootPane rootPane = new RootPane();
@@ -591,6 +595,26 @@ public class PuissanceXFX extends Application {
                 tracker.reset();
                 bottomBox.getChildren().clear();
                 statusLabel.setTextFill(Color.WHITE);
+                
+                // Réinitialiser le modèle pour commencer avec le premier joueur
+                if (model != null) {
+                    model.setIdPlayer(0);
+                    String firstPlayer = model.getCurrentPlayer().getName();
+                    statusLabel.setText("Au tour de " + firstPlayer);
+                    statusLabel.setTextFill(Color.RED);
+                    
+                    // Si le premier joueur est un ordinateur, lancer son tour
+                    if (firstPlayer.toLowerCase().contains("ordinateur")) {
+                        Platform.runLater(() -> {
+                            try {
+                                Thread.sleep(1000);
+                                playComputerTurn();
+                            } catch (InterruptedException ex) {
+                                ex.printStackTrace();
+                            }
+                        });
+                    }
+                }
             });
             
             bottomBox.getChildren().add(newGameButton);
@@ -609,6 +633,26 @@ public class PuissanceXFX extends Application {
                 tracker.reset();
                 bottomBox.getChildren().clear();
                 statusLabel.setTextFill(Color.WHITE);
+                
+                // Réinitialiser le modèle pour commencer avec le premier joueur
+                if (model != null) {
+                    model.setIdPlayer(0);
+                    String firstPlayer = model.getCurrentPlayer().getName();
+                    statusLabel.setText("Au tour de " + firstPlayer);
+                    statusLabel.setTextFill(Color.RED);
+                    
+                    // Si le premier joueur est un ordinateur, lancer son tour
+                    if (firstPlayer.toLowerCase().contains("ordinateur")) {
+                        Platform.runLater(() -> {
+                            try {
+                                Thread.sleep(1000);
+                                playComputerTurn();
+                            } catch (InterruptedException ex) {
+                                ex.printStackTrace();
+                            }
+                        });
+                    }
+                }
             });
             
             bottomBox.getChildren().add(newGameButton);
@@ -639,80 +683,90 @@ public class PuissanceXFX extends Application {
 
     private void resetGame() {
         gameOver = false;
-        board.clear();
         
-        // Réinitialiser les pots
-        redPot = new PuissanceXPawnPot(80, 80, stageModel, (nbRows * nbCols + 1) / 2);
-        yellowPot = new PuissanceXPawnPot(80, 80, stageModel, nbRows * nbCols / 2);
-        stageModel.setRedPot(redPot);
-        stageModel.setYellowPot(yellowPot);
+        // Réinitialiser les scores
+        scoreJoueur1 = 0;
+        scoreJoueur2 = 0;
         
-        // Récupérer les conteneurs des pots
-        BorderPane root = (BorderPane) gameBoard.getParent().getParent();
+        // Réinitialiser le tracker console
+        ConsoleGameTracker tracker = ConsoleGameTracker.getInstance(nbRows, nbCols, nbAlign);
+        if (tracker != null) {
+            tracker.reset();
+        }
         
-        // Recréer le conteneur gauche (pot rouge)
-        VBox leftBox = new VBox(20);
-        leftBox.setAlignment(Pos.CENTER);
-        leftBox.setPadding(new Insets(0, 20, 0, 0));
-        leftBox.setStyle("-fx-background-color: #333333;");
-        leftBox.setMinWidth(150);
+        // Réinitialiser les variables du jeu
+        if (board != null) {
+            board.clear();
+        }
         
-        Label redLabel = new Label("Joueur 1 (Rouge)");
-        redLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: red;");
+        // Réinitialiser les pots si ils existent
+        if (stageModel != null) {
+            redPot = new PuissanceXPawnPot(80, 80, stageModel, (nbRows * nbCols + 1) / 2);
+            yellowPot = new PuissanceXPawnPot(80, 80, stageModel, nbRows * nbCols / 2);
+            stageModel.setRedPot(redPot);
+            stageModel.setYellowPot(yellowPot);
+        }
         
-        redPotLabel = new Label("Pions restants : " + redPot.getRemainingPawns());
-        redPotLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: red;");
-        
-        VBox redPotInfo = new VBox(10);
-        redPotInfo.setAlignment(Pos.CENTER);
-        redPotInfo.setStyle("-fx-background-color: #444444; -fx-border-color: #666666; -fx-border-width: 2; -fx-padding: 20;");
-        redPotInfo.setMinHeight(100);
-        redPotInfo.getChildren().add(redPotLabel);
-        
-        leftBox.getChildren().addAll(redLabel, redPotInfo);
-        root.setLeft(leftBox);
-        
-        // Recréer le conteneur droit (pot jaune)
-        VBox rightBox = new VBox(20);
-        rightBox.setAlignment(Pos.CENTER);
-        rightBox.setPadding(new Insets(0, 0, 0, 20));
-        rightBox.setStyle("-fx-background-color: #333333;");
-        rightBox.setMinWidth(150);
-        
-        Label yellowLabel = new Label("Joueur 2 (Jaune)");
-        yellowLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: yellow;");
-        
-        yellowPotLabel = new Label("Pions restants : " + yellowPot.getRemainingPawns());
-        yellowPotLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: yellow;");
-        
-        VBox yellowPotInfo = new VBox(10);
-        yellowPotInfo.setAlignment(Pos.CENTER);
-        yellowPotInfo.setStyle("-fx-background-color: #444444; -fx-border-color: #666666; -fx-border-width: 2; -fx-padding: 20;");
-        yellowPotInfo.setMinHeight(100);
-        yellowPotInfo.getChildren().add(yellowPotLabel);
-        
-        rightBox.getChildren().addAll(yellowLabel, yellowPotInfo);
-        root.setRight(rightBox);
-        
-        model.setIdPlayer(0);
-        updateBoard(-1, -1, -1);
-        statusLabel.setText("Au tour de " + model.getCurrentPlayer().getName());
-        statusLabel.setTextFill(Color.RED);
-
-        // Si c'est un tour d'ordinateur, jouer automatiquement
-        if (model.getCurrentPlayer().getName().toLowerCase().contains("ordinateur")) {
-            Platform.runLater(() -> {
-                try {
-                    Thread.sleep(1000); // Attendre que tout soit bien initialisé
-                    if (board != null) {
-                        playComputerTurn();
-                    } else {
-                        System.out.println("Le plateau est toujours null, on ne peut pas jouer");
-                    }
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            });
+        // Réinitialiser l'interface si elle existe
+        if (gameBoard != null) {
+            BorderPane root = (BorderPane) gameBoard.getParent().getParent();
+            
+            // Recréer le conteneur gauche (pot rouge)
+            VBox leftBox = new VBox(20);
+            leftBox.setAlignment(Pos.CENTER);
+            leftBox.setPadding(new Insets(0, 20, 0, 0));
+            leftBox.setStyle("-fx-background-color: #333333;");
+            leftBox.setMinWidth(150);
+            
+            Label redLabel = new Label("Joueur 1 (Rouge)");
+            redLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: red;");
+            
+            redPotLabel = new Label("Pions restants : " + (redPot != null ? redPot.getRemainingPawns() : 0));
+            redPotLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: red;");
+            
+            VBox redPotInfo = new VBox(10);
+            redPotInfo.setAlignment(Pos.CENTER);
+            redPotInfo.setStyle("-fx-background-color: #444444; -fx-border-color: #666666; -fx-border-width: 2; -fx-padding: 20;");
+            redPotInfo.setMinHeight(100);
+            redPotInfo.getChildren().add(redPotLabel);
+            
+            leftBox.getChildren().addAll(redLabel, redPotInfo);
+            root.setLeft(leftBox);
+            
+            // Recréer le conteneur droit (pot jaune)
+            VBox rightBox = new VBox(20);
+            rightBox.setAlignment(Pos.CENTER);
+            rightBox.setPadding(new Insets(0, 0, 0, 20));
+            rightBox.setStyle("-fx-background-color: #333333;");
+            rightBox.setMinWidth(150);
+            
+            Label yellowLabel = new Label("Joueur 2 (Jaune)");
+            yellowLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: yellow;");
+            
+            yellowPotLabel = new Label("Pions restants : " + (yellowPot != null ? yellowPot.getRemainingPawns() : 0));
+            yellowPotLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: yellow;");
+            
+            VBox yellowPotInfo = new VBox(10);
+            yellowPotInfo.setAlignment(Pos.CENTER);
+            yellowPotInfo.setStyle("-fx-background-color: #444444; -fx-border-color: #666666; -fx-border-width: 2; -fx-padding: 20;");
+            yellowPotInfo.setMinHeight(100);
+            yellowPotInfo.getChildren().add(yellowPotLabel);
+            
+            rightBox.getChildren().addAll(yellowLabel, yellowPotInfo);
+            root.setRight(rightBox);
+            
+            // Réinitialiser le plateau de jeu
+            updateBoard();
+            
+            // Réinitialiser les labels de statut
+            if (statusLabel != null) {
+                statusLabel.setText("Au tour de Joueur 1");
+                statusLabel.setTextFill(Color.WHITE);
+            }
+            
+            if (scoreLabel != null) {
+                scoreLabel.setText("Score: Joueur 1 (Rouge) : 0 - Joueur 2 (Jaune) : 0");
+            }
         }
     }
 
