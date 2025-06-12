@@ -1,6 +1,8 @@
 import boardifier.control.ActionPlayer;
+import boardifier.control.Controller;
 import boardifier.control.Decider;
 import boardifier.model.Model;
+import boardifier.model.action.ActionList;
 import boardifier.view.RootPane;
 import boardifier.view.View;
 import control.PuissanceXController;
@@ -23,12 +25,11 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
-import model.PuissanceXBoard;
-import model.PuissanceXStageModel;
-import model.Pawn;
-import model.PuissanceXPawnPot;
-import boardifier.model.action.ActionList;
 import model.ConsoleGameTracker;
+import model.Pawn;
+import model.PuissanceXBoard;
+import model.PuissanceXPawnPot;
+import model.PuissanceXStageModel;
 
 public class PuissanceXFX extends Application {
     private Model model;
@@ -56,83 +57,96 @@ public class PuissanceXFX extends Application {
     @Override
     public void start(Stage primaryStage) {
         createConfigScene(primaryStage);
-
-        // Gérer la fermeture de la fenêtre
+        
+        // Ajouter un gestionnaire pour la fermeture de la fenêtre
         primaryStage.setOnCloseRequest(event -> {
-            // Réinitialiser le singleton ConsoleGameTracker
+            // Réinitialiser complètement le ConsoleGameTracker
             ConsoleGameTracker.resetInstance();
             
-            // Réinitialiser le modèle et les composants du jeu
-            if (model != null) {
-                model.reset();
-            }
-            if (controller != null) {
-                controller.stopGame();
-            }
-            
-            // Réinitialiser les variables d'instance
-            model = null;
-            stageModel = null;
-            controller = null;
-            board = null;
-            gameBoard = null;
-            redPot = null;
-            yellowPot = null;
-            gameOver = false;
-            view = null;
-            gameStage = null;
-            
             // Fermer la fenêtre de jeu si elle est ouverte
-            if (gameStage != null && gameStage != primaryStage) {
+            if (gameStage != null) {
                 gameStage.close();
             }
+            
+            // Réinitialiser les variables statiques et les ressources
+            resetStaticResources();
         });
     }
 
     private void createConfigScene(Stage stage) {
         VBox configBox = new VBox(20);
-        configBox.setPadding(new Insets(40));
         configBox.setAlignment(Pos.CENTER);
+        configBox.setPadding(new Insets(20));
         configBox.setStyle("-fx-background-color: #333333;");
 
-        // Style pour les labels
-        String labelStyle = "-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: white;";
-        
-        // Mode de jeu
-        Label modeLabel = new Label("Mode de jeu:");
+        String labelStyle = "-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: white;";
+
+        Label modeLabel = new Label("Mode de jeu");
         modeLabel.setStyle(labelStyle);
         ComboBox<String> modeCombo = new ComboBox<>();
+        modeCombo.getItems().addAll("Joueur vs Joueur", "Joueur vs Ordinateur", "Ordinateur vs Ordinateur");
+        modeCombo.setValue("Joueur vs Ordinateur");
         modeCombo.setStyle("-fx-font-size: 14px;");
         modeCombo.setPrefWidth(300);
-        modeCombo.getItems().addAll("Joueur vs Joueur", "Joueur vs Ordinateur", "Ordinateur vs Ordinateur");
-        modeCombo.setValue("Joueur vs Joueur");
 
-        // Niveau de l'ordinateur
-        Label levelLabel = new Label("Niveau de l'ordinateur:");
-        levelLabel.setStyle(labelStyle);
-        ComboBox<String> levelCombo = new ComboBox<>();
-        levelCombo.setStyle("-fx-font-size: 14px;");
-        levelCombo.setPrefWidth(300);
-        levelCombo.getItems().addAll("Facile", "Moyen");
-        levelCombo.setValue("Facile");
+        // Niveau pour le joueur 1 (ou bot 1)
+        Label levelLabel1 = new Label("Niveau Joueur 1");
+        levelLabel1.setStyle(labelStyle);
+        ComboBox<String> levelCombo1 = new ComboBox<>();
+        levelCombo1.getItems().addAll("Humain", "Bot Facile", "Bot Moyen");
+        levelCombo1.setValue("Humain");
+        levelCombo1.setStyle("-fx-font-size: 14px;");
+        levelCombo1.setPrefWidth(300);
+        levelCombo1.setDisable(true); // Désactivé par défaut
 
-        // Dimensions du plateau
-        Label colsLabel = new Label("Nombre de colonnes (5-10):");
+        // Niveau pour le joueur 2 (ou bot 2)
+        Label levelLabel2 = new Label("Niveau Joueur 2");
+        levelLabel2.setStyle(labelStyle);
+        ComboBox<String> levelCombo2 = new ComboBox<>();
+        levelCombo2.getItems().addAll("Humain", "Bot Facile", "Bot Moyen");
+        levelCombo2.setValue("Bot Moyen");
+        levelCombo2.setStyle("-fx-font-size: 14px;");
+        levelCombo2.setPrefWidth(300);
+
+        // Gérer l'activation/désactivation des combos de niveau selon le mode
+        modeCombo.setOnAction(e -> {
+            switch (modeCombo.getValue()) {
+                case "Joueur vs Joueur":
+                    levelCombo1.setValue("Humain");
+                    levelCombo2.setValue("Humain");
+                    levelCombo1.setDisable(true);
+                    levelCombo2.setDisable(true);
+                    break;
+                case "Joueur vs Ordinateur":
+                    levelCombo1.setValue("Humain");
+                    levelCombo2.setValue("Bot Moyen");
+                    levelCombo1.setDisable(true);
+                    levelCombo2.setDisable(false);
+                    break;
+                case "Ordinateur vs Ordinateur":
+                    levelCombo1.setValue("Bot Moyen");
+                    levelCombo2.setValue("Bot Moyen");
+                    levelCombo1.setDisable(false);
+                    levelCombo2.setDisable(false);
+                    break;
+            }
+        });
+
+        Label colsLabel = new Label("Nombre de colonnes");
         colsLabel.setStyle(labelStyle);
-        Spinner<Integer> colsSpinner = new Spinner<>(5, 10, 7);
+        Spinner<Integer> colsSpinner = new Spinner<>(4, 12, 7);
         colsSpinner.setStyle("-fx-font-size: 14px;");
         colsSpinner.setPrefWidth(300);
-        
-        Label rowsLabel = new Label("Nombre de lignes (5-10):");
+
+        Label rowsLabel = new Label("Nombre de lignes");
         rowsLabel.setStyle(labelStyle);
-        Spinner<Integer> rowsSpinner = new Spinner<>(5, 10, 6);
+        Spinner<Integer> rowsSpinner = new Spinner<>(4, 12, 6);
         rowsSpinner.setStyle("-fx-font-size: 14px;");
         rowsSpinner.setPrefWidth(300);
 
-        // Nombre d'alignements
-        Label alignLabel = new Label("Nombre de pions à aligner:");
+        Label alignLabel = new Label("Nombre de pions à aligner");
         alignLabel.setStyle(labelStyle);
-        Spinner<Integer> alignSpinner = new Spinner<>(3, 6, 4);
+        Spinner<Integer> alignSpinner = new Spinner<>(3, 8, 4);
         alignSpinner.setStyle("-fx-font-size: 14px;");
         alignSpinner.setPrefWidth(300);
 
@@ -142,36 +156,41 @@ public class PuissanceXFX extends Application {
             nbCols = colsSpinner.getValue();
             nbRows = rowsSpinner.getValue();
             nbAlign = alignSpinner.getValue();
-            computerLevel = levelCombo.getValue().equals("Facile") ? 0 : 1;
             
-            initializeGame(modeCombo.getValue());
+            // Initialiser le jeu avec les niveaux choisis
+            String mode = modeCombo.getValue();
+            String level1 = levelCombo1.getValue();
+            String level2 = levelCombo2.getValue();
+            
+            initializeGame(mode, level1, level2);
             createGameScene();
         });
 
         configBox.getChildren().addAll(
             modeLabel, modeCombo,
-            levelLabel, levelCombo,
+            levelLabel1, levelCombo1,
+            levelLabel2, levelCombo2,
             colsLabel, colsSpinner,
             rowsLabel, rowsSpinner,
             alignLabel, alignSpinner,
             startButton
         );
 
-        Scene configScene = new Scene(configBox, 600, 400);
+        Scene configScene = new Scene(configBox, 600, 600);
         configScene.setFill(Color.web("#333333"));
         stage.setTitle("Puissance X");
         stage.setScene(configScene);
         stage.show();
     }
 
-    private void initializeGame(String gameMode) {
+    private void initializeGame(String gameMode, String level1, String level2) {
         model = new Model();
         gameStage = new Stage();
         RootPane rootPane = new RootPane();
         view = new View(model, gameStage, rootPane);
         rootPane.init(view.getGameStageView());
         
-        // Ajouter les joueurs selon le mode choisi
+        // Ajouter les joueurs selon le mode choisi et leurs niveaux
         switch (gameMode) {
             case "Joueur vs Joueur":
                 model.addHumanPlayer("Joueur 1");
@@ -179,65 +198,42 @@ public class PuissanceXFX extends Application {
                 break;
             case "Joueur vs Ordinateur":
                 model.addHumanPlayer("Joueur 1");
-                model.addComputerPlayer("Ordinateur");
+                if (level2.equals("Bot Facile")) {
+                    computerLevel = 0; // SmartDecider = facile
+                    model.addComputerPlayer("Ordinateur (Facile)");
+                } else {
+                    computerLevel = 1; // Decider = moyen
+                    model.addComputerPlayer("Ordinateur (Moyen)");
+                }
                 break;
             case "Ordinateur vs Ordinateur":
-                model.addComputerPlayer("Ordinateur 1");
-                model.addComputerPlayer("Ordinateur 2");
+                // Premier bot
+                if (level1.equals("Bot Facile")) {
+                    computerLevel = 0; // SmartDecider = facile
+                    model.addComputerPlayer("Ordinateur 1 (Facile)");
+                } else {
+                    computerLevel = 1; // Decider = moyen
+                    model.addComputerPlayer("Ordinateur 1 (Moyen)");
+                }
+                // Deuxième bot
+                if (level2.equals("Bot Facile")) {
+                    computerLevel = 0; // SmartDecider = facile
+                    model.addComputerPlayer("Ordinateur 2 (Facile)");
+                } else {
+                    computerLevel = 1; // Decider = moyen
+                    model.addComputerPlayer("Ordinateur 2 (Moyen)");
+                }
                 break;
         }
+        
+        // Créer le stage model et le controller
+        stageModel = new PuissanceXStageModel("main", model);
+        controller = new PuissanceXController(model, view);
+        model.setGameStage(stageModel);
 
-        try {
-            stageModel = new PuissanceXStageModel("stage1", model);
-            System.out.println("Initialisation du jeu...");
-            System.out.println("Dimensions: " + nbRows + "x" + nbCols + ", alignement: " + nbAlign);
-            
-            // Définir les dimensions AVANT de créer les éléments
-            stageModel.setDimensions(nbRows, nbCols, nbAlign);
-            
-            // Créer les éléments du jeu
-            stageModel.createElements(stageModel.getDefaultElementFactory());
-            
-            // S'assurer que le plateau est initialisé
-            board = stageModel.getBoard();
-            int attempts = 0;
-            while (board == null && attempts < 5) {
-                System.out.println("Tentative " + (attempts + 1) + " d'initialisation du plateau...");
-                try {
-                    Thread.sleep(500);
-                    board = stageModel.getBoard();
-                    attempts++;
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-            
-            if (board == null) {
-                System.out.println("ERREUR: Impossible d'initialiser le plateau après plusieurs tentatives");
-                return;
-            }
-            
-            System.out.println("Plateau initialisé avec succès. Plateau: " + (board != null ? "initialisé" : "non initialisé"));
-            
-            // Initialiser le modèle avec le stage
-            model.startGame(stageModel);
-            
-            // Créer et configurer le contrôleur
-            controller = new PuissanceXController(model, view);
-            
-            // Vérifier l'état final du plateau
-            System.out.println("État du plateau après initialisation:");
-            System.out.println("- board: " + (board != null ? "non null" : "null"));
-            System.out.println("- stageModel: " + (stageModel != null ? "non null" : "null"));
-            System.out.println("- stageModel.getBoard(): " + (stageModel.getBoard() != null ? "non null" : "null"));
-            
-            // Vérifier l'état du plateau dans le modèle
-            System.out.println("État du plateau dans le modèle:");
-            System.out.println("- stage: " + (model.getGameStage() != null ? "non null" : "null"));
-            System.out.println("- stage.getBoard(): " + (((PuissanceXStageModel)model.getGameStage()).getBoard() != null ? "non null" : "null"));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        // Créer le plateau
+        board = new PuissanceXBoard(80, 80, stageModel, nbRows, nbCols, nbAlign);
+        stageModel.setBoard(board);
     }
 
     private void createGameScene() {
@@ -356,33 +352,6 @@ public class PuissanceXFX extends Application {
         gameScene.setFill(Color.web("#333333"));
         gameStage.setTitle("Puissance X - Partie en cours");
         gameStage.setScene(gameScene);
-        
-        // Gérer la fermeture de la fenêtre de jeu
-        gameStage.setOnCloseRequest(event -> {
-            // Réinitialiser le singleton ConsoleGameTracker
-            ConsoleGameTracker.resetInstance();
-            
-            // Réinitialiser le modèle et les composants du jeu
-            if (model != null) {
-                model.reset();
-            }
-            if (controller != null) {
-                controller.stopGame();
-            }
-            
-            // Réinitialiser les variables d'instance
-            model = null;
-            stageModel = null;
-            controller = null;
-            board = null;
-            gameBoard = null;
-            redPot = null;
-            yellowPot = null;
-            gameOver = false;
-            view = null;
-            gameStage = null;
-        });
-        
         gameStage.show();
 
         // Si c'est un tour d'ordinateur, jouer automatiquement après que la scène soit initialisée
@@ -509,31 +478,19 @@ public class PuissanceXFX extends Application {
 
     private void playComputerTurn() {
         System.out.println("=== DEBUT playComputerTurn ===");
-        System.out.println("Joueur actuel: " + model.getCurrentPlayer().getName());
-        System.out.println("Niveau IA: " + (computerLevel == 0 ? "Facile" : "Moyen"));
         
-        if (gameOver) {
-            System.out.println("Jeu terminé, on ne joue pas");
-            return;
-        }
-        
-        // Vérifier l'état du plateau avant de créer l'IA
-        System.out.println("État du plateau avant création de l'IA:");
-        System.out.println("- board: " + (board != null ? "non null" : "null"));
-        System.out.println("- stageModel: " + (stageModel != null ? "non null" : "null"));
-        if (stageModel != null) {
-            System.out.println("- stageModel.getBoard(): " + (stageModel.getBoard() != null ? "non null" : "null"));
-        }
-        
-        // Créer l'IA avec le stage actuel
+        // Créer le decider approprié selon le niveau
         Decider decider;
         if (computerLevel == 0) {
-            decider = new PuissanceXDecider(model, controller);
-        } else {
+            // Niveau facile = SmartDecider
             decider = new PuissanceXSmartDecider(model, controller);
             ((PuissanceXSmartDecider) decider).setStage(stageModel);
+        } else {
+            // Niveau moyen = Decider
+            decider = new PuissanceXDecider(model, controller);
+            ((PuissanceXDecider) decider).setStage(stageModel);
         }
-        System.out.println("IA créée: " + decider.getClass().getSimpleName());
+        System.out.println("IA créée: " + decider.getClass().getSimpleName() + " (Niveau: " + (computerLevel == 0 ? "Facile" : "Moyen") + ")");
         
         // Vérifier l'état du plateau après création de l'IA
         System.out.println("État du plateau après création de l'IA:");
@@ -757,6 +714,25 @@ public class PuissanceXFX extends Application {
                 }
             });
         }
+    }
+
+    // Méthode pour réinitialiser les ressources statiques
+    private void resetStaticResources() {
+        // Réinitialiser le modèle et les composants du jeu
+        model = null;
+        stageModel = null;
+        controller = null;
+        board = null;
+        gameBoard = null;
+        redPot = null;
+        yellowPot = null;
+        gameOver = false;
+        view = null;
+        gameStage = null;
+        
+        // Réinitialiser les scores
+        scoreJoueur1 = 0;
+        scoreJoueur2 = 0;
     }
 
     public static void main(String[] args) {

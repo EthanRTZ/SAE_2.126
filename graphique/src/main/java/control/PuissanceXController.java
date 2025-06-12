@@ -56,7 +56,7 @@ public class PuissanceXController extends Controller {
         Player p = model.getCurrentPlayer();
         if (p.getType() == Player.COMPUTER) {
             System.out.println("COMPUTER IS PLAYING");
-            PuissanceXDecider decider = new PuissanceXDecider(model, this);
+            control.PuissanceXDecider decider = new control.PuissanceXDecider(model, this);
             ActionPlayer play = new ActionPlayer(model, this, decider, null);
             play.start();
             

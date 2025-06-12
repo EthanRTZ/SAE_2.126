@@ -26,10 +26,6 @@ public class ConsoleGameTracker {
         return instance;
     }
 
-    public static void resetInstance() {
-        instance = null;
-    }
-
     public void reset() {
         for (int i = 0; i < nbRows; i++) {
             for (int j = 0; j < nbCols; j++) {
@@ -38,11 +34,33 @@ public class ConsoleGameTracker {
         }
     }
 
+    // Réinitialise complètement l'instance, à utiliser lors de la fermeture du jeu
+    public static void resetInstance() {
+        instance = null;
+    }
+
     public void updateGrid(int[][] newGrid) {
         for (int i = 0; i < nbRows; i++) {
             System.arraycopy(newGrid[i], 0, grid[i], 0, nbCols);
         }
         printGrid();
+    }
+
+    private void printGrid() {
+        System.out.println("\nÉtat actuel du plateau (Console Tracker):");
+        for (int i = 0; i < nbRows; i++) {
+            for (int j = 0; j < nbCols; j++) {
+                if (grid[i][j] == -1) {
+                    System.out.print(". ");
+                } else if (grid[i][j] == Pawn.PAWN_RED) {
+                    System.out.print("R ");
+                } else {
+                    System.out.print("Y ");
+                }
+            }
+            System.out.println();
+        }
+        System.out.println();
     }
 
     public boolean checkWin(int row, int col, int playerColor) {
@@ -159,21 +177,5 @@ public class ConsoleGameTracker {
         }
 
         return false;
-    }
-
-    private void printGrid() {
-        System.out.println("\nÉtat actuel du plateau (Console Tracker):");
-        for (int i = 0; i < nbRows; i++) {
-            for (int j = 0; j < nbCols; j++) {
-                String symbol = switch (grid[i][j]) {
-                    case Pawn.PAWN_RED -> "R";
-                    case Pawn.PAWN_YELLOW -> "Y";
-                    default -> ".";
-                };
-                System.out.print(symbol + " ");
-            }
-            System.out.println();
-        }
-        System.out.println();
     }
 } 
