@@ -1,7 +1,9 @@
 package control;
 
+import boardifier.control.ActionFactory;
 import boardifier.control.Controller;
 import boardifier.control.Decider;
+import boardifier.model.GameElement;
 import boardifier.model.Model;
 import boardifier.model.action.ActionList;
 import java.util.Calendar;
@@ -13,210 +15,303 @@ import model.PuissanceXStageModel;
 
 public class PuissanceXDecider extends Decider {
     private static final Random random = new Random(Calendar.getInstance().getTimeInMillis());
-    private static final int WIN_SCORE = 100000;
-    private static final int BLOCK_SCORE = 50000;
+    private static final int WIN_SCORE = 10000;
+    private static final int BLOCK_SCORE = 8000;
     private static final int THREE_IN_ROW_SCORE = 1000;
-    private static final int TWO_IN_ROW_SCORE = 100;
-    private static final int CENTER_COLUMN_BONUS = 50;
-    private static final int DEPTH = 4;
-    private PuissanceXStageModel stage;
+    private static final int TWO_IN_ROW_SCORE = 700;
+    private static final int CENTER_COLUMN_BONUS = 100;
+    private static final int THREAT_SCORE = 2000;
+    private static final int DEPTH = 3;
 
     public PuissanceXDecider(Model model, Controller control) {
         super(model, control);
     }
 
-    public void setStage(PuissanceXStageModel stage) {
-        this.stage = stage;
-    }
-
-    @Override
-    public ActionList decide() {
-        PuissanceXBoard board = stage.getBoard();
-        int currentPlayer = model.getIdPlayer();
-        int color = currentPlayer == 0 ? Pawn.PAWN_RED : Pawn.PAWN_YELLOW;
+    private int evaluateColumn(PuissanceXBoard board, int col, int playerId) {
+        if (board.isColumnFull(col)) return Integer.MIN_VALUE;
         
-        // Vérifier d'abord les coups gagnants directs
-        for (int col = 0; col < board.getNbCols(); col++) {
-            if (!board.isColumnFull(col)) {
-                int row = board.getFirstEmptyRow(col);
-                board.getGrid()[row][col] = color;
-                if (board.checkWin(row, col, color)) {
-                    board.getGrid()[row][col] = -1;
-                    return playMove(board, col, color);
-                }
-                board.getGrid()[row][col] = -1;
-            }
-        }
-        
-        // Vérifier les coups qui bloquent une victoire adverse
-        int opponentColor = color == Pawn.PAWN_RED ? Pawn.PAWN_YELLOW : Pawn.PAWN_RED;
-        for (int col = 0; col < board.getNbCols(); col++) {
-            if (!board.isColumnFull(col)) {
-                int row = board.getFirstEmptyRow(col);
-                board.getGrid()[row][col] = opponentColor;
-                if (board.checkWin(row, col, opponentColor)) {
-                    board.getGrid()[row][col] = -1;
-                    return playMove(board, col, color);
-                }
-                board.getGrid()[row][col] = -1;
-            }
-        }
-        
-        // Utiliser l'algorithme minimax pour trouver le meilleur coup
-        int bestScore = Integer.MIN_VALUE;
-        int bestCol = -1;
-        
-        for (int col = 0; col < board.getNbCols(); col++) {
-            if (!board.isColumnFull(col)) {
-                int row = board.getFirstEmptyRow(col);
-                board.getGrid()[row][col] = color;
-                int score = minimax(board, DEPTH, false, color);
-                board.getGrid()[row][col] = -1;
-                
-                if (score > bestScore) {
-                    bestScore = score;
-                    bestCol = col;
-                }
-            }
-        }
-        
-        // Si aucun coup n'est trouvé, jouer au centre ou aléatoirement
-        if (bestCol == -1) {
-            int centerCol = board.getNbCols() / 2;
-            if (!board.isColumnFull(centerCol)) {
-                bestCol = centerCol;
-            } else {
-                do {
-                    bestCol = random.nextInt(board.getNbCols());
-                } while (board.isColumnFull(bestCol));
-            }
-        }
-        
-        return playMove(board, bestCol, color);
-    }
-
-    private ActionList playMove(PuissanceXBoard board, int col, int color) {
         int row = board.getFirstEmptyRow(col);
-        board.getGrid()[row][col] = color;
-        
-        PuissanceXPawnPot pot = color == Pawn.PAWN_RED ? stage.getRedPot() : stage.getYellowPot();
-        pot.removeElement(null);
-        
-        return new ActionList();
-    }
-
-    private int minimax(PuissanceXBoard board, int depth, boolean isMaximizing, int playerColor) {
-        int opponentColor = playerColor == Pawn.PAWN_RED ? Pawn.PAWN_YELLOW : Pawn.PAWN_RED;
-        
-        // Vérifier les conditions de fin de jeu
-        if (depth == 0) {
-            return evaluateBoard(board, playerColor);
-        }
-        
-        if (isMaximizing) {
-            int maxScore = Integer.MIN_VALUE;
-            for (int col = 0; col < board.getNbCols(); col++) {
-                if (!board.isColumnFull(col)) {
-                    int row = board.getFirstEmptyRow(col);
-                    board.getGrid()[row][col] = playerColor;
-                    
-                    // Vérifier la victoire immédiate
-                    if (board.checkWin(row, col, playerColor)) {
-                        board.getGrid()[row][col] = -1;
-                        return WIN_SCORE;
-                    }
-                    
-                    int score = minimax(board, depth - 1, false, playerColor);
-                    board.getGrid()[row][col] = -1;
-                    maxScore = Math.max(maxScore, score);
-                }
-            }
-            return maxScore;
-        } else {
-            int minScore = Integer.MAX_VALUE;
-            for (int col = 0; col < board.getNbCols(); col++) {
-                if (!board.isColumnFull(col)) {
-                    int row = board.getFirstEmptyRow(col);
-                    board.getGrid()[row][col] = opponentColor;
-                    
-                    // Vérifier la défaite immédiate
-                    if (board.checkWin(row, col, opponentColor)) {
-                        board.getGrid()[row][col] = -1;
-                        return -WIN_SCORE;
-                    }
-                    
-                    int score = minimax(board, depth - 1, true, playerColor);
-                    board.getGrid()[row][col] = -1;
-                    minScore = Math.min(minScore, score);
-                }
-            }
-            return minScore;
-        }
-    }
-
-    private int evaluateBoard(PuissanceXBoard board, int playerColor) {
         int score = 0;
-        int opponentColor = playerColor == Pawn.PAWN_RED ? Pawn.PAWN_YELLOW : Pawn.PAWN_RED;
+        
+        int centerCol = board.getNbCols() / 2;
+        int distanceFromCenter = Math.abs(col - centerCol);
+        score += (board.getNbCols() / 2 - distanceFromCenter) * CENTER_COLUMN_BONUS;
+        
+        int[][] grid = board.getGrid();
+        int playerColor = (playerId == 0) ? Pawn.PAWN_YELLOW : Pawn.PAWN_RED;
+        grid[row][col] = playerColor;
+        
+        if (board.checkWin(row, col, playerColor)) {
+            score += WIN_SCORE;
+        }
+        
+        int opponentColor = (playerId == 0) ? Pawn.PAWN_RED : Pawn.PAWN_YELLOW;
+        grid[row][col] = opponentColor;
+        if (board.checkWin(row, col, opponentColor)) {
+            score += BLOCK_SCORE;
+        }
+
+        score += evaluateSequences(board, row, col, playerColor);
+        score += evaluateThreats(board, row, col, playerColor);
+
+        score -= evaluateOpponentOpportunities(board, row, col, playerColor);
+
+        grid[row][col] = -1;
+
+        return score;
+    }
+
+    private int evaluateSequences(PuissanceXBoard board, int row, int col, int playerColor) {
+        int score = 0;
+        // Définir toutes les directions possibles avec leur poids
+        int[][] directions = {
+            {1,0},   // vertical
+            {0,1},   // horizontal
+            {1,1},   // diagonale bas-droite
+            {1,-1},  // diagonale bas-gauche
+            {-1,1},  // diagonale haut-droite
+            {-1,-1}  // diagonale haut-gauche
+        };
+        int[][] grid = board.getGrid();
+
+        for (int[] dir : directions) {
+            int count = 1;
+            int empty = 0;
+            int blocked = 0;
+
+            // Vérifier dans la direction positive
+                for (int i = 1; i <= 3; i++) {
+                int newRow = row + i * dir[0];
+                int newCol = col + i * dir[1];
+
+                    if (newRow >= 0 && newRow < board.getNbRows() &&
+                        newCol >= 0 && newCol < board.getNbCols()) {
+                        if (grid[newRow][newCol] == playerColor) {
+                            count++;
+                        } else if (grid[newRow][newCol] == -1) {
+                            empty++;
+                    } else {
+                        blocked++;
+                        break;
+                    }
+                }
+            }
+
+            // Vérifier dans la direction négative
+            for (int i = 1; i <= 3; i++) {
+                int newRow = row - i * dir[0];
+                int newCol = col - i * dir[1];
+
+                if (newRow >= 0 && newRow < board.getNbRows() &&
+                    newCol >= 0 && newCol < board.getNbCols()) {
+                    if (grid[newRow][newCol] == playerColor) {
+                        count++;
+                    } else if (grid[newRow][newCol] == -1) {
+                        empty++;
+                    } else {
+                        blocked++;
+                        break;
+                    }
+                }
+            }
+
+            // Attribuer des scores en fonction du nombre de pions alignés et des cases vides
+            if (count >= 3 && empty >= 1) {
+                score += THREE_IN_ROW_SCORE * (4 - blocked); // Bonus si moins bloqué
+            }
+            if (count >= 2 && empty >= 2) {
+                score += TWO_IN_ROW_SCORE * (4 - blocked);
+            }
+            // Bonus pour les séquences au centre
+            if (Math.abs(col - board.getNbCols()/2) <= 1) {
+                score += score * 0.2; // 20% bonus pour les positions centrales
+            }
+        }
+
+        return score;
+    }
+
+    private int evaluateOpponentOpportunities(PuissanceXBoard board, int row, int col, int playerColor) {
+        int score = 0;
+        int opponentColor = (playerColor == Pawn.PAWN_YELLOW) ? Pawn.PAWN_RED : Pawn.PAWN_YELLOW;
+        int[][] grid = board.getGrid();
+
+        grid[row][col] = opponentColor;
+
+        score += evaluateSequences(board, row, col, opponentColor);
+
+        for (int c = 0; c < board.getNbCols(); c++) {
+            if (!board.isColumnFull(c)) {
+                int r = board.getFirstEmptyRow(c);
+                grid[r][c] = opponentColor;
+                if (board.checkWin(r, c, opponentColor)) {
+                    score += BLOCK_SCORE + 2000;
+                }
+
+                grid[r][c] = -1;
+            }
+        }
+
+        grid[row][col] = -1;
+        return score;
+    }
+
+    private int evaluateThreats(PuissanceXBoard board, int row, int col, int playerColor) {
+        int score = 0;
         int[][] grid = board.getGrid();
         
-        // Évaluer les séquences horizontales
-        for (int row = 0; row < board.getNbRows(); row++) {
-            for (int col = 0; col < board.getNbCols() - 3; col++) {
-                score += evaluateSequence(grid, row, col, 0, 1, playerColor, opponentColor);
+        for (int c = Math.max(0, col - 3); c <= Math.min(board.getNbCols() - 1, col + 3); c++) {
+            if (c == col) continue;
+            int r = board.getFirstEmptyRow(c);
+            if (r != -1) {
+                grid[r][c] = playerColor;
+                if (board.checkWin(r, c, playerColor)) {
+                    score += THREAT_SCORE;
+                }
+                grid[r][c] = -1;
             }
         }
         
-        // Évaluer les séquences verticales
-        for (int row = 0; row < board.getNbRows() - 3; row++) {
-            for (int col = 0; col < board.getNbCols(); col++) {
-                score += evaluateSequence(grid, row, col, 1, 0, playerColor, opponentColor);
+        if (row > 0) {
+            grid[row-1][col] = playerColor;
+            if (board.checkWin(row-1, col, playerColor)) {
+                score += THREAT_SCORE;
             }
+            grid[row-1][col] = -1;
         }
         
-        // Évaluer les séquences diagonales
-        for (int row = 0; row < board.getNbRows() - 3; row++) {
-            for (int col = 0; col < board.getNbCols() - 3; col++) {
-                score += evaluateSequence(grid, row, col, 1, 1, playerColor, opponentColor);
-                score += evaluateSequence(grid, row, col + 3, 1, -1, playerColor, opponentColor);
-            }
-        }
-        
-        // Bonus pour le centre
-        int centerCol = board.getNbCols() / 2;
-        for (int row = 0; row < board.getNbRows(); row++) {
-            if (grid[row][centerCol] == playerColor) {
-                score += CENTER_COLUMN_BONUS;
-            } else if (grid[row][centerCol] == opponentColor) {
-                score -= CENTER_COLUMN_BONUS;
+        int[][] directions = {{1,1}, {1,-1}};
+        for (int[] dir : directions) {
+            for (int i = -3; i <= 3; i++) {
+                if (i == 0) continue;
+                int newRow = row + i * dir[0];
+                int newCol = col + i * dir[1];
+                if (newRow >= 0 && newRow < board.getNbRows() && 
+                    newCol >= 0 && newCol < board.getNbCols()) {
+                    int r = board.getFirstEmptyRow(newCol);
+                    if (r != -1) {
+                        grid[r][newCol] = playerColor;
+                        if (board.checkWin(r, newCol, playerColor)) {
+                            score += THREAT_SCORE;
+                        }
+                        grid[r][newCol] = -1;
+                    }
+                }
             }
         }
         
         return score;
     }
 
-    private int evaluateSequence(int[][] grid, int startRow, int startCol, int deltaRow, int deltaCol, int playerColor, int opponentColor) {
-        int playerCount = 0;
-        int opponentCount = 0;
-        int emptyCount = 0;
+    @Override
+    public ActionList decide() {
+        PuissanceXStageModel stageModel = (PuissanceXStageModel) model.getGameStage();
+        PuissanceXBoard board = stageModel.getBoard();
+        PuissanceXPawnPot pot = model.getIdPlayer() == 0 ? stageModel.getYellowPot() : stageModel.getRedPot();
+        GameElement pawn = null;
+        int rowDest = -1;
+        int colDest = -1;
+        int bestCol = -1;
+
+        int playerColor = (model.getIdPlayer() == 0) ? Pawn.PAWN_YELLOW : Pawn.PAWN_RED;
+
+        // 1. First, check for immediate winning moves
+        for (int col = 0; col < board.getNbCols(); col++) {
+            if (!board.isColumnFull(col)) {
+                int row = board.getFirstEmptyRow(col);
+                board.getGrid()[row][col] = playerColor;
+                if (board.checkWin(row, col, playerColor)) {
+                    board.getGrid()[row][col] = -1;
+                    bestCol = col;
+                    break;
+                }
+                board.getGrid()[row][col] = -1;
+            }
+        }
+
+        // 2. If no winning move, check for opponent's winning moves to block
+        int opponentColor = (model.getIdPlayer() == 0) ? Pawn.PAWN_RED : Pawn.PAWN_YELLOW;
+        if (bestCol == -1) {
+            for (int col = 0; col < board.getNbCols(); col++) {
+                if (!board.isColumnFull(col)) {
+                    int row = board.getFirstEmptyRow(col);
+                    board.getGrid()[row][col] = opponentColor;
+                    if (board.checkWin(row, col, opponentColor)) {
+                        board.getGrid()[row][col] = -1;
+                        bestCol = col;
+                        break;
+                    }
+                    board.getGrid()[row][col] = -1;
+                }
+            }
+        }
+
+        // 3. Otherwise, evaluate columns with heuristic
+        if (bestCol == -1) {
+            int bestScore = Integer.MIN_VALUE;
+            for (int col = 0; col < board.getNbCols(); col++) {
+                if (!board.isColumnFull(col)) {
+                    int score = evaluateColumnWithDepth(board, col, model.getIdPlayer(), DEPTH);
+                    if (score > bestScore) {
+                        bestScore = score;
+                        bestCol = col;
+                    }
+                }
+            }
+        }
+
+        // If no move found (very rare except if board is full), return null
+        if (bestCol == -1) return null;
+
+        // Find first available piece in player's pot
+        int row = board.getFirstEmptyRow(bestCol);
+        for (int i = 0; i < pot.getNbRows(); i++) {
+            if (!pot.isEmptyAt(0, i)) {
+                pawn = pot.getElement(0, i);
+                rowDest = row;
+                colDest = bestCol;
+                break;
+            }
+        }
+
+        if (pawn == null) return null;
+
+        ActionList actions = ActionFactory.generatePutInContainer(control, model, pawn, "PuissanceXboard", rowDest, colDest);
+        actions.setDoEndOfTurn(true);
+        return actions;
+    }
+
+
+    private int evaluateColumnWithDepth(PuissanceXBoard board, int col, int playerId, int depth) {
+        if (depth == 0) {
+            return evaluateColumn(board, col, playerId);
+        }
         
-        for (int i = 0; i < 4; i++) {
-            int row = startRow + i * deltaRow;
-            int col = startCol + i * deltaCol;
-            
-            if (grid[row][col] == playerColor) {
-                playerCount++;
-            } else if (grid[row][col] == opponentColor) {
-                opponentCount++;
-            } else {
-                emptyCount++;
+        int row = board.getFirstEmptyRow(col);
+        if (row == -1) return Integer.MIN_VALUE;
+        
+        int[][] grid = board.getGrid();
+        int playerColor = (playerId == 0) ? Pawn.PAWN_YELLOW : Pawn.PAWN_RED;
+        
+        grid[row][col] = playerColor;
+        
+        if (board.checkWin(row, col, playerColor)) {
+            grid[row][col] = -1;
+            return WIN_SCORE;
+        }
+        
+        int opponentId = (playerId + 1) % 2;
+        int bestOpponentScore = Integer.MIN_VALUE;
+        
+        for (int c = 0; c < board.getNbCols(); c++) {
+            if (!board.isColumnFull(c)) {
+                int score = evaluateColumnWithDepth(board, c, opponentId, depth - 1);
+                bestOpponentScore = Math.max(bestOpponentScore, score);
             }
         }
         
-        if (playerCount == 3 && emptyCount == 1) return THREE_IN_ROW_SCORE;
-        if (playerCount == 2 && emptyCount == 2) return TWO_IN_ROW_SCORE;
-        if (opponentCount == 3 && emptyCount == 1) return -THREE_IN_ROW_SCORE;
-        if (opponentCount == 2 && emptyCount == 2) return -TWO_IN_ROW_SCORE;
+        grid[row][col] = -1;
         
-        return 0;
+        return evaluateColumn(board, col, playerId) - bestOpponentScore / 2;
     }
 }

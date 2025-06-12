@@ -1,9 +1,7 @@
 package control;
 
-import boardifier.control.ActionFactory;
 import boardifier.control.Controller;
 import boardifier.control.Decider;
-import boardifier.model.GameElement;
 import boardifier.model.Model;
 import boardifier.model.action.ActionList;
 import java.util.Calendar;

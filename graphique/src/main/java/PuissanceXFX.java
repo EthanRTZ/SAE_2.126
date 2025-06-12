@@ -28,6 +28,7 @@ import model.PuissanceXStageModel;
 import model.Pawn;
 import model.PuissanceXPawnPot;
 import boardifier.model.action.ActionList;
+import model.ConsoleGameTracker;
 
 public class PuissanceXFX extends Application {
     private Model model;
@@ -55,6 +56,37 @@ public class PuissanceXFX extends Application {
     @Override
     public void start(Stage primaryStage) {
         createConfigScene(primaryStage);
+
+        // Gérer la fermeture de la fenêtre
+        primaryStage.setOnCloseRequest(event -> {
+            // Réinitialiser le singleton ConsoleGameTracker
+            ConsoleGameTracker.resetInstance();
+            
+            // Réinitialiser le modèle et les composants du jeu
+            if (model != null) {
+                model.reset();
+            }
+            if (controller != null) {
+                controller.stopGame();
+            }
+            
+            // Réinitialiser les variables d'instance
+            model = null;
+            stageModel = null;
+            controller = null;
+            board = null;
+            gameBoard = null;
+            redPot = null;
+            yellowPot = null;
+            gameOver = false;
+            view = null;
+            gameStage = null;
+            
+            // Fermer la fenêtre de jeu si elle est ouverte
+            if (gameStage != null && gameStage != primaryStage) {
+                gameStage.close();
+            }
+        });
     }
 
     private void createConfigScene(Stage stage) {
@@ -324,6 +356,33 @@ public class PuissanceXFX extends Application {
         gameScene.setFill(Color.web("#333333"));
         gameStage.setTitle("Puissance X - Partie en cours");
         gameStage.setScene(gameScene);
+        
+        // Gérer la fermeture de la fenêtre de jeu
+        gameStage.setOnCloseRequest(event -> {
+            // Réinitialiser le singleton ConsoleGameTracker
+            ConsoleGameTracker.resetInstance();
+            
+            // Réinitialiser le modèle et les composants du jeu
+            if (model != null) {
+                model.reset();
+            }
+            if (controller != null) {
+                controller.stopGame();
+            }
+            
+            // Réinitialiser les variables d'instance
+            model = null;
+            stageModel = null;
+            controller = null;
+            board = null;
+            gameBoard = null;
+            redPot = null;
+            yellowPot = null;
+            gameOver = false;
+            view = null;
+            gameStage = null;
+        });
+        
         gameStage.show();
 
         // Si c'est un tour d'ordinateur, jouer automatiquement après que la scène soit initialisée
@@ -470,7 +529,6 @@ public class PuissanceXFX extends Application {
         Decider decider;
         if (computerLevel == 0) {
             decider = new PuissanceXDecider(model, controller);
-            ((PuissanceXDecider) decider).setStage(stageModel);
         } else {
             decider = new PuissanceXSmartDecider(model, controller);
             ((PuissanceXSmartDecider) decider).setStage(stageModel);
@@ -511,17 +569,25 @@ public class PuissanceXFX extends Application {
         int currentPlayer = model.getIdPlayer();
         int color = currentPlayer == 0 ? Pawn.PAWN_RED : Pawn.PAWN_YELLOW;
         
-        // Trouver la dernière position jouée
+        // Trouver la dernière position jouée en cherchant la position la plus haute dans chaque colonne
         int lastRow = -1;
         int lastCol = -1;
-        for (int row = 0; row < board.getNbRows(); row++) {
-            for (int col = 0; col < board.getNbCols(); col++) {
+        
+        // Parcourir chaque colonne
+        for (int col = 0; col < board.getNbCols(); col++) {
+            // Chercher le pion le plus haut de la couleur actuelle
+            for (int row = 0; row < board.getNbRows(); row++) {
                 if (board.getGrid()[row][col] == color) {
-                    lastRow = row;
-                    lastCol = col;
+                    // Si c'est le premier pion trouvé ou s'il est plus haut que le précédent
+                    if (lastRow == -1 || row < lastRow) {
+                        lastRow = row;
+                        lastCol = col;
+                    }
+                    break; // Passer à la colonne suivante une fois qu'on a trouvé un pion
                 }
             }
         }
+        
         System.out.println("Dernière position jouée: row=" + lastRow + ", col=" + lastCol + ", color=" + color);
         
         updateBoard(lastRow, lastCol, color);
@@ -535,8 +601,19 @@ public class PuissanceXFX extends Application {
         
         VBox bottomBox = (VBox) ((BorderPane) gameBoard.getParent().getParent()).getBottom();
         
-        if (row != -1 && board.checkWin(row, col, color)) {
+        // Mettre à jour le tracker console
+        ConsoleGameTracker tracker = ConsoleGameTracker.getInstance(nbRows, nbCols, nbAlign);
+        tracker.updateGrid(board.getGrid());
+        
+        // Vérifier la victoire à la fois avec le board normal et le tracker console
+        boolean winBoard = row != -1 && board.checkWin(row, col, color);
+        boolean winTracker = row != -1 && tracker.checkWin(row, col, color);
+        
+        if (winBoard || winTracker) {
             System.out.println("Victoire détectée!");
+            if (winBoard) System.out.println("- Détectée par le plateau");
+            if (winTracker) System.out.println("- Détectée par le tracker console");
+            
             gameOver = true;
             String gagnant = model.getCurrentPlayer().getName();
             if (color == Pawn.PAWN_RED) {
@@ -554,6 +631,7 @@ public class PuissanceXFX extends Application {
             newGameButton.setStyle("-fx-font-size: 16px; -fx-padding: 10 20 10 20; -fx-background-color: #444444; -fx-text-fill: white; -fx-border-color: #666666;");
             newGameButton.setOnAction(e -> {
                 resetGame();
+                tracker.reset();
                 bottomBox.getChildren().clear();
                 statusLabel.setTextFill(Color.WHITE);
             });
@@ -571,6 +649,7 @@ public class PuissanceXFX extends Application {
             newGameButton.setStyle("-fx-font-size: 16px; -fx-padding: 10 20 10 20; -fx-background-color: #444444; -fx-text-fill: white; -fx-border-color: #666666;");
             newGameButton.setOnAction(e -> {
                 resetGame();
+                tracker.reset();
                 bottomBox.getChildren().clear();
                 statusLabel.setTextFill(Color.WHITE);
             });
@@ -662,6 +741,22 @@ public class PuissanceXFX extends Application {
         updateBoard(-1, -1, -1);
         statusLabel.setText("Au tour de " + model.getCurrentPlayer().getName());
         statusLabel.setTextFill(Color.RED);
+
+        // Si c'est un tour d'ordinateur, jouer automatiquement
+        if (model.getCurrentPlayer().getName().toLowerCase().contains("ordinateur")) {
+            Platform.runLater(() -> {
+                try {
+                    Thread.sleep(1000); // Attendre que tout soit bien initialisé
+                    if (board != null) {
+                        playComputerTurn();
+                    } else {
+                        System.out.println("Le plateau est toujours null, on ne peut pas jouer");
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            });
+        }
     }
 
     public static void main(String[] args) {

@@ -73,6 +73,8 @@ public class PuissanceXBoard extends ContainerElement {
 
     // Vérifie si un joueur a gagné
     public boolean checkWin(int row, int col, int playerColor) {
+        System.out.println("PuissanceXBoard - Vérification de victoire pour : ligne=" + row + ", colonne=" + col + ", couleur=" + (playerColor == Pawn.PAWN_YELLOW ? "JAUNE" : "ROUGE"));
+
         // Vérifier horizontalement
         int count = 0;
         // Vérifier à gauche du pion placé
@@ -84,6 +86,7 @@ public class PuissanceXBoard extends ContainerElement {
             count++;
         }
         if (count >= nbAlign) {
+            System.out.println("PuissanceXBoard - Victoire horizontale détectée !");
             return true;
         }
 
@@ -98,6 +101,7 @@ public class PuissanceXBoard extends ContainerElement {
             count++;
         }
         if (count >= nbAlign) {
+            System.out.println("PuissanceXBoard - Victoire verticale détectée !");
             return true;
         }
 
@@ -112,6 +116,7 @@ public class PuissanceXBoard extends ContainerElement {
             count++;
         }
         if (count >= nbAlign) {
+            System.out.println("PuissanceXBoard - Victoire diagonale \\ détectée !");
             return true;
         }
 
@@ -126,7 +131,79 @@ public class PuissanceXBoard extends ContainerElement {
             count++;
         }
         if (count >= nbAlign) {
+            System.out.println("PuissanceXBoard - Victoire diagonale / détectée !");
             return true;
+        }
+
+        // Vérification supplémentaire de toutes les directions
+        for (int startRow = 0; startRow < nbRows; startRow++) {
+            for (int startCol = 0; startCol < nbCols; startCol++) {
+                if (grid[startRow][startCol] == playerColor) {
+                    // Vérifier horizontalement
+                    if (startCol <= nbCols - nbAlign) {
+                        count = 1;
+                        for (int k = 1; k < nbAlign; k++) {
+                            if (grid[startRow][startCol + k] == playerColor) {
+                                count++;
+                            } else {
+                                break;
+                            }
+                        }
+                        if (count >= nbAlign) {
+                            System.out.println("PuissanceXBoard - Victoire horizontale détectée (vérification supplémentaire) !");
+                            return true;
+                        }
+                    }
+                    
+                    // Vérifier verticalement
+                    if (startRow <= nbRows - nbAlign) {
+                        count = 1;
+                        for (int k = 1; k < nbAlign; k++) {
+                            if (grid[startRow + k][startCol] == playerColor) {
+                                count++;
+                            } else {
+                                break;
+                            }
+                        }
+                        if (count >= nbAlign) {
+                            System.out.println("PuissanceXBoard - Victoire verticale détectée (vérification supplémentaire) !");
+                            return true;
+                        }
+                    }
+                    
+                    // Vérifier diagonale descendante
+                    if (startRow <= nbRows - nbAlign && startCol <= nbCols - nbAlign) {
+                        count = 1;
+                        for (int k = 1; k < nbAlign; k++) {
+                            if (grid[startRow + k][startCol + k] == playerColor) {
+                                count++;
+                            } else {
+                                break;
+                            }
+                        }
+                        if (count >= nbAlign) {
+                            System.out.println("PuissanceXBoard - Victoire diagonale \\ détectée (vérification supplémentaire) !");
+                            return true;
+                        }
+                    }
+                    
+                    // Vérifier diagonale montante
+                    if (startRow >= nbAlign - 1 && startCol <= nbCols - nbAlign) {
+                        count = 1;
+                        for (int k = 1; k < nbAlign; k++) {
+                            if (grid[startRow - k][startCol + k] == playerColor) {
+                                count++;
+                            } else {
+                                break;
+                            }
+                        }
+                        if (count >= nbAlign) {
+                            System.out.println("PuissanceXBoard - Victoire diagonale / détectée (vérification supplémentaire) !");
+                            return true;
+                        }
+                    }
+                }
+            }
         }
 
         return false;
