@@ -15,113 +15,85 @@ import model.PuissanceXStageModel;
 
 public class PuissanceXSmartDecider extends Decider {
     private static final Random random = new Random(Calendar.getInstance().getTimeInMillis());
+    private PuissanceXStageModel stage;
 
     public PuissanceXSmartDecider(Model model, Controller control) {
         super(model, control);
     }
 
+    public void setStage(PuissanceXStageModel stage) {
+        this.stage = stage;
+    }
+
     @Override
     public ActionList decide() {
-        // Get game elements
-        PuissanceXStageModel stage = (PuissanceXStageModel)model.getGameStage();
+        // Obtenir le plateau et le joueur actuel
         PuissanceXBoard board = stage.getBoard();
-        PuissanceXPawnPot pot = null;
-        GameElement pawn = null;
-        int rowDest = 0;
-        int colDest = 0;
         
-        // Choose the right pawn pot based on the player
-        if (model.getIdPlayer() == 0) {
-            pot = stage.getYellowPot();
-        } else {
-            pot = stage.getRedPot();
+        // Vérifier si le plateau est initialisé
+        if (board == null) {
+            System.out.println("Le plateau n'est pas encore initialisé, on attend...");
+            try {
+                Thread.sleep(1000); // Attendre 1 seconde
+                board = stage.getBoard();
+                if (board == null) {
+                    System.out.println("Le plateau est toujours null après l'attente");
+                    return null;
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+                return null;
+            }
         }
-
-        // STEP 1: Check if we can win
-        boolean moveFound = false;
+        
+        int currentPlayer = model.getIdPlayer();
+        int color = currentPlayer == 0 ? Pawn.PAWN_RED : Pawn.PAWN_YELLOW;
+        int opponentColor = color == Pawn.PAWN_RED ? Pawn.PAWN_YELLOW : Pawn.PAWN_RED;
+        
+        // 1. Vérifier si l'IA peut gagner immédiatement
         for (int col = 0; col < board.getNbCols(); col++) {
-            // Check if the column is not full
             if (!board.isColumnFull(col)) {
-                // Find the first empty row in this column
                 int row = board.getFirstEmptyRow(col);
-                
-                // Simulate the move
-                int[][] grid = board.getGrid();
-                int playerColor;
-                if (model.getIdPlayer() == 0) {
-                    playerColor = Pawn.PAWN_RED;
-                } else {
-                    playerColor = Pawn.PAWN_YELLOW;
+                board.getGrid()[row][col] = color;
+                if (board.checkWin(row, col, color)) {
+                    // Retirer un pion du pot
+                    PuissanceXPawnPot pot = color == Pawn.PAWN_RED ? stage.getRedPot() : stage.getYellowPot();
+                    pot.removeElement(null);
+                    return new ActionList();
                 }
-                grid[row][col] = playerColor;
-                
-                // Check if this move wins
-                if (board.checkWin(row, col, playerColor)) {
-                    rowDest = row;
-                    colDest = col;
-                    moveFound = true;
-                    break;
-                }
-                
-                // Undo simulated move
-                grid[row][col] = -1;
-            }
-        }
-
-        // STEP 2: If we can't win, check if opponent can win
-        if (!moveFound) {
-            int opponentColor;
-            if (model.getIdPlayer() == 0) {
-                opponentColor = Pawn.PAWN_YELLOW;
-            } else {
-                opponentColor = Pawn.PAWN_RED;
-            }
-            
-            for (int col = 0; col < board.getNbCols(); col++) {
-                if (!board.isColumnFull(col)) {
-                    int row = board.getFirstEmptyRow(col);
-                    
-                    // Simulate opponent's move
-                    int[][] grid = board.getGrid();
-                    grid[row][col] = opponentColor;
-                    
-                    // Check if opponent can win
-                    if (board.checkWin(row, col, opponentColor)) {
-                        rowDest = row;
-                        colDest = col;
-                        moveFound = true;
-                        break;
-                    }
-                    
-                    // Undo simulated move
-                    grid[row][col] = -1;
-                }
-            }
-        }
-
-        // STEP 3: If no strategic move is found, play randomly
-        if (!moveFound) {
-            int col;
-            do {
-                col = random.nextInt(board.getNbCols());
-            } while (board.isColumnFull(col));
-            rowDest = board.getFirstEmptyRow(col);
-            colDest = col;
-        }
-
-        // Find an available pawn in the pot
-        for (int i = 0; i < pot.getNbRows(); i++) {
-            if (!pot.isEmptyAt(0, i)) {
-                pawn = pot.getElement(0, i);
-                break;
+                board.getGrid()[row][col] = -1;
             }
         }
         
-        if (pawn == null) return null;
-
-        // Create and return action to place the pawn
-        ActionList actions = ActionFactory.generatePutInContainer(control, model, pawn, "PuissanceXboard", rowDest, colDest);
-        actions.setDoEndOfTurn(true);
-        return actions;
+        // 2. Vérifier si l'adversaire peut gagner au prochain coup et le bloquer
+        for (int col = 0; col < board.getNbCols(); col++) {
+            if (!board.isColumnFull(col)) {
+                int row = board.getFirstEmptyRow(col);
+                board.getGrid()[row][col] = opponentColor;
+                if (board.checkWin(row, col, opponentColor)) {
+                    board.getGrid()[row][col] = color;
+                    // Retirer un pion du pot
+                    PuissanceXPawnPot pot = color == Pawn.PAWN_RED ? stage.getRedPot() : stage.getYellowPot();
+                    pot.removeElement(null);
+                    return new ActionList();
+                }
+                board.getGrid()[row][col] = -1;
+            }
+        }
+        
+        // 3. Si aucun coup stratégique n'est trouvé, jouer aléatoirement
+        int col;
+        do {
+            col = (int) (Math.random() * board.getNbCols());
+        } while (board.isColumnFull(col));
+        
+        int row = board.getFirstEmptyRow(col);
+        board.getGrid()[row][col] = color;
+        
+        // Retirer un pion du pot
+        PuissanceXPawnPot pot = color == Pawn.PAWN_RED ? stage.getRedPot() : stage.getYellowPot();
+        pot.removeElement(null);
+        
+        return new ActionList();
     }
 } 

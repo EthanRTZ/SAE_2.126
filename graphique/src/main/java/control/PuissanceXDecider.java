@@ -63,31 +63,69 @@ public class PuissanceXDecider extends Decider {
 
     private int evaluateSequences(PuissanceXBoard board, int row, int col, int playerColor) {
         int score = 0;
-        int[][] directions = {{1,0}, {0,1}, {1,1}, {1,-1}};
+        // Définir toutes les directions possibles avec leur poids
+        int[][] directions = {
+            {1,0},   // vertical
+            {0,1},   // horizontal
+            {1,1},   // diagonale bas-droite
+            {1,-1},  // diagonale bas-gauche
+            {-1,1},  // diagonale haut-droite
+            {-1,-1}  // diagonale haut-gauche
+        };
         int[][] grid = board.getGrid();
 
         for (int[] dir : directions) {
             int count = 1;
             int empty = 0;
+            int blocked = 0;
 
-            for (int direction = -1; direction <= 1; direction += 2) {
-                for (int i = 1; i <= 3; i++) {
-                    int newRow = row + direction * i * dir[0];
-                    int newCol = col + direction * i * dir[1];
+            // Vérifier dans la direction positive
+            for (int i = 1; i <= 3; i++) {
+                int newRow = row + i * dir[0];
+                int newCol = col + i * dir[1];
 
-                    if (newRow >= 0 && newRow < board.getNbRows() &&
-                        newCol >= 0 && newCol < board.getNbCols()) {
-                        if (grid[newRow][newCol] == playerColor) {
-                            count++;
-                        } else if (grid[newRow][newCol] == -1) {
-                            empty++;
-                        }
+                if (newRow >= 0 && newRow < board.getNbRows() &&
+                    newCol >= 0 && newCol < board.getNbCols()) {
+                    if (grid[newRow][newCol] == playerColor) {
+                        count++;
+                    } else if (grid[newRow][newCol] == -1) {
+                        empty++;
+                    } else {
+                        blocked++;
+                        break;
                     }
                 }
             }
 
-            if (count == 3 && empty >= 1) score += THREE_IN_ROW_SCORE;
-            if (count == 2 && empty >= 2) score += TWO_IN_ROW_SCORE;
+            // Vérifier dans la direction négative
+            for (int i = 1; i <= 3; i++) {
+                int newRow = row - i * dir[0];
+                int newCol = col - i * dir[1];
+
+                if (newRow >= 0 && newRow < board.getNbRows() &&
+                    newCol >= 0 && newCol < board.getNbCols()) {
+                    if (grid[newRow][newCol] == playerColor) {
+                        count++;
+                    } else if (grid[newRow][newCol] == -1) {
+                        empty++;
+                    } else {
+                        blocked++;
+                        break;
+                    }
+                }
+            }
+
+            // Attribuer des scores en fonction du nombre de pions alignés et des cases vides
+            if (count >= 3 && empty >= 1) {
+                score += THREE_IN_ROW_SCORE * (4 - blocked); // Bonus si moins bloqué
+            }
+            if (count >= 2 && empty >= 2) {
+                score += TWO_IN_ROW_SCORE * (4 - blocked);
+            }
+            // Bonus pour les séquences au centre
+            if (Math.abs(col - board.getNbCols()/2) <= 1) {
+                score += score * 0.2; // 20% bonus pour les positions centrales
+            }
         }
 
         return score;
@@ -169,6 +207,23 @@ public class PuissanceXDecider extends Decider {
     public ActionList decide() {
         PuissanceXStageModel stage = (PuissanceXStageModel) model.getGameStage();
         PuissanceXBoard board = stage.getBoard();
+        
+        // Vérifier si le plateau est initialisé
+        if (board == null) {
+            System.out.println("Le plateau n'est pas encore initialisé dans PuissanceXDecider, on attend...");
+            try {
+                Thread.sleep(1000); // Attendre 1 seconde
+                board = stage.getBoard();
+                if (board == null) {
+                    System.out.println("Le plateau est toujours null après l'attente dans PuissanceXDecider");
+                    return null;
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+
         PuissanceXPawnPot pot = (model.getIdPlayer() == 0) ? stage.getYellowPot() : stage.getRedPot();
 
         GameElement pawn = null;

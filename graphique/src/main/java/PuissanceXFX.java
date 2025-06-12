@@ -7,6 +7,7 @@ import control.PuissanceXController;
 import control.PuissanceXDecider;
 import control.PuissanceXSmartDecider;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -156,20 +157,74 @@ public class PuissanceXFX extends Application {
 
         try {
             stageModel = new PuissanceXStageModel("stage1", model);
+            System.out.println("Initialisation du jeu...");
+            System.out.println("Dimensions: " + nbRows + "x" + nbCols + ", alignement: " + nbAlign);
+            
+            // Définir les dimensions AVANT de créer les éléments
             stageModel.setDimensions(nbRows, nbCols, nbAlign);
+            
+            // Créer les éléments du jeu
             stageModel.createElements(stageModel.getDefaultElementFactory());
+            
+            // S'assurer que le plateau est initialisé
+            board = stageModel.getBoard();
+            int attempts = 0;
+            while (board == null && attempts < 5) {
+                System.out.println("Tentative " + (attempts + 1) + " d'initialisation du plateau...");
+                try {
+                    Thread.sleep(500);
+                    board = stageModel.getBoard();
+                    attempts++;
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            
+            if (board == null) {
+                System.out.println("ERREUR: Impossible d'initialiser le plateau après plusieurs tentatives");
+                return;
+            }
+            
+            System.out.println("Plateau initialisé avec succès. Plateau: " + (board != null ? "initialisé" : "non initialisé"));
+            
+            // Initialiser le modèle avec le stage
             model.startGame(stageModel);
             
+            // Créer et configurer le contrôleur
             controller = new PuissanceXController(model, view);
-            board = stageModel.getBoard();
             
-            model.setIdPlayer(0);
+            // Vérifier l'état final du plateau
+            System.out.println("État du plateau après initialisation:");
+            System.out.println("- board: " + (board != null ? "non null" : "null"));
+            System.out.println("- stageModel: " + (stageModel != null ? "non null" : "null"));
+            System.out.println("- stageModel.getBoard(): " + (stageModel.getBoard() != null ? "non null" : "null"));
+            
+            // Vérifier l'état du plateau dans le modèle
+            System.out.println("État du plateau dans le modèle:");
+            System.out.println("- stage: " + (model.getGameStage() != null ? "non null" : "null"));
+            System.out.println("- stage.getBoard(): " + (((PuissanceXStageModel)model.getGameStage()).getBoard() != null ? "non null" : "null"));
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     private void createGameScene() {
+        // Vérifier que le plateau est initialisé
+        if (board == null) {
+            System.out.println("Le plateau n'est pas initialisé dans createGameScene, on attend...");
+            try {
+                Thread.sleep(1000);
+                board = stageModel.getBoard();
+                if (board == null) {
+                    System.out.println("Le plateau est toujours null après l'attente");
+                    return;
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+                return;
+            }
+        }
+        
         BorderPane root = new BorderPane();
         root.setPadding(new Insets(40));
         root.setStyle("-fx-background-color: #333333;");
@@ -202,6 +257,7 @@ public class PuissanceXFX extends Application {
         gameBoard.setVgap(10);
         gameBoard.setAlignment(Pos.CENTER);
         gameBoard.setStyle("-fx-background-color: #333333;");
+        
         updateBoard();
         
         centerBox.getChildren().add(gameBoard);
@@ -270,9 +326,20 @@ public class PuissanceXFX extends Application {
         gameStage.setScene(gameScene);
         gameStage.show();
 
-        // Si c'est un tour d'ordinateur, jouer automatiquement
+        // Si c'est un tour d'ordinateur, jouer automatiquement après que la scène soit initialisée
         if (model.getCurrentPlayer().getName().toLowerCase().contains("ordinateur")) {
-            playComputerTurn();
+            Platform.runLater(() -> {
+                try {
+                    Thread.sleep(1000); // Attendre que tout soit bien initialisé
+                    if (board != null) {
+                        playComputerTurn();
+                    } else {
+                        System.out.println("Le plateau est toujours null, on ne peut pas jouer");
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            });
         }
     }
 
@@ -315,6 +382,49 @@ public class PuissanceXFX extends Application {
         }
     }
 
+    private void updateBoard(int lastRow, int lastCol, int color) {
+        gameBoard.getChildren().clear();
+        
+        for (int i = 0; i < nbRows; i++) {
+            for (int j = 0; j < nbCols; j++) {
+                // Créer un conteneur pour la cellule
+                StackPane cell = new StackPane();
+                cell.setPrefSize(70, 70);
+                cell.setStyle("-fx-background-color: #333333; -fx-border-color: #666666; -fx-border-width: 2;");
+                
+                // Créer le cercle pour le pion
+                Circle circle = new Circle(30);
+                circle.setFill(Color.WHITE);
+                circle.setStroke(Color.GRAY);
+                circle.setStrokeWidth(2);
+                
+                int value = board.getGrid()[i][j];
+                if (value == Pawn.PAWN_RED) {
+                    circle.setFill(Color.RED);
+                    circle.setStroke(Color.DARKRED);
+                } else if (value == Pawn.PAWN_YELLOW) {
+                    circle.setFill(Color.YELLOW);
+                    circle.setStroke(Color.GOLDENROD);
+                }
+                
+                cell.getChildren().add(circle);
+                
+                final int col = j;
+                cell.setOnMouseClicked(e -> {
+                    if (!gameOver && !model.getCurrentPlayer().getName().toLowerCase().contains("ordinateur")) {
+                        handlePlayerMove(col);
+                    }
+                });
+                
+                gameBoard.add(cell, j, i);
+            }
+        }
+        
+        // Mettre à jour les labels des pots
+        redPotLabel.setText("Pions restants : " + redPot.getRemainingPawns());
+        yellowPotLabel.setText("Pions restants : " + yellowPot.getRemainingPawns());
+    }
+
     private void handlePlayerMove(int col) {
         if (board.isColumnFull(col)) {
             statusLabel.setText("Cette colonne est pleine ! Choisissez une autre colonne.");
@@ -334,35 +444,98 @@ public class PuissanceXFX extends Application {
         board.getGrid()[row][col] = color;
         currentPot.removeElement(null); // Retirer un pion du pot
         
-        // Mettre à jour l'affichage des pots
-        if (color == Pawn.PAWN_RED) {
-            redPotLabel.setText("Pions restants : " + redPot.getRemainingPawns());
-        } else {
-            yellowPotLabel.setText("Pions restants : " + yellowPot.getRemainingPawns());
-        }
-        
-        updateBoard();
+        updateBoard(row, col, color);
         checkGameStatus(row, col, color);
     }
 
     private void playComputerTurn() {
-        Decider decider = computerLevel == 0 ? 
-            new PuissanceXDecider(model, controller) : 
-            new PuissanceXSmartDecider(model, controller);
-
-        ActionList actions = decider.decide();
-        if (actions != null && !actions.getActions().isEmpty()) {
-            ActionPlayer play = new ActionPlayer(model, controller, actions);
-            play.start();
-            updateBoard();
-            checkGameStatus(-1, -1, -1);
+        System.out.println("=== DEBUT playComputerTurn ===");
+        System.out.println("Joueur actuel: " + model.getCurrentPlayer().getName());
+        System.out.println("Niveau IA: " + (computerLevel == 0 ? "Facile" : "Moyen"));
+        
+        if (gameOver) {
+            System.out.println("Jeu terminé, on ne joue pas");
+            return;
         }
+        
+        // Vérifier l'état du plateau avant de créer l'IA
+        System.out.println("État du plateau avant création de l'IA:");
+        System.out.println("- board: " + (board != null ? "non null" : "null"));
+        System.out.println("- stageModel: " + (stageModel != null ? "non null" : "null"));
+        if (stageModel != null) {
+            System.out.println("- stageModel.getBoard(): " + (stageModel.getBoard() != null ? "non null" : "null"));
+        }
+        
+        // Créer l'IA avec le stage actuel
+        Decider decider;
+        if (computerLevel == 0) {
+            decider = new PuissanceXDecider(model, controller);
+        } else {
+            decider = new PuissanceXSmartDecider(model, controller);
+            ((PuissanceXSmartDecider) decider).setStage(stageModel);
+        }
+        System.out.println("IA créée: " + decider.getClass().getSimpleName());
+        
+        // Vérifier l'état du plateau après création de l'IA
+        System.out.println("État du plateau après création de l'IA:");
+        System.out.println("- board: " + (board != null ? "non null" : "null"));
+        System.out.println("- stageModel: " + (stageModel != null ? "non null" : "null"));
+        if (stageModel != null) {
+            System.out.println("- stageModel.getBoard(): " + (stageModel.getBoard() != null ? "non null" : "null"));
+        }
+        
+        ActionList actions = decider.decide();
+        System.out.println("Actions retournées par l'IA: " + (actions != null ? "non null" : "null"));
+        
+        if (actions == null) {
+            System.out.println("L'IA n'a pas pu jouer, on réessaie dans 1 seconde");
+            Platform.runLater(() -> {
+                try {
+                    Thread.sleep(1000);
+                    playComputerTurn();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            });
+            return;
+        }
+        
+        // Utiliser directement stageModel au lieu de récupérer un nouveau stage
+        System.out.println("État du plateau après récupération du stage:");
+        System.out.println("- stageModel: " + (stageModel != null ? "non null" : "null"));
+        if (stageModel != null) {
+            System.out.println("- stageModel.getBoard(): " + (stageModel.getBoard() != null ? "non null" : "null"));
+        }
+        
+        int currentPlayer = model.getIdPlayer();
+        int color = currentPlayer == 0 ? Pawn.PAWN_RED : Pawn.PAWN_YELLOW;
+        
+        // Trouver la dernière position jouée
+        int lastRow = -1;
+        int lastCol = -1;
+        for (int row = 0; row < board.getNbRows(); row++) {
+            for (int col = 0; col < board.getNbCols(); col++) {
+                if (board.getGrid()[row][col] == color) {
+                    lastRow = row;
+                    lastCol = col;
+                }
+            }
+        }
+        System.out.println("Dernière position jouée: row=" + lastRow + ", col=" + lastCol + ", color=" + color);
+        
+        updateBoard(lastRow, lastCol, color);
+        checkGameStatus(lastRow, lastCol, color);
+        System.out.println("=== FIN playComputerTurn ===");
     }
 
     private void checkGameStatus(int row, int col, int color) {
+        System.out.println("=== DEBUT checkGameStatus ===");
+        System.out.println("Paramètres: row=" + row + ", col=" + col + ", color=" + color);
+        
         VBox bottomBox = (VBox) ((BorderPane) gameBoard.getParent().getParent()).getBottom();
         
         if (row != -1 && board.checkWin(row, col, color)) {
+            System.out.println("Victoire détectée!");
             gameOver = true;
             String gagnant = model.getCurrentPlayer().getName();
             if (color == Pawn.PAWN_RED) {
@@ -385,8 +558,9 @@ public class PuissanceXFX extends Application {
             });
             
             bottomBox.getChildren().add(newGameButton);
-            
-        } else if (board.isBoardFull()) {
+        } 
+        else if (board.isBoardFull()) {
+            System.out.println("Match nul détecté!");
             gameOver = true;
             statusLabel.setText("Match nul !");
             statusLabel.setTextFill(Color.LIGHTGRAY);
@@ -401,16 +575,29 @@ public class PuissanceXFX extends Application {
             });
             
             bottomBox.getChildren().add(newGameButton);
-            
-        } else {
+        } 
+        else {
+            System.out.println("Jeu continue, passage au joueur suivant");
             model.setNextPlayer();
-            statusLabel.setText("Au tour de " + model.getCurrentPlayer().getName());
+            String nextPlayer = model.getCurrentPlayer().getName();
+            System.out.println("Prochain joueur: " + nextPlayer);
+            statusLabel.setText("Au tour de " + nextPlayer);
             statusLabel.setTextFill(model.getIdPlayer() == 0 ? Color.RED : Color.YELLOW);
             
-            if (model.getCurrentPlayer().getName().toLowerCase().contains("ordinateur")) {
-                playComputerTurn();
+            if (nextPlayer.toLowerCase().contains("ordinateur")) {
+                System.out.println("Prochain joueur est un ordinateur, on lance playComputerTurn dans 500ms");
+                // Ajouter un délai avant de jouer le prochain coup
+                new Thread(() -> {
+                    try {
+                        Thread.sleep(500);
+                        javafx.application.Platform.runLater(() -> playComputerTurn());
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }).start();
             }
         }
+        System.out.println("=== FIN checkGameStatus ===");
     }
 
     private void resetGame() {
@@ -471,7 +658,7 @@ public class PuissanceXFX extends Application {
         root.setRight(rightBox);
         
         model.setIdPlayer(0);
-        updateBoard();
+        updateBoard(-1, -1, -1);
         statusLabel.setText("Au tour de " + model.getCurrentPlayer().getName());
         statusLabel.setTextFill(Color.RED);
     }
