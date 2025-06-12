@@ -21,7 +21,7 @@ public class PawnLook extends ElementLook {
         
         circle = new Circle(25); // rayon de 25 pixels
         Pawn pawn = (Pawn) element;
-        if (pawn.getColor() == Pawn.PAWN_BLACK) {
+        if (pawn.getColor() == Pawn.PAWN_YELLOW) {
             circle.setFill(Color.YELLOW);
         } else {
             circle.setFill(Color.RED);

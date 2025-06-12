@@ -5,7 +5,7 @@ import boardifier.model.GameElement;
 import boardifier.model.GameStageModel;
 
 public class Pawn extends GameElement {
-    public static final int PAWN_BLACK = 0;
+    public static final int PAWN_YELLOW = 0;  // Anciennement PAWN_BLACK
     public static final int PAWN_RED = 1;
 
     private int number;

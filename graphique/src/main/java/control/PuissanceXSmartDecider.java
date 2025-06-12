@@ -49,9 +49,9 @@ public class PuissanceXSmartDecider extends Decider {
                 int[][] grid = board.getGrid();
                 int playerColor;
                 if (model.getIdPlayer() == 0) {
-                    playerColor = Pawn.PAWN_BLACK;
-                } else {
                     playerColor = Pawn.PAWN_RED;
+                } else {
+                    playerColor = Pawn.PAWN_YELLOW;
                 }
                 grid[row][col] = playerColor;
                 
@@ -72,9 +72,9 @@ public class PuissanceXSmartDecider extends Decider {
         if (!moveFound) {
             int opponentColor;
             if (model.getIdPlayer() == 0) {
-                opponentColor = Pawn.PAWN_RED;
+                opponentColor = Pawn.PAWN_YELLOW;
             } else {
-                opponentColor = Pawn.PAWN_BLACK;
+                opponentColor = Pawn.PAWN_RED;
             }
             
             for (int col = 0; col < board.getNbCols(); col++) {

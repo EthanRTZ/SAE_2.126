@@ -67,10 +67,10 @@ public class PuissanceXBoard extends ContainerElement {
     public boolean checkWin(int row, int col, int playerColor) {
         // Vérifier horizontalement
         int count = 0;
-        for (int j = 0; j < nbCols; j++) {
+        for (int j = Math.max(0, col - 3); j <= Math.min(nbCols - 1, col + 3); j++) {
             if (grid[row][j] == playerColor) {
                 count++;
-                if (count == nbAlign) return true;
+                if (count >= nbAlign) return true;
             } else {
                 count = 0;
             }
@@ -78,10 +78,10 @@ public class PuissanceXBoard extends ContainerElement {
 
         // Vérifier verticalement
         count = 0;
-        for (int i = 0; i < nbRows; i++) {
+        for (int i = Math.max(0, row - 3); i <= Math.min(nbRows - 1, row + 3); i++) {
             if (grid[i][col] == playerColor) {
                 count++;
-                if (count == nbAlign) return true;
+                if (count >= nbAlign) return true;
             } else {
                 count = 0;
             }
@@ -89,32 +89,32 @@ public class PuissanceXBoard extends ContainerElement {
 
         // Vérifier diagonalement (haut gauche vers bas droite)
         count = 0;
-        int startRow = row - Math.min(row, col);
-        int startCol = col - Math.min(row, col);
-        while (startRow < nbRows && startCol < nbCols) {
-            if (grid[startRow][startCol] == playerColor) {
-                count++;
-                if (count == nbAlign) return true;
-            } else {
-                count = 0;
+        for (int i = -3; i <= 3; i++) {
+            int r = row + i;
+            int c = col + i;
+            if (r >= 0 && r < nbRows && c >= 0 && c < nbCols) {
+                if (grid[r][c] == playerColor) {
+                    count++;
+                    if (count >= nbAlign) return true;
+                } else {
+                    count = 0;
+                }
             }
-            startRow++;
-            startCol++;
         }
 
         // Vérifier diagonalement (haut droite vers bas gauche)
         count = 0;
-        startRow = row - Math.min(row, nbCols - 1 - col);
-        startCol = col + Math.min(row, nbCols - 1 - col);
-        while (startRow < nbRows && startCol >= 0) {
-            if (grid[startRow][startCol] == playerColor) {
-                count++;
-                if (count == nbAlign) return true;
-            } else {
-                count = 0;
+        for (int i = -3; i <= 3; i++) {
+            int r = row + i;
+            int c = col - i;
+            if (r >= 0 && r < nbRows && c >= 0 && c < nbCols) {
+                if (grid[r][c] == playerColor) {
+                    count++;
+                    if (count >= nbAlign) return true;
+                } else {
+                    count = 0;
+                }
             }
-            startRow++;
-            startCol--;
         }
 
         return false;

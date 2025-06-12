@@ -30,10 +30,11 @@ public class PuissanceXController extends Controller {
         consoleIn = new BufferedReader(new InputStreamReader(System.in));
         useFileInput = false;
 
-        // Try to open match_nul.txt file
-
         // Initialize game scene
         try {
+            // Enregistrer le stage avant de le créer
+            StageFactory.registerModelAndView("main", "model.PuissanceXStageModel", "view.PuissanceXStageView");
+            
             PuissanceXStageModel stageModel = (PuissanceXStageModel) StageFactory.createStageModel("main", model);
             model.startGame(stageModel);
         } catch (GameException e) {
@@ -159,7 +160,7 @@ public class PuissanceXController extends Controller {
     public void endGame() {
         PuissanceXStageModel stageModel = (PuissanceXStageModel) model.getGameStage();
         int winner = stageModel.getWinner();
-        if (winner == Pawn.PAWN_BLACK) {
+        if (winner == Pawn.PAWN_YELLOW) {
             System.out.println("Player 1 wins!");
         } else if (winner == Pawn.PAWN_RED) {
             System.out.println("Player 2 wins!");

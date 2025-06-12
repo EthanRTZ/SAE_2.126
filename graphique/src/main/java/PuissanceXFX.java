@@ -48,6 +48,8 @@ public class PuissanceXFX extends Application {
     private Stage gameStage;
     private int scoreJoueur1 = 0;
     private int scoreJoueur2 = 0;
+    private Label redPotLabel;
+    private Label yellowPotLabel;
 
     @Override
     public void start(Stage primaryStage) {
@@ -218,7 +220,7 @@ public class PuissanceXFX extends Application {
         redPot = new PuissanceXPawnPot(80, 80, stageModel, (nbRows * nbCols + 1) / 2);
         stageModel.setRedPot(redPot);
         
-        Label redPotLabel = new Label("Pions restants : " + redPot.getRemainingPawns());
+        redPotLabel = new Label("Pions restants : " + redPot.getRemainingPawns());
         redPotLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: red;");
         
         VBox redPotInfo = new VBox(10);
@@ -243,7 +245,7 @@ public class PuissanceXFX extends Application {
         yellowPot = new PuissanceXPawnPot(80, 80, stageModel, nbRows * nbCols / 2);
         stageModel.setYellowPot(yellowPot);
         
-        Label yellowPotLabel = new Label("Pions restants : " + yellowPot.getRemainingPawns());
+        yellowPotLabel = new Label("Pions restants : " + yellowPot.getRemainingPawns());
         yellowPotLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: yellow;");
         
         VBox yellowPotInfo = new VBox(10);
@@ -294,7 +296,7 @@ public class PuissanceXFX extends Application {
                 if (value == Pawn.PAWN_RED) {
                     circle.setFill(Color.RED);
                     circle.setStroke(Color.DARKRED);
-                } else if (value == Pawn.PAWN_BLACK) {
+                } else if (value == Pawn.PAWN_YELLOW) {
                     circle.setFill(Color.YELLOW);
                     circle.setStroke(Color.GOLDENROD);
                 }
@@ -320,7 +322,7 @@ public class PuissanceXFX extends Application {
         }
 
         int row = board.getFirstEmptyRow(col);
-        int color = model.getIdPlayer() == 0 ? Pawn.PAWN_RED : Pawn.PAWN_BLACK;
+        int color = model.getIdPlayer() == 0 ? Pawn.PAWN_RED : Pawn.PAWN_YELLOW;
         
         // Vérifier s'il reste des pions dans le pot
         PuissanceXPawnPot currentPot = color == Pawn.PAWN_RED ? redPot : yellowPot;
@@ -331,6 +333,13 @@ public class PuissanceXFX extends Application {
         
         board.getGrid()[row][col] = color;
         currentPot.removeElement(null); // Retirer un pion du pot
+        
+        // Mettre à jour l'affichage des pots
+        if (color == Pawn.PAWN_RED) {
+            redPotLabel.setText("Pions restants : " + redPot.getRemainingPawns());
+        } else {
+            yellowPotLabel.setText("Pions restants : " + yellowPot.getRemainingPawns());
+        }
         
         updateBoard();
         checkGameStatus(row, col, color);
@@ -427,7 +436,7 @@ public class PuissanceXFX extends Application {
         Label redLabel = new Label("Joueur 1 (Rouge)");
         redLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: red;");
         
-        Label redPotLabel = new Label("Pions restants : " + redPot.getRemainingPawns());
+        redPotLabel = new Label("Pions restants : " + redPot.getRemainingPawns());
         redPotLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: red;");
         
         VBox redPotInfo = new VBox(10);
@@ -449,7 +458,7 @@ public class PuissanceXFX extends Application {
         Label yellowLabel = new Label("Joueur 2 (Jaune)");
         yellowLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: yellow;");
         
-        Label yellowPotLabel = new Label("Pions restants : " + yellowPot.getRemainingPawns());
+        yellowPotLabel = new Label("Pions restants : " + yellowPot.getRemainingPawns());
         yellowPotLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: yellow;");
         
         VBox yellowPotInfo = new VBox(10);

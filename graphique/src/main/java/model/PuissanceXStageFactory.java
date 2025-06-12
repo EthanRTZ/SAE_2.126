@@ -58,7 +58,7 @@ public class PuissanceXStageFactory extends StageElementsFactory {
         
         // Créer et ajouter les pions jaunes
         for (int i = 0; i < pawnsPerPlayerYellow; i++) {
-            Pawn yellowPawn = new Pawn(i + 1, Pawn.PAWN_BLACK, stageModel);
+            Pawn yellowPawn = new Pawn(i + 1, Pawn.PAWN_YELLOW, stageModel);
             pawns.add(yellowPawn);
             yellowPot.addElement(yellowPawn, 0, i);
         }

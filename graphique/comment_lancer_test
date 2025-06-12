@@ -1,0 +1,149 @@
+# Guide d'Exécution des Tests - Puissance X
+
+Ce document explique comment exécuter les tests du projet Puissance X avec JUnit 5 et Mockito.
+
+## Prérequis
+
+1. Java JDK 17 ou supérieur
+2. Maven
+3. JavaFX
+4. JUnit 5.8.2
+5. Mockito 4.5.1
+
+## Structure des Tests
+
+Les tests sont organisés en plusieurs catégories :
+
+```
+test/
+└── java/
+    ├── PuissanceXFXTest.java     // Tests de l'application principale
+    ├── model/
+    │   ├── PuissanceXBoardTest.java     // Tests du plateau avec Mockito
+    │   ├── PuissanceXStageModelTest.java // Tests du modèle avec Mockito
+    │   └── PuissanceXPawnPotTest.java   // Tests des pots de pions
+    ├── control/
+    │   └── GameControllerTest.java      // Tests du contrôleur avec Mockito
+    └── view/
+        ├── GameViewTest.java            // Tests de la vue
+        └── UIComponentsTest.java        // Tests des composants UI
+```
+
+## Installation des Dépendances
+
+1. Assurez-vous que Maven est installé :
+   ```bash
+   mvn --version
+   ```
+
+2. Installez les dépendances :
+   ```bash
+   mvn install
+   ```
+
+## Exécution des Tests
+
+### Tous les Tests
+Pour exécuter tous les tests :
+```bash
+mvn test
+```
+
+### Tests Spécifiques
+Pour exécuter une classe de test spécifique :
+```bash
+mvn test -Dtest=PuissanceXBoardTest
+```
+
+Pour exécuter une méthode de test spécifique :
+```bash
+mvn test -Dtest=PuissanceXBoardTest#testInitialisation
+```
+
+## Types de Tests
+
+1. Tests du Modèle avec Mockito :
+   - Mocks des composants du plateau
+   - Vérification des interactions
+   - Tests d'initialisation
+   - Tests de placement des pions
+   - Tests de détection des victoires
+
+2. Tests du Contrôleur avec Mockito :
+   - Mocks de la vue et du modèle
+   - Tests des actions utilisateur
+   - Vérification des changements d'état
+   - Tests de gestion des erreurs
+
+3. Tests de la Vue :
+   - Tests d'affichage
+   - Tests des composants UI
+   - Tests des interactions utilisateur
+
+## Utilisation de Mockito
+
+### Création de Mocks
+```java
+@Mock
+private PuissanceXBoard board;
+
+@InjectMocks
+private GameController controller;
+```
+
+### Configuration des Mocks
+```java
+when(board.placePawn(any(Pawn.class), eq(0))).thenReturn(true);
+when(stageModel.getCurrentPlayer()).thenReturn(1);
+```
+
+### Vérification des Interactions
+```java
+verify(board).placePawn(any(Pawn.class), eq(0));
+verify(view, times(2)).updateDisplay();
+verify(stageModel, never()).nextPlayer();
+```
+
+## Résolution des Problèmes Courants
+
+1. Erreur "No tests were found"
+   ```bash
+   mvn clean test
+   ```
+
+2. Erreur "MockitoExtension not found"
+   ```bash
+   mvn dependency:resolve
+   ```
+
+3. Erreur de compilation des tests
+   ```bash
+   mvn clean compile test
+   ```
+
+## Bonnes Pratiques avec Mockito
+
+1. Utilisez @ExtendWith(MockitoExtension.class) pour activer Mockito
+2. Préférez @InjectMocks pour l'injection automatique des mocks
+3. Utilisez les matchers appropriés (any(), eq(), etc.)
+4. Vérifiez les interactions importantes
+5. Évitez de mocker les types que vous ne possédez pas
+6. Utilisez when().thenReturn() pour les comportements attendus
+7. Utilisez verify() pour confirmer les interactions
+
+## Couverture des Tests
+
+Pour générer un rapport de couverture :
+```bash
+mvn jacoco:report
+```
+
+Le rapport sera disponible dans : `target/site/jacoco/index.html`
+
+## Maintenance des Tests
+
+1. Gardez les tests à jour avec le code
+2. Documentez les scénarios de test complexes
+3. Utilisez des noms de test descriptifs
+4. Suivez le pattern Arrange-Act-Assert
+5. Isolez les tests avec @BeforeEach

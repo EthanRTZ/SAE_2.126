@@ -100,7 +100,8 @@ public class PuissanceXStageModel extends GameStageModel {
                 Pawn pawn = (Pawn) element;
                 int color = pawn.getColor();
                 if (board.checkWin(row, col, color)) {
-                    winner = color;
+                    // Le gagnant est l'ID du joueur (0 ou 1) et non la couleur du pion
+                    winner = (color == Pawn.PAWN_RED) ? 0 : 1;
                     model.stopGame();
                 } else if (board.isBoardFull()) {
                     winner = -1;

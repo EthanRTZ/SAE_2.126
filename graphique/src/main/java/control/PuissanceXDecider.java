@@ -38,14 +38,14 @@ public class PuissanceXDecider extends Decider {
         score += (board.getNbCols() / 2 - distanceFromCenter) * CENTER_COLUMN_BONUS;
         
         int[][] grid = board.getGrid();
-        int playerColor = (playerId == 0) ? Pawn.PAWN_BLACK : Pawn.PAWN_RED;
+        int playerColor = (playerId == 0) ? Pawn.PAWN_YELLOW : Pawn.PAWN_RED;
         grid[row][col] = playerColor;
         
         if (board.checkWin(row, col, playerColor)) {
             score += WIN_SCORE;
         }
         
-        int opponentColor = (playerId == 0) ? Pawn.PAWN_RED : Pawn.PAWN_BLACK;
+        int opponentColor = (playerId == 0) ? Pawn.PAWN_RED : Pawn.PAWN_YELLOW;
         grid[row][col] = opponentColor;
         if (board.checkWin(row, col, opponentColor)) {
             score += BLOCK_SCORE;
@@ -95,7 +95,7 @@ public class PuissanceXDecider extends Decider {
 
     private int evaluateOpponentOpportunities(PuissanceXBoard board, int row, int col, int playerColor) {
         int score = 0;
-        int opponentColor = (playerColor == Pawn.PAWN_BLACK) ? Pawn.PAWN_RED : Pawn.PAWN_BLACK;
+        int opponentColor = (playerColor == Pawn.PAWN_YELLOW) ? Pawn.PAWN_RED : Pawn.PAWN_YELLOW;
         int[][] grid = board.getGrid();
 
         grid[row][col] = opponentColor;
@@ -176,8 +176,8 @@ public class PuissanceXDecider extends Decider {
         int colDest = 0;
         int bestCol = -1;
 
-        int playerColor = (model.getIdPlayer() == 0) ? Pawn.PAWN_BLACK : Pawn.PAWN_RED;
-        int opponentColor = (playerColor == Pawn.PAWN_BLACK) ? Pawn.PAWN_RED : Pawn.PAWN_BLACK;
+        int playerColor = (model.getIdPlayer() == 0) ? Pawn.PAWN_YELLOW : Pawn.PAWN_RED;
+        int opponentColor = (playerColor == Pawn.PAWN_YELLOW) ? Pawn.PAWN_RED : Pawn.PAWN_YELLOW;
 
         // 1. Check if AI can win immediately
         for (int col = 0; col < board.getNbCols(); col++) {
@@ -254,7 +254,7 @@ public class PuissanceXDecider extends Decider {
         if (row == -1) return Integer.MIN_VALUE;
         
         int[][] grid = board.getGrid();
-        int playerColor = (playerId == 0) ? Pawn.PAWN_BLACK : Pawn.PAWN_RED;
+        int playerColor = (playerId == 0) ? Pawn.PAWN_YELLOW : Pawn.PAWN_RED;
         
         grid[row][col] = playerColor;
         
