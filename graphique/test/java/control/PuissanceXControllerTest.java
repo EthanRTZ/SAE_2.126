@@ -32,8 +32,8 @@ public class PuissanceXControllerTest {
             controller = new PuissanceXController(model, null);
             
             // Ajouter des joueurs
-            model.addHumanPlayer("Player 1");
-            model.addHumanPlayer("Player 2");
+            model.addHumanPlayer("Player 1"); // Joueur 1 = Rouge
+            model.addHumanPlayer("Player 2"); // Joueur 2 = Jaune
             
             // Créer et configurer le stage
             stageModel = new PuissanceXStageModel("main", model);
@@ -46,6 +46,7 @@ public class PuissanceXControllerTest {
             yellowPot = stageModel.getYellowPot();
             redPot = stageModel.getRedPot();
         } catch (Exception e) {
+            e.printStackTrace();
             fail("Exception during setup: " + e.getMessage());
         }
     }
@@ -76,31 +77,39 @@ public class PuissanceXControllerTest {
                 }
             }
         }
+        System.out.println("Test Match Nul - Attendu : -1 (match nul), Obtenu : " + stageModel.getWinner());
         assertEquals(-1, stageModel.getWinner());
     }
     
     @Test
     void testVictoireJoueur1() {
-        // Aligner 4 pions rouges horizontalement
+        // Aligner 4 pions rouges horizontalement (joueur 1 = rouge = 1)
         int row = board.getNbRows() - 1;
+        
         for (int col = 0; col < 4; col++) {
-            Pawn pawn = (Pawn) redPot.getElement(0, col);
+            Pawn pawn = (Pawn) redPot.getElement(0, 0); // Pions rouges pour joueur 1
             board.addElement(pawn, row, col);
-            if (col < 3) model.setNextPlayer(); // Passer au joueur suivant sauf pour le dernier pion
         }
-        assertEquals(0, stageModel.getWinner());
+        
+        System.out.println("Test Victoire Joueur 1 - Attendu : 0 (joueur 1), Obtenu : " + stageModel.getWinner());
+        assertEquals(0, stageModel.getWinner()); // Joueur 1 (rouge) gagne
     }
     
     @Test
     void testVictoireJoueur2() {
-        // Aligner 4 pions jaunes verticalement
+        // Aligner 4 pions jaunes verticalement (joueur 2 = jaune = 0)
         int col = 0;
         model.setNextPlayer(); // Commencer avec le joueur 2
-        for (int row = 0; row < 4; row++) {
-            Pawn pawn = (Pawn) yellowPot.getElement(0, row);
+        
+        for (int row = board.getNbRows() - 1; row >= board.getNbRows() - 4; row--) {
+            Pawn pawn = (Pawn) yellowPot.getElement(0, 0); // Pions jaunes pour joueur 2
             board.addElement(pawn, row, col);
-            if (row < 3) model.setNextPlayer(); // Passer au joueur suivant sauf pour le dernier pion
+            if (row > board.getNbRows() - 4) {
+                model.setNextPlayer(); // Passer au joueur suivant sauf pour le dernier pion
+            }
         }
-        assertEquals(1, stageModel.getWinner());
+        
+        System.out.println("Test Victoire Joueur 2 - Attendu : 1 (joueur 2), Obtenu : " + stageModel.getWinner());
+        assertEquals(1, stageModel.getWinner()); // Joueur 2 (jaune) gagne
     }
 }

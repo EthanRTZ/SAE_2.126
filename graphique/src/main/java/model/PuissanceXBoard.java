@@ -1,6 +1,7 @@
 package model;
 
 import boardifier.model.ContainerElement;
+import boardifier.model.GameElement;
 import boardifier.model.GameStageModel;
 
 public class PuissanceXBoard extends ContainerElement {
@@ -20,6 +21,13 @@ public class PuissanceXBoard extends ContainerElement {
                 grid[i][j] = -1;
             }
         }
+    }
+
+    @Override
+    public void addElement(GameElement element, int row, int col) {
+        grid[row][col] = ((Pawn) element).getColor();
+        // Appeler super après la mise à jour de la grille
+        super.addElement(element, row, col);
     }
 
     public int getNbCols() {
@@ -67,54 +75,58 @@ public class PuissanceXBoard extends ContainerElement {
     public boolean checkWin(int row, int col, int playerColor) {
         // Vérifier horizontalement
         int count = 0;
-        for (int j = Math.max(0, col - 3); j <= Math.min(nbCols - 1, col + 3); j++) {
-            if (grid[row][j] == playerColor) {
-                count++;
-                if (count >= nbAlign) return true;
-            } else {
-                count = 0;
-            }
+        // Vérifier à gauche du pion placé
+        for (int j = col; j >= 0 && grid[row][j] == playerColor; j--) {
+            count++;
+        }
+        // Vérifier à droite du pion placé (sans recompter le pion placé)
+        for (int j = col + 1; j < nbCols && grid[row][j] == playerColor; j++) {
+            count++;
+        }
+        if (count >= nbAlign) {
+            return true;
         }
 
         // Vérifier verticalement
         count = 0;
-        for (int i = Math.max(0, row - 3); i <= Math.min(nbRows - 1, row + 3); i++) {
-            if (grid[i][col] == playerColor) {
-                count++;
-                if (count >= nbAlign) return true;
-            } else {
-                count = 0;
-            }
+        // Vérifier en haut du pion placé
+        for (int i = row; i >= 0 && grid[i][col] == playerColor; i--) {
+            count++;
+        }
+        // Vérifier en bas du pion placé (sans recompter le pion placé)
+        for (int i = row + 1; i < nbRows && grid[i][col] == playerColor; i++) {
+            count++;
+        }
+        if (count >= nbAlign) {
+            return true;
         }
 
         // Vérifier diagonalement (haut gauche vers bas droite)
         count = 0;
-        for (int i = -3; i <= 3; i++) {
-            int r = row + i;
-            int c = col + i;
-            if (r >= 0 && r < nbRows && c >= 0 && c < nbCols) {
-                if (grid[r][c] == playerColor) {
-                    count++;
-                    if (count >= nbAlign) return true;
-                } else {
-                    count = 0;
-                }
-            }
+        // Vérifier en haut à gauche du pion placé
+        for (int i = row, j = col; i >= 0 && j >= 0 && grid[i][j] == playerColor; i--, j--) {
+            count++;
+        }
+        // Vérifier en bas à droite du pion placé (sans recompter le pion placé)
+        for (int i = row + 1, j = col + 1; i < nbRows && j < nbCols && grid[i][j] == playerColor; i++, j++) {
+            count++;
+        }
+        if (count >= nbAlign) {
+            return true;
         }
 
         // Vérifier diagonalement (haut droite vers bas gauche)
         count = 0;
-        for (int i = -3; i <= 3; i++) {
-            int r = row + i;
-            int c = col - i;
-            if (r >= 0 && r < nbRows && c >= 0 && c < nbCols) {
-                if (grid[r][c] == playerColor) {
-                    count++;
-                    if (count >= nbAlign) return true;
-                } else {
-                    count = 0;
-                }
-            }
+        // Vérifier en haut à droite du pion placé
+        for (int i = row, j = col; i >= 0 && j < nbCols && grid[i][j] == playerColor; i--, j++) {
+            count++;
+        }
+        // Vérifier en bas à gauche du pion placé (sans recompter le pion placé)
+        for (int i = row + 1, j = col - 1; i < nbRows && j >= 0 && grid[i][j] == playerColor; i++, j--) {
+            count++;
+        }
+        if (count >= nbAlign) {
+            return true;
         }
 
         return false;
