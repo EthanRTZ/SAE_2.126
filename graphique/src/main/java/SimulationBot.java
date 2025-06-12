@@ -1,17 +1,15 @@
-import boardifier.control.Controller;
 import boardifier.control.Decider;
 import boardifier.model.Model;
 import boardifier.model.action.ActionList;
 import control.PuissanceXController;
 import control.PuissanceXDecider;
 import control.PuissanceXSmartDecider;
+import java.util.Scanner;
 import model.ConsoleGameTracker;
 import model.Pawn;
 import model.PuissanceXBoard;
 import model.PuissanceXPawnPot;
 import model.PuissanceXStageModel;
-
-import java.util.Scanner;
 
 public class SimulationBot {
     private Model model;
@@ -198,6 +196,8 @@ public class SimulationBot {
         System.out.println("=".repeat(50));
         System.out.println("Nombre de duels: " + nbDuels);
         System.out.println("Configuration: " + nbRows + "x" + nbCols + ", alignement: " + nbAlign);
+        System.out.println("lignes: " + nbRows);
+        System.out.println("colonnes: " + nbCols);
         System.out.println();
         System.out.println("Bot Facile (SmartDecider):");
         System.out.println("  Victoires: " + victoiresBotFacile + " (" + 
