@@ -8,10 +8,10 @@ import boardifier.model.Model;
 import boardifier.model.action.ActionList;
 import java.util.Calendar;
 import java.util.Random;
+import model.Pawn;
 import model.PuissanceXBoard;
 import model.PuissanceXPawnPot;
 import model.PuissanceXStageModel;
-import model.Pawn;
 
 public class PuissanceXSmartDecider extends Decider {
     private static final Random random = new Random(Calendar.getInstance().getTimeInMillis());
@@ -120,7 +120,7 @@ public class PuissanceXSmartDecider extends Decider {
         if (pawn == null) return null;
 
         // Create and return action to place the pawn
-        ActionList actions = ActionFactory.generatePutInContainer(model, pawn, "PuissanceXboard", rowDest, colDest);
+        ActionList actions = ActionFactory.generatePutInContainer(control, model, pawn, "PuissanceXboard", rowDest, colDest);
         actions.setDoEndOfTurn(true);
         return actions;
     }

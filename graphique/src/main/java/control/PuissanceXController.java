@@ -13,10 +13,10 @@ import boardifier.view.View;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import model.Pawn;
 import model.PuissanceXBoard;
 import model.PuissanceXPawnPot;
 import model.PuissanceXStageModel;
-import model.Pawn;
 
 public class PuissanceXController extends Controller {
     private BufferedReader consoleIn;
@@ -146,7 +146,7 @@ public class PuissanceXController extends Controller {
         if (pawn == null) return false;
 
         // Create action to place the pawn
-        ActionList actions = ActionFactory.generatePutInContainer(model, pawn, "PuissanceXboard", row, col);
+        ActionList actions = ActionFactory.generatePutInContainer(this, model, pawn, "PuissanceXboard", row, col);
         actions.setDoEndOfTurn(true);
         
         // Execute the action

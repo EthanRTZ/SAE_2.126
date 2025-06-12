@@ -2,27 +2,45 @@ package view;
 
 import boardifier.model.GameElement;
 import boardifier.view.ElementLook;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import model.Pawn;
 
 public class PawnLook extends ElementLook {
+    private Circle circle;
+
     public PawnLook(GameElement element) {
-        super(element, 3, 1);
-        updateShape();
+        super(element);
+        render();
     }
 
     @Override
-    public void render() {
-        updateShape();
+    protected void render() {
+        clearGroup();
+        clearShapes();
+        
+        circle = new Circle(25); // rayon de 25 pixels
+        Pawn pawn = (Pawn) element;
+        if (pawn.getColor() == Pawn.PAWN_BLACK) {
+            circle.setFill(Color.YELLOW);
+        } else {
+            circle.setFill(Color.RED);
+        }
+        circle.setStroke(Color.BLACK);
+        circle.setStrokeWidth(2);
+        
+        addShape(circle);
     }
 
-    private void updateShape() {
-        // Définir l'apparence du pion en fonction de sa couleur
+    @Override
+    public void onSelectionChange() {
         Pawn pawn = (Pawn) element;
-        String pawnSymbol = " ● ";
-        if (pawn.getColor() == Pawn.PAWN_BLACK) {
-            shape[0][0] = boardifier.view.ConsoleColor.YELLOW + pawnSymbol + boardifier.view.ConsoleColor.RESET;
+        if (pawn.isSelected()) {
+            circle.setStroke(Color.WHITE);
+            circle.setStrokeWidth(3);
         } else {
-            shape[0][0] = boardifier.view.ConsoleColor.RED + pawnSymbol + boardifier.view.ConsoleColor.RESET;
+            circle.setStroke(Color.BLACK);
+            circle.setStrokeWidth(2);
         }
     }
 } 

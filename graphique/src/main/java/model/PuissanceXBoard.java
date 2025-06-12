@@ -119,4 +119,13 @@ public class PuissanceXBoard extends ContainerElement {
 
         return false;
     }
+
+    // Réinitialise le plateau
+    public void clear() {
+        for (int i = 0; i < nbRows; i++) {
+            for (int j = 0; j < nbCols; j++) {
+                grid[i][j] = -1;
+            }
+        }
+    }
 } 
