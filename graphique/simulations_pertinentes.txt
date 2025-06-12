@@ -1,0 +1,136 @@
+SIMULATIONS PERTINENTES POUR ANALYSER LES PERFORMANCES DES BOTS
+================================================================
+
+1. SIMULATIONS DE BASE (RECOMMANDÉES EN PREMIER)
+================================================
+
+A) Configuration classique Puissance 4
+   - Nombre de duels: 100
+   - Lignes: 6
+   - Colonnes: 7
+   - Alignement: 4
+   - Pourquoi: Configuration standard du Puissance 4, permet de comparer avec les performances humaines
+
+B) Configuration Puissance 5
+   - Nombre de duels: 100
+   - Lignes: 6
+   - Colonnes: 7
+   - Alignement: 5
+   - Pourquoi: Teste la capacité des bots à penser plus loin
+
+2. SIMULATIONS DE ROBUSTESSE
+============================
+
+A) Plateaux plus grands
+   - Nombre de duels: 50
+   - Lignes: 8
+   - Colonnes: 10
+   - Alignement: 4
+   - Pourquoi: Teste la performance sur des plateaux plus complexes
+
+B) Plateaux plus petits
+   - Nombre de duels: 100
+   - Lignes: 4
+   - Colonnes: 5
+   - Alignement: 3
+   - Pourquoi: Teste la performance sur des configurations plus simples
+
+3. SIMULATIONS STATISTIQUES
+===========================
+
+A) Grand échantillon
+   - Nombre de duels: 1000
+   - Lignes: 6
+   - Colonnes: 7
+   - Alignement: 4
+   - Pourquoi: Donne des statistiques plus fiables et révèle les vraies tendances
+
+B) Échantillon moyen
+   - Nombre de duels: 500
+   - Lignes: 6
+   - Colonnes: 7
+   - Alignement: 4
+   - Pourquoi: Bon compromis entre précision et temps d'exécution
+
+4. SIMULATIONS DE STRESS
+========================
+
+A) Configuration critique
+   - Nombre de duels: 100
+   - Lignes: 5
+   - Colonnes: 5
+   - Alignement: 4
+   - Pourquoi: Plateau très contraint, teste la capacité d'adaptation
+
+B) Configuration asymétrique
+   - Nombre de duels: 100
+   - Lignes: 8
+   - Colonnes: 6
+   - Alignement: 4
+   - Pourquoi: Teste la performance sur des plateaux non carrés
+
+5. SIMULATIONS AVANCÉES
+=======================
+
+A) Configuration très grande
+   - Nombre de duels: 50
+   - Lignes: 10
+   - Colonnes: 12
+   - Alignement: 4
+   - Pourquoi: Teste les limites des algorithmes sur de très grands plateaux
+
+B) Configuration très petite
+   - Nombre de duels: 200
+   - Lignes: 3
+   - Colonnes: 4
+   - Alignement: 3
+   - Pourquoi: Teste la performance sur des configurations minimales
+
+C) Alignement difficile
+   - Nombre de duels: 100
+   - Lignes: 6
+   - Colonnes: 7
+   - Alignement: 6
+   - Pourquoi: Teste la capacité à aligner beaucoup de pions
+
+RECOMMANDATION DE PROGRESSION
+=============================
+
+1. Commencez par: 100 duels, 6x7, alignement 4 (configuration classique)
+2. Puis testez: 500 duels, 6x7, alignement 4 (statistiques plus fiables)
+3. Ensuite: 100 duels, 8x10, alignement 4 (plateau plus grand)
+4. Puis: 100 duels, 4x5, alignement 3 (plateau plus petit)
+5. Enfin: 100 duels, 6x7, alignement 5 (difficulté accrue)
+
+QUESTIONS À ANALYSER
+====================
+
+- Quel bot gagne le plus souvent ?
+- Y a-t-il une différence significative entre les bots ?
+- Comment les performances évoluent avec la taille du plateau ?
+- Quel bot s'adapte mieux aux différentes configurations ?
+- Quel bot est plus rapide (moins de coups moyens par partie) ?
+- Y a-t-il des configurations où un bot domine clairement l'autre ?
+
+PARAMÈTRES À ENTRER DANS LE SIMULATEUR
+======================================
+
+Pour chaque simulation, entrez les paramètres dans cet ordre:
+1. Nombre de duels à simuler
+2. Nombre de lignes
+3. Nombre de colonnes
+4. Nombre de pions à aligner
+
+Exemple pour la simulation A1:
+> Nombre de duels à simuler: 100
+> Nombre de lignes: 6
+> Nombre de colonnes: 7
+> Nombre de pions à aligner: 4
+
+NOTES IMPORTANTES
+=================
+
+- Les simulations avec plus de duels donnent des résultats plus fiables
+- Les plateaux plus grands peuvent prendre plus de temps à simuler
+- Gardez une trace des résultats pour comparer les performances
+- Analysez les pourcentages de victoire et le nombre moyen de coups par partie 

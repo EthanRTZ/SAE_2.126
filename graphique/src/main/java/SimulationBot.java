@@ -39,6 +39,8 @@ public class SimulationBot {
     }
     
     public void lancerSimulation() {
+        long tempsDebut = System.currentTimeMillis();
+        
         System.out.println("=== SIMULATION DE " + nbDuels + " DUELS ===");
         System.out.println("Configuration: " + nbRows + "x" + nbCols + ", alignement: " + nbAlign);
         System.out.println("Bot Facile vs Bot Moyen");
@@ -54,7 +56,10 @@ public class SimulationBot {
             }
         }
         
-        afficherResultatsFinaux();
+        long tempsFin = System.currentTimeMillis();
+        long tempsExecution = tempsFin - tempsDebut;
+        
+        afficherResultatsFinaux(tempsExecution);
     }
     
     private void jouerDuel() {
@@ -190,7 +195,7 @@ public class SimulationBot {
                           String.format("%.1f", (double)totalCoups/duelActuel));
     }
     
-    private void afficherResultatsFinaux() {
+    private void afficherResultatsFinaux(long tempsExecution) {
         System.out.println("\n" + "=".repeat(50));
         System.out.println("RÉSULTATS FINAUX DE LA SIMULATION");
         System.out.println("=".repeat(50));
@@ -214,6 +219,15 @@ public class SimulationBot {
         System.out.println("  Moyenne de coups par partie: " + 
                           String.format("%.1f", (double)totalCoups/nbDuels));
         System.out.println("  Total de coups joués: " + totalCoups);
+        
+        // Afficher le temps d'exécution de manière lisible
+        long secondes = tempsExecution / 1000;
+        long millisecondes = tempsExecution % 1000;
+        if (secondes > 0) {
+            System.out.println("  Temps d'exécution: " + secondes + "s " + millisecondes + "ms");
+        } else {
+            System.out.println("  Temps d'exécution: " + millisecondes + "ms");
+        }
         
         // Déterminer le gagnant
         if (victoiresBotFacile > victoiresBotMoyen) {
