@@ -470,6 +470,7 @@ public class PuissanceXFX extends Application {
         Decider decider;
         if (computerLevel == 0) {
             decider = new PuissanceXDecider(model, controller);
+            ((PuissanceXDecider) decider).setStage(stageModel);
         } else {
             decider = new PuissanceXSmartDecider(model, controller);
             ((PuissanceXSmartDecider) decider).setStage(stageModel);
