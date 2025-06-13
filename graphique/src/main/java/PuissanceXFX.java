@@ -180,6 +180,12 @@ public class PuissanceXFX extends Application {
         configScene.setFill(Color.web("#333333"));
         stage.setTitle("Puissance X");
         stage.setScene(configScene);
+        
+        // Permettre le redimensionnement et le plein écran
+        stage.setResizable(true);
+        stage.setMinWidth(500);
+        stage.setMinHeight(500);
+        
         stage.show();
     }
 
@@ -350,12 +356,35 @@ public class PuissanceXFX extends Application {
         bottomBox.setAlignment(Pos.CENTER);
         bottomBox.setPadding(new Insets(20, 0, 0, 0));
         bottomBox.setStyle("-fx-background-color: #333333;");
+        
+        // Ajouter un bouton pour basculer le plein écran
+        Button fullscreenButton = new Button("Plein écran (F11)");
+        fullscreenButton.setStyle("-fx-font-size: 14px; -fx-padding: 8 16 8 16; -fx-background-color: #555555; -fx-text-fill: white; -fx-border-color: #777777;");
+        fullscreenButton.setOnAction(e -> {
+            gameStage.setFullScreen(!gameStage.isFullScreen());
+            fullscreenButton.setText(gameStage.isFullScreen() ? "Quitter plein écran (F11)" : "Plein écran (F11)");
+        });
+        
+        bottomBox.getChildren().add(fullscreenButton);
         root.setBottom(bottomBox);
         
         Scene gameScene = new Scene(root, 1000, 800);
         gameScene.setFill(Color.web("#333333"));
         gameStage.setTitle("Puissance X - Partie en cours");
         gameStage.setScene(gameScene);
+        
+        // Permettre le redimensionnement et le plein écran
+        gameStage.setResizable(true);
+        gameStage.setMinWidth(800);
+        gameStage.setMinHeight(600);
+        
+        // Ajouter un raccourci clavier pour basculer le plein écran (F11)
+        gameScene.setOnKeyPressed(e -> {
+            if (e.getCode() == javafx.scene.input.KeyCode.F11) {
+                gameStage.setFullScreen(!gameStage.isFullScreen());
+            }
+        });
+        
         gameStage.show();
 
         // Si c'est un tour d'ordinateur, jouer automatiquement après que la scène soit initialisée
@@ -684,9 +713,9 @@ public class PuissanceXFX extends Application {
     private void resetGame() {
         gameOver = false;
         
-        // Réinitialiser les scores
-        scoreJoueur1 = 0;
-        scoreJoueur2 = 0;
+        // NE PAS réinitialiser les scores ici - ils doivent persister entre les parties
+        // scoreJoueur1 = 0;
+        // scoreJoueur2 = 0;
         
         // Réinitialiser le tracker console
         ConsoleGameTracker tracker = ConsoleGameTracker.getInstance(nbRows, nbCols, nbAlign);
@@ -705,6 +734,11 @@ public class PuissanceXFX extends Application {
             yellowPot = new PuissanceXPawnPot(80, 80, stageModel, nbRows * nbCols / 2);
             stageModel.setRedPot(redPot);
             stageModel.setYellowPot(yellowPot);
+        }
+        
+        // Mettre à jour l'affichage du score
+        if (scoreLabel != null) {
+            scoreLabel.setText("Score: Joueur 1 (Rouge) : " + scoreJoueur1 + " - Joueur 2 (Jaune) : " + scoreJoueur2);
         }
         
         // Réinitialiser l'interface si elle existe
@@ -755,18 +789,13 @@ public class PuissanceXFX extends Application {
             rightBox.getChildren().addAll(yellowLabel, yellowPotInfo);
             root.setRight(rightBox);
             
-            // Réinitialiser le plateau de jeu
+            // Mettre à jour le plateau
             updateBoard();
-            
-            // Réinitialiser les labels de statut
-            if (statusLabel != null) {
-                statusLabel.setText("Au tour de Joueur 1");
-                statusLabel.setTextFill(Color.WHITE);
-            }
-            
-            if (scoreLabel != null) {
-                scoreLabel.setText("Score: Joueur 1 (Rouge) : 0 - Joueur 2 (Jaune) : 0");
-            }
+        }
+        
+        // Réinitialiser le statut
+        if (statusLabel != null) {
+            statusLabel.setTextFill(Color.WHITE);
         }
     }
 
