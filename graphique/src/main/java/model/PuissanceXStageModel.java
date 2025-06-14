@@ -13,7 +13,7 @@ public class PuissanceXStageModel extends GameStageModel {
     private boolean gameOver;
     private List<Pawn> pawns;
     private int winner;
-    // Ajout des pots pour les pions jaunes et rouges
+    // Addition of pots for yellow and red pawns
     private PuissanceXPawnPot yellowPot;
     private PuissanceXPawnPot redPot;
     private int nbRows;
@@ -75,7 +75,7 @@ public class PuissanceXStageModel extends GameStageModel {
         }
     }
 
-    // Accesseurs pour les pots de pions
+    // Getters for pawn pots
     public PuissanceXPawnPot getYellowPot() {
         return yellowPot;
     }

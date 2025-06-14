@@ -25,23 +25,23 @@ public class PuissanceXControllerTest {
     @BeforeEach
     void setUp() {
         try {
-            // Enregistrer le stage avant de le créer
+            // Register the stage before creating it
             StageFactory.registerModelAndView("main", "model.PuissanceXStageModel", "view.PuissanceXStageView");
             
             model = new Model();
             controller = new PuissanceXController(model, null);
             
-            // Ajouter des joueurs
-            model.addHumanPlayer("Player 1"); // Joueur 1 = Rouge
-            model.addHumanPlayer("Player 2"); // Joueur 2 = Jaune
+            // Add players
+            model.addHumanPlayer("Player 1"); // Player 1 = Red
+            model.addHumanPlayer("Player 2"); // Player 2 = Yellow
             
-            // Créer et configurer le stage
+            // Create and configure the stage
             stageModel = new PuissanceXStageModel("main", model);
-            stageModel.setDimensions(6, 7, 4); // 6 lignes, 7 colonnes, 4 à aligner
+            stageModel.setDimensions(6, 7, 4); // 6 rows, 7 columns, 4 to align
             stageModel.createElements(stageModel.getDefaultElementFactory());
             model.startGame(stageModel);
             
-            // Récupérer les éléments créés
+            // Get the created elements
             board = stageModel.getBoard();
             yellowPot = stageModel.getYellowPot();
             redPot = stageModel.getRedPot();
@@ -65,7 +65,7 @@ public class PuissanceXControllerTest {
     
     @Test
     void testMatchNul() {
-        // Remplir la grille en alternant les pions des deux joueurs
+        // Fill the grid by alternating pawns from both players
         for (int col = 0; col < board.getNbCols(); col++) {
             for (int row = board.getNbRows() - 1; row >= 0; row--) {
                 if ((row + col) % 2 == 0) {
@@ -77,39 +77,39 @@ public class PuissanceXControllerTest {
                 }
             }
         }
-        System.out.println("Test Match Nul - Attendu : -1 (match nul), Obtenu : " + stageModel.getWinner());
+        System.out.println("Test Draw - Expected: -1 (draw), Got: " + stageModel.getWinner());
         assertEquals(-1, stageModel.getWinner());
     }
     
     @Test
     void testVictoireJoueur1() {
-        // Aligner 4 pions rouges horizontalement (joueur 1 = rouge = 1)
+        // Align 4 red pawns horizontally (player 1 = red = 1)
         int row = board.getNbRows() - 1;
         
         for (int col = 0; col < 4; col++) {
-            Pawn pawn = (Pawn) redPot.getElement(0, 0); // Pions rouges pour joueur 1
+            Pawn pawn = (Pawn) redPot.getElement(0, 0); // Red pawns for player 1
             board.addElement(pawn, row, col);
         }
         
-        System.out.println("Test Victoire Joueur 1 - Attendu : 0 (joueur 1), Obtenu : " + stageModel.getWinner());
-        assertEquals(0, stageModel.getWinner()); // Joueur 1 (rouge) gagne
+        System.out.println("Test Player 1 Victory - Expected: 0 (player 1), Got: " + stageModel.getWinner());
+        assertEquals(0, stageModel.getWinner()); // Player 1 (red) wins
     }
     
     @Test
     void testVictoireJoueur2() {
-        // Aligner 4 pions jaunes verticalement (joueur 2 = jaune = 0)
+        // Align 4 yellow pawns vertically (player 2 = yellow = 0)
         int col = 0;
-        model.setNextPlayer(); // Commencer avec le joueur 2
+        model.setNextPlayer(); // Start with player 2
         
         for (int row = board.getNbRows() - 1; row >= board.getNbRows() - 4; row--) {
-            Pawn pawn = (Pawn) yellowPot.getElement(0, 0); // Pions jaunes pour joueur 2
+            Pawn pawn = (Pawn) yellowPot.getElement(0, 0); // Yellow pawns for player 2
             board.addElement(pawn, row, col);
             if (row > board.getNbRows() - 4) {
-                model.setNextPlayer(); // Passer au joueur suivant sauf pour le dernier pion
+                model.setNextPlayer(); // Switch to next player except for the last pawn
             }
         }
         
-        System.out.println("Test Victoire Joueur 2 - Attendu : 1 (joueur 2), Obtenu : " + stageModel.getWinner());
-        assertEquals(1, stageModel.getWinner()); // Joueur 2 (jaune) gagne
+        System.out.println("Test Player 2 Victory - Expected: 1 (player 2), Got: " + stageModel.getWinner());
+        assertEquals(1, stageModel.getWinner()); // Player 2 (yellow) wins
     }
 }

@@ -18,28 +18,28 @@ public class PuissanceXStageView extends GameStageView {
     public void createLooks() {
         PuissanceXStageModel model = (PuissanceXStageModel) gameStageModel;
 
-        // Créer l'affichage du nom du joueur avec une taille de police de 20 et une couleur noire
+        // Create the player name display with a font size of 20 and black color
         addLook(new TextLook(20, "0x000000", model.getPlayerName()));
 
-        // Créer l'affichage du plateau avec des couleurs alternées et une bordure
+        // Create the board display with alternating colors and a border
         addLook(new ClassicBoardLook(
-            40, // taille des cellules
-            model.getBoard(), // élément conteneur
-            0, // profondeur
-            Color.valueOf("0xFFFFFF"), // couleur des cases paires (blanc)
-            Color.valueOf("0xD3D3D3"), // couleur des cases impaires (gris clair)
-            1, // largeur de la bordure des cellules
-            Color.valueOf("0x000000"), // couleur de la bordure des cellules (noir)
-            2, // largeur du cadre
-            Color.valueOf("0x000000"), // couleur du cadre (noir)
-            true // afficher les coordonnées
+            40, // cell size
+            model.getBoard(), // container element
+            0, // depth
+            Color.valueOf("0xFFFFFF"), // even cell color (white)
+            Color.valueOf("0xD3D3D3"), // odd cell color (light gray)
+            1, // cell border width
+            Color.valueOf("0x000000"), // cell border color (black)
+            2, // frame width
+            Color.valueOf("0x000000"), // frame color (black)
+            true // display coordinates
         ));
         
-        // Ajouter les vues pour les pots de pions
+        // Add views for pawn pots
         addLook(new YellowPawnPotLook(40, 40, model.getYellowPot()));
         addLook(new RedPawnPotLook(40, 40, model.getRedPot()));
 
-        // Créer l'affichage des pions déjà existants
+        // Create display for existing pawns
         for (Pawn pawn : model.getPawns()) {
             addLook(new PawnLook(pawn));
         }

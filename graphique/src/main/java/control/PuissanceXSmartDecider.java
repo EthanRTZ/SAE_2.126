@@ -25,17 +25,17 @@ public class PuissanceXSmartDecider extends Decider {
 
     @Override
     public ActionList decide() {
-        // Obtenir le plateau et le joueur actuel
+        // Get the board and current player
         PuissanceXBoard board = stage.getBoard();
         
-        // Vérifier si le plateau est initialisé
+        // Check if the board is initialized
         if (board == null) {
-            System.out.println("Le plateau n'est pas encore initialisé, on attend...");
+            System.out.println("The board is not yet initialized, waiting...");
             try {
-                Thread.sleep(1000); // Attendre 1 seconde
+                Thread.sleep(1000); // Wait 1 second
                 board = stage.getBoard();
                 if (board == null) {
-                    System.out.println("Le plateau est toujours null après l'attente");
+                    System.out.println("The board is still null after waiting");
                     return null;
                 }
             } catch (InterruptedException e) {
@@ -48,13 +48,13 @@ public class PuissanceXSmartDecider extends Decider {
         int color = currentPlayer == 0 ? Pawn.PAWN_RED : Pawn.PAWN_YELLOW;
         int opponentColor = color == Pawn.PAWN_RED ? Pawn.PAWN_YELLOW : Pawn.PAWN_RED;
         
-        // 1. Vérifier si l'IA peut gagner immédiatement
+        // 1. Check if the AI can win immediately
         for (int col = 0; col < board.getNbCols(); col++) {
             if (!board.isColumnFull(col)) {
                 int row = board.getFirstEmptyRow(col);
                 board.getGrid()[row][col] = color;
                 if (board.checkWin(row, col, color)) {
-                    // Retirer un pion du pot
+                    // Remove a pawn from the pot
                     PuissanceXPawnPot pot = color == Pawn.PAWN_RED ? stage.getRedPot() : stage.getYellowPot();
                     pot.removeElement(null);
                     return new ActionList();
@@ -63,14 +63,14 @@ public class PuissanceXSmartDecider extends Decider {
             }
         }
         
-        // 2. Vérifier si l'adversaire peut gagner au prochain coup et le bloquer
+        // 2. Check if the opponent can win on the next move and block them
         for (int col = 0; col < board.getNbCols(); col++) {
             if (!board.isColumnFull(col)) {
                 int row = board.getFirstEmptyRow(col);
                 board.getGrid()[row][col] = opponentColor;
                 if (board.checkWin(row, col, opponentColor)) {
                     board.getGrid()[row][col] = color;
-                    // Retirer un pion du pot
+                    // Remove a pawn from the pot
                     PuissanceXPawnPot pot = color == Pawn.PAWN_RED ? stage.getRedPot() : stage.getYellowPot();
                     pot.removeElement(null);
                     return new ActionList();
@@ -79,7 +79,7 @@ public class PuissanceXSmartDecider extends Decider {
             }
         }
         
-        // 3. Si aucun coup stratégique n'est trouvé, jouer aléatoirement
+        // 3. If no strategic move is found, play randomly
         int col;
         do {
             col = (int) (Math.random() * board.getNbCols());
@@ -88,7 +88,7 @@ public class PuissanceXSmartDecider extends Decider {
         int row = board.getFirstEmptyRow(col);
         board.getGrid()[row][col] = color;
         
-        // Retirer un pion du pot
+        // Remove a pawn from the pot
         PuissanceXPawnPot pot = color == Pawn.PAWN_RED ? stage.getRedPot() : stage.getYellowPot();
         pot.removeElement(null);
         

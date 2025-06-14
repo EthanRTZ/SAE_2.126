@@ -34,7 +34,7 @@ public class ConsoleGameTracker {
         }
     }
 
-    // Réinitialise complètement l'instance, à utiliser lors de la fermeture du jeu
+    // Completely reset the instance, to be used when closing the game
     public static void resetInstance() {
         instance = null;
     }
@@ -47,7 +47,7 @@ public class ConsoleGameTracker {
     }
 
     private void printGrid() {
-        System.out.println("\nÉtat actuel du plateau (Console Tracker):");
+        System.out.println("\nCurrent board state (Console Tracker):");
         for (int i = 0; i < nbRows; i++) {
             for (int j = 0; j < nbCols; j++) {
                 if (grid[i][j] == -1) {
@@ -64,82 +64,82 @@ public class ConsoleGameTracker {
     }
 
     public boolean checkWin(int row, int col, int playerColor) {
-        // Afficher les coordonnées du dernier coup joué
-        System.out.println("Vérification de victoire pour le coup : ligne=" + row + ", colonne=" + col + ", couleur=" + (playerColor == Pawn.PAWN_YELLOW ? "JAUNE" : "ROUGE"));
+        // Display the coordinates of the last played move
+        System.out.println("Victory check for move: row=" + row + ", column=" + col + ", color=" + (playerColor == Pawn.PAWN_YELLOW ? "YELLOW" : "RED"));
 
-        // Vérification horizontale
+        // Horizontal verification
         int count = 1;
-        // Gauche
+        // Left
         for (int j = col - 1; j >= 0 && grid[row][j] == playerColor; j--) {
             count++;
-            System.out.println("Horizontal gauche : " + count);
+            System.out.println("Horizontal left: " + count);
         }
-        // Droite
+        // Right
         for (int j = col + 1; j < nbCols && grid[row][j] == playerColor; j++) {
             count++;
-            System.out.println("Horizontal droite : " + count);
+            System.out.println("Horizontal right: " + count);
         }
         if (count >= nbAlign) {
-            System.out.println("Victoire horizontale détectée pour le joueur " + (playerColor == Pawn.PAWN_YELLOW ? "JAUNE" : "ROUGE"));
+            System.out.println("Horizontal victory detected for player " + (playerColor == Pawn.PAWN_YELLOW ? "YELLOW" : "RED"));
             return true;
         }
 
-        // Vérification verticale
+        // Vertical verification
         count = 1;
-        // Haut
+        // Top
         for (int i = row - 1; i >= 0 && grid[i][col] == playerColor; i--) {
             count++;
-            System.out.println("Vertical haut : " + count);
+            System.out.println("Vertical top: " + count);
         }
-        // Bas
+        // Bottom
         for (int i = row + 1; i < nbRows && grid[i][col] == playerColor; i++) {
             count++;
-            System.out.println("Vertical bas : " + count);
+            System.out.println("Vertical bottom: " + count);
         }
         if (count >= nbAlign) {
-            System.out.println("Victoire verticale détectée pour le joueur " + (playerColor == Pawn.PAWN_YELLOW ? "JAUNE" : "ROUGE"));
+            System.out.println("Vertical victory detected for player " + (playerColor == Pawn.PAWN_YELLOW ? "YELLOW" : "RED"));
             return true;
         }
 
-        // Vérification diagonale (haut-gauche à bas-droite)
+        // Diagonal verification (top-left to bottom-right)
         count = 1;
-        // Haut-gauche
+        // Top-left
         for (int i = row - 1, j = col - 1; i >= 0 && j >= 0 && grid[i][j] == playerColor; i--, j--) {
             count++;
-            System.out.println("Diagonale \\ haut-gauche : " + count);
+            System.out.println("Diagonal \\ top-left: " + count);
         }
-        // Bas-droite
+        // Bottom-right
         for (int i = row + 1, j = col + 1; i < nbRows && j < nbCols && grid[i][j] == playerColor; i++, j++) {
             count++;
-            System.out.println("Diagonale \\ bas-droite : " + count);
+            System.out.println("Diagonal \\ bottom-right: " + count);
         }
         if (count >= nbAlign) {
-            System.out.println("Victoire diagonale \\ détectée pour le joueur " + (playerColor == Pawn.PAWN_YELLOW ? "JAUNE" : "ROUGE"));
+            System.out.println("Diagonal \\ victory detected for player " + (playerColor == Pawn.PAWN_YELLOW ? "YELLOW" : "RED"));
             return true;
         }
 
-        // Vérification diagonale (haut-droite à bas-gauche)
+        // Diagonal verification (top-right to bottom-left)
         count = 1;
-        // Haut-droite
+        // Top-right
         for (int i = row - 1, j = col + 1; i >= 0 && j < nbCols && grid[i][j] == playerColor; i--, j++) {
             count++;
-            System.out.println("Diagonale / haut-droite : " + count);
+            System.out.println("Diagonal / top-right: " + count);
         }
-        // Bas-gauche
+        // Bottom-left
         for (int i = row + 1, j = col - 1; i < nbRows && j >= 0 && grid[i][j] == playerColor; i++, j--) {
             count++;
-            System.out.println("Diagonale / bas-gauche : " + count);
+            System.out.println("Diagonal / bottom-left: " + count);
         }
         if (count >= nbAlign) {
-            System.out.println("Victoire diagonale / détectée pour le joueur " + (playerColor == Pawn.PAWN_YELLOW ? "JAUNE" : "ROUGE"));
+            System.out.println("Diagonal / victory detected for player " + (playerColor == Pawn.PAWN_YELLOW ? "YELLOW" : "RED"));
             return true;
         }
 
-        // Vérification supplémentaire pour toutes les diagonales possibles
+        // Additional verification for all possible diagonals
         for (int startRow = 0; startRow < nbRows; startRow++) {
             for (int startCol = 0; startCol < nbCols; startCol++) {
                 if (grid[startRow][startCol] == playerColor) {
-                    // Vérifier diagonale descendante
+                    // Check descending diagonal
                     if (startRow <= nbRows - nbAlign && startCol <= nbCols - nbAlign) {
                         count = 1;
                         for (int k = 1; k < nbAlign; k++) {
@@ -150,13 +150,13 @@ public class ConsoleGameTracker {
                             }
                         }
                         if (count >= nbAlign) {
-                            System.out.println("Victoire diagonale \\ détectée (vérification supplémentaire) pour le joueur " + 
-                                             (playerColor == Pawn.PAWN_YELLOW ? "JAUNE" : "ROUGE"));
+                            System.out.println("Diagonal \\ victory detected (additional verification) for player " + 
+                                             (playerColor == Pawn.PAWN_YELLOW ? "YELLOW" : "RED"));
                             return true;
                         }
                     }
                     
-                    // Vérifier diagonale montante
+                    // Check ascending diagonal
                     if (startRow >= nbAlign - 1 && startCol <= nbCols - nbAlign) {
                         count = 1;
                         for (int k = 1; k < nbAlign; k++) {
@@ -167,8 +167,8 @@ public class ConsoleGameTracker {
                             }
                         }
                         if (count >= nbAlign) {
-                            System.out.println("Victoire diagonale / détectée (vérification supplémentaire) pour le joueur " + 
-                                             (playerColor == Pawn.PAWN_YELLOW ? "JAUNE" : "ROUGE"));
+                            System.out.println("Diagonal / victory detected (additional verification) for player " + 
+                                             (playerColor == Pawn.PAWN_YELLOW ? "YELLOW" : "RED"));
                             return true;
                         }
                     }

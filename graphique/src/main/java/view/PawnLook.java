@@ -19,7 +19,7 @@ public class PawnLook extends ElementLook {
         clearGroup();
         clearShapes();
         
-        circle = new Circle(25); // rayon de 25 pixels
+        circle = new Circle(25); // radius of 25 pixels
         Pawn pawn = (Pawn) element;
         if (pawn.getColor() == Pawn.PAWN_YELLOW) {
             circle.setFill(Color.YELLOW);

@@ -35,7 +35,7 @@ public class PuissanceXDecider extends Decider {
         int currentPlayer = model.getIdPlayer();
         int color = currentPlayer == 0 ? Pawn.PAWN_RED : Pawn.PAWN_YELLOW;
 
-        // Vérifier d'abord les coups gagnants directs
+        // First check for direct winning moves
         for (int col = 0; col < board.getNbCols(); col++) {
             if (!board.isColumnFull(col)) {
                 int row = board.getFirstEmptyRow(col);
@@ -48,7 +48,7 @@ public class PuissanceXDecider extends Decider {
             }
         }
 
-        // Vérifier les coups qui bloquent une victoire adverse
+        // Check for moves that block an opponent's victory
         int opponentColor = color == Pawn.PAWN_RED ? Pawn.PAWN_YELLOW : Pawn.PAWN_RED;
         for (int col = 0; col < board.getNbCols(); col++) {
             if (!board.isColumnFull(col)) {
@@ -62,7 +62,7 @@ public class PuissanceXDecider extends Decider {
             }
         }
 
-        // Utiliser l'algorithme minimax pour trouver le meilleur coup
+        // Use the minimax algorithm to find the best move
         int bestScore = Integer.MIN_VALUE;
         int bestCol = -1;
 
@@ -80,7 +80,7 @@ public class PuissanceXDecider extends Decider {
             }
         }
 
-        // Si aucun coup n'est trouvé, jouer au centre ou aléatoirement
+        // If no move is found, play in the center or randomly
         if (bestCol == -1) {
             int centerCol = board.getNbCols() / 2;
             if (!board.isColumnFull(centerCol)) {
@@ -108,7 +108,7 @@ public class PuissanceXDecider extends Decider {
     private int minimax(PuissanceXBoard board, int depth, boolean isMaximizing, int playerColor) {
         int opponentColor = playerColor == Pawn.PAWN_RED ? Pawn.PAWN_YELLOW : Pawn.PAWN_RED;
 
-        // Vérifier les conditions de fin de jeu
+        // Check end game conditions
         if (depth == 0) {
             return evaluateBoard(board, playerColor);
         }
@@ -120,7 +120,7 @@ public class PuissanceXDecider extends Decider {
                     int row = board.getFirstEmptyRow(col);
                     board.getGrid()[row][col] = playerColor;
 
-                    // Vérifier la victoire immédiate
+                    // Check for immediate victory
                     if (board.checkWin(row, col, playerColor)) {
                         board.getGrid()[row][col] = -1;
                         return WIN_SCORE;
@@ -139,7 +139,7 @@ public class PuissanceXDecider extends Decider {
                     int row = board.getFirstEmptyRow(col);
                     board.getGrid()[row][col] = opponentColor;
 
-                    // Vérifier la défaite immédiate
+                    // Check for immediate defeat
                     if (board.checkWin(row, col, opponentColor)) {
                         board.getGrid()[row][col] = -1;
                         return -WIN_SCORE;
@@ -159,21 +159,21 @@ public class PuissanceXDecider extends Decider {
         int opponentColor = playerColor == Pawn.PAWN_RED ? Pawn.PAWN_YELLOW : Pawn.PAWN_RED;
         int[][] grid = board.getGrid();
 
-        // Évaluer les séquences horizontales
+        // Evaluate horizontal sequences
         for (int row = 0; row < board.getNbRows(); row++) {
             for (int col = 0; col < board.getNbCols() - 3; col++) {
                 score += evaluateSequence(grid, row, col, 0, 1, playerColor, opponentColor);
             }
         }
 
-        // Évaluer les séquences verticales
+        // Evaluate vertical sequences
         for (int row = 0; row < board.getNbRows() - 3; row++) {
             for (int col = 0; col < board.getNbCols(); col++) {
                 score += evaluateSequence(grid, row, col, 1, 0, playerColor, opponentColor);
             }
         }
 
-        // Évaluer les séquences diagonales
+        // Evaluate diagonal sequences
         for (int row = 0; row < board.getNbRows() - 3; row++) {
             for (int col = 0; col < board.getNbCols() - 3; col++) {
                 score += evaluateSequence(grid, row, col, 1, 1, playerColor, opponentColor);
@@ -181,7 +181,7 @@ public class PuissanceXDecider extends Decider {
             }
         }
 
-        // Bonus pour le centre
+        // Bonus for center
         int centerCol = board.getNbCols() / 2;
         for (int row = 0; row < board.getNbRows(); row++) {
             if (grid[row][centerCol] == playerColor) {

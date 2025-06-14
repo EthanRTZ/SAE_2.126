@@ -32,7 +32,7 @@ public class PuissanceXController extends Controller {
 
         // Initialize game scene
         try {
-            // Enregistrer le stage avant de le créer
+            // Register the stage before creating it
             StageFactory.registerModelAndView("main", "model.PuissanceXStageModel", "view.PuissanceXStageView");
             
             PuissanceXStageModel stageModel = (PuissanceXStageModel) StageFactory.createStageModel("main", model);

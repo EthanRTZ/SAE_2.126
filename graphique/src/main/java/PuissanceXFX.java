@@ -58,17 +58,17 @@ public class PuissanceXFX extends Application {
     public void start(Stage primaryStage) {
         createConfigScene(primaryStage);
         
-        // Ajouter un gestionnaire pour la fermeture de la fenêtre
+        // Add a handler for window closing
         primaryStage.setOnCloseRequest(event -> {
-            // Réinitialiser complètement le ConsoleGameTracker
+            // Completely reset the ConsoleGameTracker
             ConsoleGameTracker.resetInstance();
             
-            // Fermer la fenêtre de jeu si elle est ouverte
+            // Close the game window if it's open
             if (gameStage != null) {
                 gameStage.close();
             }
             
-            // Réinitialiser les variables statiques et les ressources
+            // Reset static variables and resources
             resetStaticResources();
         });
     }
@@ -81,83 +81,83 @@ public class PuissanceXFX extends Application {
 
         String labelStyle = "-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: white;";
 
-        Label modeLabel = new Label("Mode de jeu");
+        Label modeLabel = new Label("Game mode");
         modeLabel.setStyle(labelStyle);
         ComboBox<String> modeCombo = new ComboBox<>();
-        modeCombo.getItems().addAll("Joueur vs Joueur", "Joueur vs Ordinateur", "Ordinateur vs Ordinateur");
-        modeCombo.setValue("Joueur vs Ordinateur");
+        modeCombo.getItems().addAll("Player vs Player", "Player vs Computer", "Computer vs Computer");
+        modeCombo.setValue("Player vs Computer");
         modeCombo.setStyle("-fx-font-size: 14px;");
         modeCombo.setPrefWidth(300);
 
-        // Niveau pour le joueur 1 (ou bot 1)
-        Label levelLabel1 = new Label("Niveau Joueur 1");
+        // Level for player 1 (or bot 1)
+        Label levelLabel1 = new Label("Player 1 Level");
         levelLabel1.setStyle(labelStyle);
         ComboBox<String> levelCombo1 = new ComboBox<>();
-        levelCombo1.getItems().addAll("Humain", "Bot Facile", "Bot Moyen");
-        levelCombo1.setValue("Humain");
+        levelCombo1.getItems().addAll("Human", "Easy Bot", "Medium Bot");
+        levelCombo1.setValue("Human");
         levelCombo1.setStyle("-fx-font-size: 14px;");
         levelCombo1.setPrefWidth(300);
-        levelCombo1.setDisable(true); // Désactivé par défaut
+        levelCombo1.setDisable(true); // Disabled by default
 
-        // Niveau pour le joueur 2 (ou bot 2)
-        Label levelLabel2 = new Label("Niveau Joueur 2");
+        // Level for player 2 (or bot 2)
+        Label levelLabel2 = new Label("Player 2 Level");
         levelLabel2.setStyle(labelStyle);
         ComboBox<String> levelCombo2 = new ComboBox<>();
-        levelCombo2.getItems().addAll("Humain", "Bot Facile", "Bot Moyen");
-        levelCombo2.setValue("Bot Moyen");
+        levelCombo2.getItems().addAll("Human", "Easy Bot", "Medium Bot");
+        levelCombo2.setValue("Medium Bot");
         levelCombo2.setStyle("-fx-font-size: 14px;");
         levelCombo2.setPrefWidth(300);
 
-        // Gérer l'activation/désactivation des combos de niveau selon le mode
+        // Handle enabling/disabling level combos based on mode
         modeCombo.setOnAction(e -> {
             switch (modeCombo.getValue()) {
-                case "Joueur vs Joueur":
-                    levelCombo1.setValue("Humain");
-                    levelCombo2.setValue("Humain");
+                case "Player vs Player":
+                    levelCombo1.setValue("Human");
+                    levelCombo2.setValue("Human");
                     levelCombo1.setDisable(true);
                     levelCombo2.setDisable(true);
                     break;
-                case "Joueur vs Ordinateur":
-                    levelCombo1.setValue("Humain");
-                    levelCombo2.setValue("Bot Moyen");
+                case "Player vs Computer":
+                    levelCombo1.setValue("Human");
+                    levelCombo2.setValue("Medium Bot");
                     levelCombo1.setDisable(true);
                     levelCombo2.setDisable(false);
                     break;
-                case "Ordinateur vs Ordinateur":
-                    levelCombo1.setValue("Bot Moyen");
-                    levelCombo2.setValue("Bot Moyen");
+                case "Computer vs Computer":
+                    levelCombo1.setValue("Medium Bot");
+                    levelCombo2.setValue("Medium Bot");
                     levelCombo1.setDisable(false);
                     levelCombo2.setDisable(false);
                     break;
             }
         });
 
-        Label colsLabel = new Label("Nombre de colonnes");
+        Label colsLabel = new Label("Number of columns");
         colsLabel.setStyle(labelStyle);
         Spinner<Integer> colsSpinner = new Spinner<>(4, 12, 7);
         colsSpinner.setStyle("-fx-font-size: 14px;");
         colsSpinner.setPrefWidth(300);
 
-        Label rowsLabel = new Label("Nombre de lignes");
+        Label rowsLabel = new Label("Number of rows");
         rowsLabel.setStyle(labelStyle);
         Spinner<Integer> rowsSpinner = new Spinner<>(4, 12, 6);
         rowsSpinner.setStyle("-fx-font-size: 14px;");
         rowsSpinner.setPrefWidth(300);
 
-        Label alignLabel = new Label("Nombre de pions à aligner");
+        Label alignLabel = new Label("Number of pieces to align");
         alignLabel.setStyle(labelStyle);
         Spinner<Integer> alignSpinner = new Spinner<>(3, 8, 4);
         alignSpinner.setStyle("-fx-font-size: 14px;");
         alignSpinner.setPrefWidth(300);
 
-        Button startButton = new Button("Commencer");
+        Button startButton = new Button("Start");
         startButton.setStyle("-fx-font-size: 16px; -fx-padding: 10 20 10 20; -fx-background-color: #444444; -fx-text-fill: white; -fx-border-color: #666666;");
         startButton.setOnAction(e -> {
             nbCols = colsSpinner.getValue();
             nbRows = rowsSpinner.getValue();
             nbAlign = alignSpinner.getValue();
             
-            // Initialiser le jeu avec les niveaux choisis
+            // Initialize the game with chosen levels
             String mode = modeCombo.getValue();
             String level1 = levelCombo1.getValue();
             String level2 = levelCombo2.getValue();
@@ -181,7 +181,7 @@ public class PuissanceXFX extends Application {
         stage.setTitle("Puissance X");
         stage.setScene(configScene);
         
-        // Permettre le redimensionnement et le plein écran
+        // Allow resizing and fullscreen
         stage.setResizable(true);
         stage.setMinWidth(500);
         stage.setMinHeight(500);
@@ -190,7 +190,7 @@ public class PuissanceXFX extends Application {
     }
 
     private void initializeGame(String gameMode, String level1, String level2) {
-        // Réinitialiser complètement le jeu
+        // Completely reset the game
         resetGame();
         resetStaticResources();
         
@@ -200,61 +200,61 @@ public class PuissanceXFX extends Application {
         view = new View(model, gameStage, rootPane);
         rootPane.init(view.getGameStageView());
         
-        // Ajouter les joueurs selon le mode choisi et leurs niveaux
+        // Add players based on chosen mode and their levels
         switch (gameMode) {
-            case "Joueur vs Joueur":
-                model.addHumanPlayer("Joueur 1");
-                model.addHumanPlayer("Joueur 2");
+            case "Player vs Player":
+                model.addHumanPlayer("Player 1");
+                model.addHumanPlayer("Player 2");
                 break;
-            case "Joueur vs Ordinateur":
-                model.addHumanPlayer("Joueur 1");
-                if (level2.equals("Bot Facile")) {
-                    computerLevel = 0; // SmartDecider = facile
-                    model.addComputerPlayer("Ordinateur (Facile)");
+            case "Player vs Computer":
+                model.addHumanPlayer("Player 1");
+                if (level2.equals("Easy Bot")) {
+                    computerLevel = 0; // SmartDecider = easy
+                    model.addComputerPlayer("Computer (Easy)");
                 } else {
-                    computerLevel = 1; // Decider = moyen
-                    model.addComputerPlayer("Ordinateur (Moyen)");
+                    computerLevel = 1; // Decider = medium
+                    model.addComputerPlayer("Computer (Medium)");
                 }
                 break;
-            case "Ordinateur vs Ordinateur":
-                // Premier bot
-                if (level1.equals("Bot Facile")) {
-                    computerLevel = 0; // SmartDecider = facile
-                    model.addComputerPlayer("Ordinateur 1 (Facile)");
+            case "Computer vs Computer":
+                // First bot
+                if (level1.equals("Easy Bot")) {
+                    computerLevel = 0; // SmartDecider = easy
+                    model.addComputerPlayer("Computer 1 (Easy)");
                 } else {
-                    computerLevel = 1; // Decider = moyen
-                    model.addComputerPlayer("Ordinateur 1 (Moyen)");
+                    computerLevel = 1; // Decider = medium
+                    model.addComputerPlayer("Computer 1 (Medium)");
                 }
-                // Deuxième bot
-                if (level2.equals("Bot Facile")) {
-                    computerLevel = 0; // SmartDecider = facile
-                    model.addComputerPlayer("Ordinateur 2 (Facile)");
+                // Second bot
+                if (level2.equals("Easy Bot")) {
+                    computerLevel = 0; // SmartDecider = easy
+                    model.addComputerPlayer("Computer 2 (Easy)");
                 } else {
-                    computerLevel = 1; // Decider = moyen
-                    model.addComputerPlayer("Ordinateur 2 (Moyen)");
+                    computerLevel = 1; // Decider = medium
+                    model.addComputerPlayer("Computer 2 (Medium)");
                 }
                 break;
         }
         
-        // Créer le stage model et le controller
+        // Create the stage model and controller
         stageModel = new PuissanceXStageModel("main", model);
         controller = new PuissanceXController(model, view);
         model.setGameStage(stageModel);
 
-        // Créer le plateau
+        // Create the board
         board = new PuissanceXBoard(80, 80, stageModel, nbRows, nbCols, nbAlign);
         stageModel.setBoard(board);
     }
 
     private void createGameScene() {
-        // Vérifier que le plateau est initialisé
+        // Check if the board is initialized
         if (board == null) {
-            System.out.println("Le plateau n'est pas initialisé dans createGameScene, on attend...");
+            System.out.println("The board is not initialized in createGameScene, waiting...");
             try {
                 Thread.sleep(1000);
                 board = stageModel.getBoard();
                 if (board == null) {
-                    System.out.println("Le plateau est toujours null après l'attente");
+                    System.out.println("The board is still null after waiting");
                     return;
                 }
             } catch (InterruptedException e) {
@@ -267,29 +267,29 @@ public class PuissanceXFX extends Application {
         root.setPadding(new Insets(40));
         root.setStyle("-fx-background-color: #333333;");
 
-        // Style pour les labels
+        // Style for labels
         String labelStyle = "-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: white;";
         
-        // Panneau du haut (scores et statut)
+        // Top panel (scores and status)
         VBox topBox = new VBox(15);
         topBox.setAlignment(Pos.CENTER);
         topBox.setStyle("-fx-background-color: #333333;");
         
-        scoreLabel = new Label("Score: Joueur 1 (Rouge) : " + scoreJoueur1 + " - Joueur 2 (Jaune) : " + scoreJoueur2);
+        scoreLabel = new Label("Score: Player 1 (Red) : " + scoreJoueur1 + " - Player 2 (Yellow) : " + scoreJoueur2);
         scoreLabel.setStyle(labelStyle);
         
-        statusLabel = new Label("Au tour de " + model.getCurrentPlayer().getName());
+        statusLabel = new Label("Next player: " + model.getCurrentPlayer().getName());
         statusLabel.setStyle(labelStyle);
         
         topBox.getChildren().addAll(scoreLabel, statusLabel);
         root.setTop(topBox);
         
-        // Panneau central (plateau de jeu)
+        // Center panel (game board)
         VBox centerBox = new VBox(20);
         centerBox.setAlignment(Pos.CENTER);
         centerBox.setStyle("-fx-background-color: #333333;");
         
-        // Créer le plateau de jeu
+        // Create the game board
         gameBoard = new GridPane();
         gameBoard.setHgap(10);
         gameBoard.setVgap(10);
@@ -301,20 +301,20 @@ public class PuissanceXFX extends Application {
         centerBox.getChildren().add(gameBoard);
         root.setCenter(centerBox);
         
-        // Panneau de gauche (pot rouge)
+        // Left panel (red pot)
         VBox leftBox = new VBox(20);
         leftBox.setAlignment(Pos.CENTER);
         leftBox.setPadding(new Insets(0, 20, 0, 0));
         leftBox.setStyle("-fx-background-color: #333333;");
         leftBox.setMinWidth(150);
         
-        Label redLabel = new Label("Joueur 1 (Rouge)");
+        Label redLabel = new Label("Player 1 (Red)");
         redLabel.setStyle(labelStyle + "; -fx-text-fill: red;");
         
         redPot = new PuissanceXPawnPot(80, 80, stageModel, (nbRows * nbCols + 1) / 2);
         stageModel.setRedPot(redPot);
         
-        redPotLabel = new Label("Pions restants : " + redPot.getRemainingPawns());
+        redPotLabel = new Label("Pieces remaining: " + redPot.getRemainingPawns());
         redPotLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: red;");
         
         VBox redPotInfo = new VBox(10);
@@ -326,20 +326,20 @@ public class PuissanceXFX extends Application {
         leftBox.getChildren().addAll(redLabel, redPotInfo);
         root.setLeft(leftBox);
         
-        // Panneau de droite (pot jaune)
+        // Right panel (yellow pot)
         VBox rightBox = new VBox(20);
         rightBox.setAlignment(Pos.CENTER);
         rightBox.setPadding(new Insets(0, 0, 0, 20));
         rightBox.setStyle("-fx-background-color: #333333;");
         rightBox.setMinWidth(150);
         
-        Label yellowLabel = new Label("Joueur 2 (Jaune)");
+        Label yellowLabel = new Label("Player 2 (Yellow)");
         yellowLabel.setStyle(labelStyle + "; -fx-text-fill: yellow;");
         
         yellowPot = new PuissanceXPawnPot(80, 80, stageModel, nbRows * nbCols / 2);
         stageModel.setYellowPot(yellowPot);
         
-        yellowPotLabel = new Label("Pions restants : " + yellowPot.getRemainingPawns());
+        yellowPotLabel = new Label("Pieces remaining: " + yellowPot.getRemainingPawns());
         yellowPotLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: yellow;");
         
         VBox yellowPotInfo = new VBox(10);
@@ -351,18 +351,18 @@ public class PuissanceXFX extends Application {
         rightBox.getChildren().addAll(yellowLabel, yellowPotInfo);
         root.setRight(rightBox);
         
-        // Panneau du bas (bouton nouvelle partie quand nécessaire)
+        // Bottom panel (new game button when needed)
         VBox bottomBox = new VBox(10);
         bottomBox.setAlignment(Pos.CENTER);
         bottomBox.setPadding(new Insets(20, 0, 0, 0));
         bottomBox.setStyle("-fx-background-color: #333333;");
         
-        // Ajouter un bouton pour basculer le plein écran
-        Button fullscreenButton = new Button("Plein écran (F11)");
+        // Add a button to toggle fullscreen
+        Button fullscreenButton = new Button("Fullscreen (F11)");
         fullscreenButton.setStyle("-fx-font-size: 14px; -fx-padding: 8 16 8 16; -fx-background-color: #555555; -fx-text-fill: white; -fx-border-color: #777777;");
         fullscreenButton.setOnAction(e -> {
             gameStage.setFullScreen(!gameStage.isFullScreen());
-            fullscreenButton.setText(gameStage.isFullScreen() ? "Quitter plein écran (F11)" : "Plein écran (F11)");
+            fullscreenButton.setText(gameStage.isFullScreen() ? "Exit fullscreen (F11)" : "Fullscreen (F11)");
         });
         
         bottomBox.getChildren().add(fullscreenButton);
@@ -370,15 +370,15 @@ public class PuissanceXFX extends Application {
         
         Scene gameScene = new Scene(root, 1000, 800);
         gameScene.setFill(Color.web("#333333"));
-        gameStage.setTitle("Puissance X - Partie en cours");
+        gameStage.setTitle("Puissance X - Game in progress");
         gameStage.setScene(gameScene);
         
-        // Permettre le redimensionnement et le plein écran
+        // Allow resizing and fullscreen
         gameStage.setResizable(true);
         gameStage.setMinWidth(800);
         gameStage.setMinHeight(600);
         
-        // Ajouter un raccourci clavier pour basculer le plein écran (F11)
+        // Add keyboard shortcut to toggle fullscreen (F11)
         gameScene.setOnKeyPressed(e -> {
             if (e.getCode() == javafx.scene.input.KeyCode.F11) {
                 gameStage.setFullScreen(!gameStage.isFullScreen());
@@ -387,15 +387,15 @@ public class PuissanceXFX extends Application {
         
         gameStage.show();
 
-        // Si c'est un tour d'ordinateur, jouer automatiquement après que la scène soit initialisée
-        if (model.getCurrentPlayer().getName().toLowerCase().contains("ordinateur")) {
+        // If it's a computer turn, play automatically after the scene is initialized
+        if (model.getCurrentPlayer().getName().toLowerCase().contains("computer")) {
             Platform.runLater(() -> {
                 try {
-                    Thread.sleep(1000); // Attendre que tout soit bien initialisé
+                    Thread.sleep(1000); // Wait for everything to be properly initialized
                     if (board != null) {
                         playComputerTurn();
                     } else {
-                        System.out.println("Le plateau est toujours null, on ne peut pas jouer");
+                        System.out.println("The board is still null, cannot play");
                     }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -409,12 +409,12 @@ public class PuissanceXFX extends Application {
         
         for (int i = 0; i < nbRows; i++) {
             for (int j = 0; j < nbCols; j++) {
-                // Créer un conteneur pour la cellule
+                // Create a container for the cell
                 StackPane cell = new StackPane();
                 cell.setPrefSize(70, 70);
                 cell.setStyle("-fx-background-color: #333333; -fx-border-color: #666666; -fx-border-width: 2;");
                 
-                // Créer le cercle pour le pion
+                // Create the circle for the pawn
                 Circle circle = new Circle(30);
                 circle.setFill(Color.WHITE);
                 circle.setStroke(Color.GRAY);
@@ -433,7 +433,7 @@ public class PuissanceXFX extends Application {
                 
                 final int col = j;
                 cell.setOnMouseClicked(e -> {
-                    if (!gameOver && !model.getCurrentPlayer().getName().toLowerCase().contains("ordinateur")) {
+                    if (!gameOver && !model.getCurrentPlayer().getName().toLowerCase().contains("computer")) {
                         handlePlayerMove(col);
                     }
                 });
@@ -472,7 +472,7 @@ public class PuissanceXFX extends Application {
                 
                 final int col = j;
                 cell.setOnMouseClicked(e -> {
-                    if (!gameOver && !model.getCurrentPlayer().getName().toLowerCase().contains("ordinateur")) {
+                    if (!gameOver && !model.getCurrentPlayer().getName().toLowerCase().contains("computer")) {
                         handlePlayerMove(col);
                     }
                 });
@@ -482,13 +482,13 @@ public class PuissanceXFX extends Application {
         }
         
         // Mettre à jour les labels des pots
-        redPotLabel.setText("Pions restants : " + redPot.getRemainingPawns());
-        yellowPotLabel.setText("Pions restants : " + yellowPot.getRemainingPawns());
+        redPotLabel.setText("Pieces remaining: " + redPot.getRemainingPawns());
+        yellowPotLabel.setText("Pieces remaining: " + yellowPot.getRemainingPawns());
     }
 
     private void handlePlayerMove(int col) {
         if (board.isColumnFull(col)) {
-            statusLabel.setText("Cette colonne est pleine ! Choisissez une autre colonne.");
+            statusLabel.setText("This column is full! Choose another column.");
             return;
         }
 
@@ -498,7 +498,7 @@ public class PuissanceXFX extends Application {
         // Vérifier s'il reste des pions dans le pot
         PuissanceXPawnPot currentPot = color == Pawn.PAWN_RED ? redPot : yellowPot;
         if (currentPot.getRemainingPawns() <= 0) {
-            statusLabel.setText("Plus de pions disponibles !");
+            statusLabel.setText("No more pieces available!");
             return;
         }
         
@@ -510,7 +510,7 @@ public class PuissanceXFX extends Application {
     }
 
     private void playComputerTurn() {
-        System.out.println("=== DEBUT playComputerTurn ===");
+        System.out.println("=== START playComputerTurn ===");
         
         // Créer le decider approprié selon le niveau
         Decider decider;
@@ -523,7 +523,7 @@ public class PuissanceXFX extends Application {
             decider = new PuissanceXDecider(model, controller);
             ((PuissanceXDecider) decider).setStage(stageModel);
         }
-        System.out.println("IA créée: " + decider.getClass().getSimpleName() + " (Niveau: " + (computerLevel == 0 ? "Facile" : "Moyen") + ")");
+        System.out.println("IA created: " + decider.getClass().getSimpleName() + " (Level: " + (computerLevel == 0 ? "Easy" : "Medium") + ")");
         
         // Vérifier l'état du plateau après création de l'IA
         System.out.println("État du plateau après création de l'IA:");
@@ -534,10 +534,10 @@ public class PuissanceXFX extends Application {
         }
         
         ActionList actions = decider.decide();
-        System.out.println("Actions retournées par l'IA: " + (actions != null ? "non null" : "null"));
+        System.out.println("Actions returned by the IA: " + (actions != null ? "non null" : "null"));
         
         if (actions == null) {
-            System.out.println("L'IA n'a pas pu jouer, on réessaie dans 1 seconde");
+            System.out.println("The IA couldn't play, retrying in 1 second");
             Platform.runLater(() -> {
                 try {
                     Thread.sleep(1000);
@@ -578,31 +578,31 @@ public class PuissanceXFX extends Application {
             }
         }
         
-        System.out.println("Dernière position jouée: row=" + lastRow + ", col=" + lastCol + ", color=" + color);
+        System.out.println("Last played position: row=" + lastRow + ", col=" + lastCol + ", color=" + color);
         
         updateBoard(lastRow, lastCol, color);
         checkGameStatus(lastRow, lastCol, color);
-        System.out.println("=== FIN playComputerTurn ===");
+        System.out.println("=== END playComputerTurn ===");
     }
 
     private void checkGameStatus(int row, int col, int color) {
-        System.out.println("=== DEBUT checkGameStatus ===");
-        System.out.println("Paramètres: row=" + row + ", col=" + col + ", color=" + color);
+        System.out.println("=== START checkGameStatus ===");
+        System.out.println("Parameters: row=" + row + ", col=" + col + ", color=" + color);
         
         VBox bottomBox = (VBox) ((BorderPane) gameBoard.getParent().getParent()).getBottom();
         
-        // Mettre à jour le tracker console
+        // Update the console tracker
         ConsoleGameTracker tracker = ConsoleGameTracker.getInstance(nbRows, nbCols, nbAlign);
         tracker.updateGrid(board.getGrid());
         
-        // Vérifier la victoire à la fois avec le board normal et le tracker console
+        // Check for victory using both the normal board and console tracker
         boolean winBoard = row != -1 && board.checkWin(row, col, color);
         boolean winTracker = row != -1 && tracker.checkWin(row, col, color);
         
         if (winBoard || winTracker) {
-            System.out.println("Victoire détectée!");
-            if (winBoard) System.out.println("- Détectée par le plateau");
-            if (winTracker) System.out.println("- Détectée par le tracker console");
+            System.out.println("Victory detected!");
+            if (winBoard) System.out.println("- Detected by the board");
+            if (winTracker) System.out.println("- Detected by the console tracker");
             
             gameOver = true;
             String gagnant = model.getCurrentPlayer().getName();
@@ -613,11 +613,11 @@ public class PuissanceXFX extends Application {
                 scoreJoueur2++;
                 statusLabel.setTextFill(Color.YELLOW);
             }
-            scoreLabel.setText("Score: Joueur 1 (Rouge) : " + scoreJoueur1 + " - Joueur 2 (Jaune) : " + scoreJoueur2);
-            statusLabel.setText(gagnant + " a gagné !");
+            scoreLabel.setText("Score: Player 1 (Red) : " + scoreJoueur1 + " - Player 2 (Yellow) : " + scoreJoueur2);
+            statusLabel.setText(gagnant + " has won!");
             
-            // Proposer une nouvelle partie
-            Button newGameButton = new Button("Nouvelle Partie");
+            // Propose a new game
+            Button newGameButton = new Button("New Game");
             newGameButton.setStyle("-fx-font-size: 16px; -fx-padding: 10 20 10 20; -fx-background-color: #444444; -fx-text-fill: white; -fx-border-color: #666666;");
             newGameButton.setOnAction(e -> {
                 resetGame();
@@ -625,15 +625,15 @@ public class PuissanceXFX extends Application {
                 bottomBox.getChildren().clear();
                 statusLabel.setTextFill(Color.WHITE);
                 
-                // Réinitialiser le modèle pour commencer avec le premier joueur
+                // Reset the model to start with the first player
                 if (model != null) {
                     model.setIdPlayer(0);
                     String firstPlayer = model.getCurrentPlayer().getName();
-                    statusLabel.setText("Au tour de " + firstPlayer);
+                    statusLabel.setText("Next player: " + firstPlayer);
                     statusLabel.setTextFill(Color.RED);
                     
-                    // Si le premier joueur est un ordinateur, lancer son tour
-                    if (firstPlayer.toLowerCase().contains("ordinateur")) {
+                    // If the first player is a computer, start their turn
+                    if (firstPlayer.toLowerCase().contains("computer")) {
                         Platform.runLater(() -> {
                             try {
                                 Thread.sleep(1000);
@@ -649,13 +649,13 @@ public class PuissanceXFX extends Application {
             bottomBox.getChildren().add(newGameButton);
         } 
         else if (board.isBoardFull()) {
-            System.out.println("Match nul détecté!");
+            System.out.println("Draw detected!");
             gameOver = true;
-            statusLabel.setText("Match nul !");
+            statusLabel.setText("Draw!");
             statusLabel.setTextFill(Color.LIGHTGRAY);
             
-            // Proposer une nouvelle partie
-            Button newGameButton = new Button("Nouvelle Partie");
+            // Propose a new game
+            Button newGameButton = new Button("New Game");
             newGameButton.setStyle("-fx-font-size: 16px; -fx-padding: 10 20 10 20; -fx-background-color: #444444; -fx-text-fill: white; -fx-border-color: #666666;");
             newGameButton.setOnAction(e -> {
                 resetGame();
@@ -663,15 +663,15 @@ public class PuissanceXFX extends Application {
                 bottomBox.getChildren().clear();
                 statusLabel.setTextFill(Color.WHITE);
                 
-                // Réinitialiser le modèle pour commencer avec le premier joueur
+                // Reset the model to start with the first player
                 if (model != null) {
                     model.setIdPlayer(0);
                     String firstPlayer = model.getCurrentPlayer().getName();
-                    statusLabel.setText("Au tour de " + firstPlayer);
+                    statusLabel.setText("Next player: " + firstPlayer);
                     statusLabel.setTextFill(Color.RED);
                     
-                    // Si le premier joueur est un ordinateur, lancer son tour
-                    if (firstPlayer.toLowerCase().contains("ordinateur")) {
+                    // If the first player is a computer, start their turn
+                    if (firstPlayer.toLowerCase().contains("computer")) {
                         Platform.runLater(() -> {
                             try {
                                 Thread.sleep(1000);
@@ -687,16 +687,16 @@ public class PuissanceXFX extends Application {
             bottomBox.getChildren().add(newGameButton);
         } 
         else {
-            System.out.println("Jeu continue, passage au joueur suivant");
+            System.out.println("Game continues, switching to next player");
             model.setNextPlayer();
             String nextPlayer = model.getCurrentPlayer().getName();
-            System.out.println("Prochain joueur: " + nextPlayer);
-            statusLabel.setText("Au tour de " + nextPlayer);
+            System.out.println("Next player: " + nextPlayer);
+            statusLabel.setText("Next player: " + nextPlayer);
             statusLabel.setTextFill(model.getIdPlayer() == 0 ? Color.RED : Color.YELLOW);
             
-            if (nextPlayer.toLowerCase().contains("ordinateur")) {
-                System.out.println("Prochain joueur est un ordinateur, on lance playComputerTurn dans 500ms");
-                // Ajouter un délai avant de jouer le prochain coup
+            if (nextPlayer.toLowerCase().contains("computer")) {
+                System.out.println("Next player is a computer, launching playComputerTurn in 500ms");
+                // Add a delay before playing the next move
                 new Thread(() -> {
                     try {
                         Thread.sleep(500);
@@ -707,28 +707,28 @@ public class PuissanceXFX extends Application {
                 }).start();
             }
         }
-        System.out.println("=== FIN checkGameStatus ===");
+        System.out.println("=== END checkGameStatus ===");
     }
 
     private void resetGame() {
         gameOver = false;
         
-        // NE PAS réinitialiser les scores ici - ils doivent persister entre les parties
+        // DO NOT reset scores here - they must persist between games
         // scoreJoueur1 = 0;
         // scoreJoueur2 = 0;
         
-        // Réinitialiser le tracker console
+        // Reset the console tracker
         ConsoleGameTracker tracker = ConsoleGameTracker.getInstance(nbRows, nbCols, nbAlign);
         if (tracker != null) {
             tracker.reset();
         }
         
-        // Réinitialiser les variables du jeu
+        // Reset game variables
         if (board != null) {
             board.clear();
         }
         
-        // Réinitialiser les pots si ils existent
+        // Reset pots if they exist
         if (stageModel != null) {
             redPot = new PuissanceXPawnPot(80, 80, stageModel, (nbRows * nbCols + 1) / 2);
             yellowPot = new PuissanceXPawnPot(80, 80, stageModel, nbRows * nbCols / 2);
@@ -736,26 +736,26 @@ public class PuissanceXFX extends Application {
             stageModel.setYellowPot(yellowPot);
         }
         
-        // Mettre à jour l'affichage du score
+        // Update score display
         if (scoreLabel != null) {
-            scoreLabel.setText("Score: Joueur 1 (Rouge) : " + scoreJoueur1 + " - Joueur 2 (Jaune) : " + scoreJoueur2);
+            scoreLabel.setText("Score: Player 1 (Red) : " + scoreJoueur1 + " - Player 2 (Yellow) : " + scoreJoueur2);
         }
         
-        // Réinitialiser l'interface si elle existe
+        // Reset interface if it exists
         if (gameBoard != null) {
             BorderPane root = (BorderPane) gameBoard.getParent().getParent();
             
-            // Recréer le conteneur gauche (pot rouge)
+            // Recreate left container (red pot)
             VBox leftBox = new VBox(20);
             leftBox.setAlignment(Pos.CENTER);
             leftBox.setPadding(new Insets(0, 20, 0, 0));
             leftBox.setStyle("-fx-background-color: #333333;");
             leftBox.setMinWidth(150);
             
-            Label redLabel = new Label("Joueur 1 (Rouge)");
+            Label redLabel = new Label("Player 1 (Red)");
             redLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: red;");
             
-            redPotLabel = new Label("Pions restants : " + (redPot != null ? redPot.getRemainingPawns() : 0));
+            redPotLabel = new Label("Pieces remaining: " + (redPot != null ? redPot.getRemainingPawns() : 0));
             redPotLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: red;");
             
             VBox redPotInfo = new VBox(10);
@@ -767,17 +767,17 @@ public class PuissanceXFX extends Application {
             leftBox.getChildren().addAll(redLabel, redPotInfo);
             root.setLeft(leftBox);
             
-            // Recréer le conteneur droit (pot jaune)
+            // Recreate right container (yellow pot)
             VBox rightBox = new VBox(20);
             rightBox.setAlignment(Pos.CENTER);
             rightBox.setPadding(new Insets(0, 0, 0, 20));
             rightBox.setStyle("-fx-background-color: #333333;");
             rightBox.setMinWidth(150);
             
-            Label yellowLabel = new Label("Joueur 2 (Jaune)");
+            Label yellowLabel = new Label("Player 2 (Yellow)");
             yellowLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: yellow;");
             
-            yellowPotLabel = new Label("Pions restants : " + (yellowPot != null ? yellowPot.getRemainingPawns() : 0));
+            yellowPotLabel = new Label("Pieces remaining: " + (yellowPot != null ? yellowPot.getRemainingPawns() : 0));
             yellowPotLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: yellow;");
             
             VBox yellowPotInfo = new VBox(10);
@@ -789,11 +789,11 @@ public class PuissanceXFX extends Application {
             rightBox.getChildren().addAll(yellowLabel, yellowPotInfo);
             root.setRight(rightBox);
             
-            // Mettre à jour le plateau
+            // Update the board
             updateBoard();
         }
         
-        // Réinitialiser le statut
+        // Reset status
         if (statusLabel != null) {
             statusLabel.setTextFill(Color.WHITE);
         }

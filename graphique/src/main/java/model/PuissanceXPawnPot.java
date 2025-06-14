@@ -5,8 +5,8 @@ import boardifier.model.GameElement;
 import boardifier.model.GameStageModel;
 
 /**
- * Connect4PawnPot représente un pot contenant des pions pour un joueur.
- * Ce conteneur stocke les pions disponibles pour un joueur du jeu Connect4.
+ * PuissanceXPawnPot represents a pot containing pawns for a player.
+ * This container stores the available pawns for a PuissanceX game player.
  */
 public class PuissanceXPawnPot extends ContainerElement {
     private int remainingPawns;
@@ -17,8 +17,8 @@ public class PuissanceXPawnPot extends ContainerElement {
     }
 
     /**
-     * Retourne le nombre de pions restants dans le pot.
-     * @return nombre de pions restants
+     * Returns the number of remaining pawns in the pot.
+     * @return number of remaining pawns
      */
     public int getRemainingPawns() {
         return remainingPawns;

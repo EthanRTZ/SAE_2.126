@@ -16,54 +16,54 @@ public class PuissanceXStageFactory extends StageElementsFactory {
 
     @Override
     public void setup() {
-        // Créer le texte qui affiche le nom du joueur
+        // Create the text that displays the player name
         TextElement text = new TextElement(stageModel.getCurrentPlayerName(), stageModel);
         text.setLocation(0, 0);
         stageModel.setPlayerName(text);
 
-        // Récupérer les dimensions choisies par l'utilisateur depuis le modèle
+        // Get the dimensions chosen by the user from the model
         PuissanceXBoard board = new PuissanceXBoard(0, 1, stageModel,
                                              stageModel.getNbRows(), 
                                              stageModel.getNbCols(), 
                                              stageModel.getNbToAlign());
         stageModel.setBoard(board);
 
-        // Calculer le nombre total de pions nécessaires
+        // Calculate the total number of pawns needed
         int nbCols = stageModel.getNbCols();
         int nbRows = stageModel.getNbRows();
         int totalPawns = nbCols * nbRows;
         
-        // Calculer la position des pots en fonction de la taille du plateau
+        // Calculate pot positions based on board size
         int boardEndX = nbCols;
-        int yellowPotX = -4; // Position à gauche du plateau
-        int redPotX = boardEndX + 3; // Position à droite du plateau
+        int yellowPotX = -4; // Position to the left of the board
+        int redPotX = boardEndX + 3; // Position to the right of the board
 
-        // Calculer le nombre de pions pour chaque joueur
+        // Calculate the number of pawns for each player
         int pawnsPerPlayerYellow = totalPawns / 2;
         int pawnsPerPlayerRed = pawnsPerPlayerYellow;
         if (totalPawns % 2 != 0) {
-            pawnsPerPlayerRed++; // Rouge a 1 pion de plus si impair
+            pawnsPerPlayerRed++; // Red has 1 more pawn if odd
         }
 
-        // Créer les pots de pions avec la capacité maximale
+        // Create pawn pots with maximum capacity
         PuissanceXPawnPot yellowPot = new PuissanceXPawnPot(yellowPotX, 1, stageModel, pawnsPerPlayerYellow);
         PuissanceXPawnPot redPot = new PuissanceXPawnPot(redPotX, 1, stageModel, pawnsPerPlayerRed);
         
-        // Assigner les pots au modèle
+        // Assign pots to the model
         stageModel.setYellowPot(yellowPot);
         stageModel.setRedPot(redPot);
 
-        // Créer les pions pour chaque joueur et les ajouter dans leur pot
+        // Create pawns for each player and add them to their pot
         List<Pawn> pawns = new ArrayList<>();
         
-        // Créer et ajouter les pions jaunes
+        // Create and add yellow pawns
         for (int i = 0; i < pawnsPerPlayerYellow; i++) {
             Pawn yellowPawn = new Pawn(i + 1, Pawn.PAWN_YELLOW, stageModel);
             pawns.add(yellowPawn);
             yellowPot.addElement(yellowPawn, 0, i);
         }
 
-        // Créer et ajouter les pions rouges (peut avoir un pion de plus)
+        // Create and add red pawns (may have one more pawn)
         for (int i = 0; i < pawnsPerPlayerRed; i++) {
             Pawn redPawn = new Pawn(i + 1, Pawn.PAWN_RED, stageModel);
             pawns.add(redPawn);

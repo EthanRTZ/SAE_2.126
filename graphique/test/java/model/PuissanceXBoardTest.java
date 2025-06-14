@@ -33,7 +33,7 @@ public class PuissanceXBoardTest {
         assertEquals(NB_ROWS, board.getNbRows());
         assertEquals(NB_ALIGN, board.getNbAlign());
         
-        // Vérifier que toutes les cases sont vides (-1)
+        // Check that all cells are empty (-1)
         int[][] grid = board.getGrid();
         for (int i = 0; i < NB_ROWS; i++) {
             for (int j = 0; j < NB_COLS; j++) {
@@ -45,7 +45,7 @@ public class PuissanceXBoardTest {
     @Test
     void testColonnePleine() {
         int col = 0;
-        // Remplir une colonne
+        // Fill a column
         for (int i = NB_ROWS - 1; i >= 0; i--) {
             board.getGrid()[i][col] = 1;
         }
@@ -57,7 +57,7 @@ public class PuissanceXBoardTest {
     @Test
     void testVictoireHorizontale() {
         int row = NB_ROWS - 1;
-        // Placer 4 pions alignés horizontalement
+        // Place 4 pawns aligned horizontally
         for (int col = 0; col < NB_ALIGN; col++) {
             board.getGrid()[row][col] = 1;
         }
@@ -68,7 +68,7 @@ public class PuissanceXBoardTest {
     @Test
     void testVictoireVerticale() {
         int col = 0;
-        // Placer 4 pions alignés verticalement
+        // Place 4 pawns aligned vertically
         for (int row = NB_ROWS - 1; row >= NB_ROWS - NB_ALIGN; row--) {
             board.getGrid()[row][col] = 1;
         }
@@ -78,7 +78,7 @@ public class PuissanceXBoardTest {
     
     @Test
     void testVictoireDiagonale() {
-        // Créer une configuration diagonale
+        // Create a diagonal configuration
         for (int i = 0; i < NB_ALIGN; i++) {
             board.getGrid()[NB_ROWS - 1 - i][i] = 1;
         }
@@ -88,7 +88,7 @@ public class PuissanceXBoardTest {
     
     @Test
     void testPasDeVictoire() {
-        // Placer des pions sans créer d'alignement
+        // Place pawns without creating an alignment
         for (int col = 0; col < 3; col++) {
             board.getGrid()[NB_ROWS - 1][col] = 1;
         }
@@ -98,7 +98,7 @@ public class PuissanceXBoardTest {
     
     @Test
     void testPlateauPlein() {
-        // Remplir tout le plateau
+        // Fill the entire board
         for (int i = 0; i < NB_ROWS; i++) {
             for (int j = 0; j < NB_COLS; j++) {
                 board.getGrid()[i][j] = (i + j) % 2;
@@ -110,14 +110,14 @@ public class PuissanceXBoardTest {
     
     @Test
     void testClear() {
-        // Remplir quelques cases
+        // Fill some cells
         board.getGrid()[0][0] = 1;
         board.getGrid()[1][1] = 2;
         
-        // Nettoyer le plateau
+        // Clear the board
         board.clear();
         
-        // Vérifier que toutes les cases sont vides
+        // Check that all cells are empty
         int[][] grid = board.getGrid();
         for (int i = 0; i < NB_ROWS; i++) {
             for (int j = 0; j < NB_COLS; j++) {

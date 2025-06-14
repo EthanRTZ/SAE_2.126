@@ -46,12 +46,12 @@ public class PuissanceXBoard extends ContainerElement {
         return grid;
     }
 
-    // Vérifie si une colonne est pleine
+    // Check if a column is full
     public boolean isColumnFull(int col) {
         return grid[0][col] != -1;
     }
 
-    // Trouve la première ligne vide dans une colonne
+    // Find the first empty row in a column
     public int getFirstEmptyRow(int col) {
         for (int i = nbRows - 1; i >= 0; i--) {
             if (grid[i][col] == -1) {
@@ -61,7 +61,7 @@ public class PuissanceXBoard extends ContainerElement {
         return -1;
     }
 
-    // Vérifie si le plateau est plein
+    // Check if the board is full
     public boolean isBoardFull() {
         for (int j = 0; j < nbCols; j++) {
             if (!isColumnFull(j)) {
@@ -71,75 +71,75 @@ public class PuissanceXBoard extends ContainerElement {
         return true;
     }
 
-    // Vérifie si un joueur a gagné
+    // Check if a player has won
     public boolean checkWin(int row, int col, int playerColor) {
-        System.out.println("PuissanceXBoard - Vérification de victoire pour : ligne=" + row + ", colonne=" + col + ", couleur=" + (playerColor == Pawn.PAWN_YELLOW ? "JAUNE" : "ROUGE"));
+        System.out.println("PuissanceXBoard - Victory check for: row=" + row + ", column=" + col + ", color=" + (playerColor == Pawn.PAWN_YELLOW ? "YELLOW" : "RED"));
 
-        // Vérifier horizontalement
+        // Check horizontally
         int count = 0;
-        // Vérifier à gauche du pion placé
+        // Check to the left of the placed pawn
         for (int j = col; j >= 0 && grid[row][j] == playerColor; j--) {
             count++;
         }
-        // Vérifier à droite du pion placé (sans recompter le pion placé)
+        // Check to the right of the placed pawn (without recounting the placed pawn)
         for (int j = col + 1; j < nbCols && grid[row][j] == playerColor; j++) {
             count++;
         }
         if (count >= nbAlign) {
-            System.out.println("PuissanceXBoard - Victoire horizontale détectée !");
+            System.out.println("PuissanceXBoard - Horizontal victory detected!");
             return true;
         }
 
-        // Vérifier verticalement
+        // Check vertically
         count = 0;
-        // Vérifier en haut du pion placé
+        // Check above the placed pawn
         for (int i = row; i >= 0 && grid[i][col] == playerColor; i--) {
             count++;
         }
-        // Vérifier en bas du pion placé (sans recompter le pion placé)
+        // Check below the placed pawn (without recounting the placed pawn)
         for (int i = row + 1; i < nbRows && grid[i][col] == playerColor; i++) {
             count++;
         }
         if (count >= nbAlign) {
-            System.out.println("PuissanceXBoard - Victoire verticale détectée !");
+            System.out.println("PuissanceXBoard - Vertical victory detected!");
             return true;
         }
 
-        // Vérifier diagonalement (haut gauche vers bas droite)
+        // Check diagonally (top left to bottom right)
         count = 0;
-        // Vérifier en haut à gauche du pion placé
+        // Check to the top left of the placed pawn
         for (int i = row, j = col; i >= 0 && j >= 0 && grid[i][j] == playerColor; i--, j--) {
             count++;
         }
-        // Vérifier en bas à droite du pion placé (sans recompter le pion placé)
+        // Check to the bottom right of the placed pawn (without recounting the placed pawn)
         for (int i = row + 1, j = col + 1; i < nbRows && j < nbCols && grid[i][j] == playerColor; i++, j++) {
             count++;
         }
         if (count >= nbAlign) {
-            System.out.println("PuissanceXBoard - Victoire diagonale \\ détectée !");
+            System.out.println("PuissanceXBoard - Diagonal \\ victory detected!");
             return true;
         }
 
-        // Vérifier diagonalement (haut droite vers bas gauche)
+        // Check diagonally (top right to bottom left)
         count = 0;
-        // Vérifier en haut à droite du pion placé
+        // Check to the top right of the placed pawn
         for (int i = row, j = col; i >= 0 && j < nbCols && grid[i][j] == playerColor; i--, j++) {
             count++;
         }
-        // Vérifier en bas à gauche du pion placé (sans recompter le pion placé)
+        // Check to the bottom left of the placed pawn (without recounting the placed pawn)
         for (int i = row + 1, j = col - 1; i < nbRows && j >= 0 && grid[i][j] == playerColor; i++, j--) {
             count++;
         }
         if (count >= nbAlign) {
-            System.out.println("PuissanceXBoard - Victoire diagonale / détectée !");
+            System.out.println("PuissanceXBoard - Diagonal / victory detected!");
             return true;
         }
 
-        // Vérification supplémentaire de toutes les directions
+        // Additional verification in all directions
         for (int startRow = 0; startRow < nbRows; startRow++) {
             for (int startCol = 0; startCol < nbCols; startCol++) {
                 if (grid[startRow][startCol] == playerColor) {
-                    // Vérifier horizontalement
+                    // Check horizontally
                     if (startCol <= nbCols - nbAlign) {
                         count = 1;
                         for (int k = 1; k < nbAlign; k++) {
@@ -150,12 +150,12 @@ public class PuissanceXBoard extends ContainerElement {
                             }
                         }
                         if (count >= nbAlign) {
-                            System.out.println("PuissanceXBoard - Victoire horizontale détectée (vérification supplémentaire) !");
+                            System.out.println("PuissanceXBoard - Horizontal victory detected (additional verification)!");
                             return true;
                         }
                     }
                     
-                    // Vérifier verticalement
+                    // Check vertically
                     if (startRow <= nbRows - nbAlign) {
                         count = 1;
                         for (int k = 1; k < nbAlign; k++) {
@@ -166,12 +166,12 @@ public class PuissanceXBoard extends ContainerElement {
                             }
                         }
                         if (count >= nbAlign) {
-                            System.out.println("PuissanceXBoard - Victoire verticale détectée (vérification supplémentaire) !");
+                            System.out.println("PuissanceXBoard - Vertical victory detected (additional verification)!");
                             return true;
                         }
                     }
                     
-                    // Vérifier diagonale descendante
+                    // Check descending diagonal
                     if (startRow <= nbRows - nbAlign && startCol <= nbCols - nbAlign) {
                         count = 1;
                         for (int k = 1; k < nbAlign; k++) {
@@ -182,12 +182,12 @@ public class PuissanceXBoard extends ContainerElement {
                             }
                         }
                         if (count >= nbAlign) {
-                            System.out.println("PuissanceXBoard - Victoire diagonale \\ détectée (vérification supplémentaire) !");
+                            System.out.println("PuissanceXBoard - Diagonal \\ victory detected (additional verification)!");
                             return true;
                         }
                     }
                     
-                    // Vérifier diagonale montante
+                    // Check ascending diagonal
                     if (startRow >= nbAlign - 1 && startCol <= nbCols - nbAlign) {
                         count = 1;
                         for (int k = 1; k < nbAlign; k++) {
@@ -198,7 +198,7 @@ public class PuissanceXBoard extends ContainerElement {
                             }
                         }
                         if (count >= nbAlign) {
-                            System.out.println("PuissanceXBoard - Victoire diagonale / détectée (vérification supplémentaire) !");
+                            System.out.println("PuissanceXBoard - Diagonal / victory detected (additional verification)!");
                             return true;
                         }
                     }
@@ -209,7 +209,7 @@ public class PuissanceXBoard extends ContainerElement {
         return false;
     }
 
-    // Réinitialise le plateau
+    // Reset the board
     public void clear() {
         for (int i = 0; i < nbRows; i++) {
             for (int j = 0; j < nbCols; j++) {
