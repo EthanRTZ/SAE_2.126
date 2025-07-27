@@ -8,6 +8,7 @@ import boardifier.view.View;
 import control.PuissanceXController;
 import control.PuissanceXDecider;
 import control.PuissanceXSmartDecider;
+import control.PuissanceXHardDecider;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -54,6 +55,15 @@ public class PuissanceXFX extends Application {
     private Label redPotLabel;
     private Label yellowPotLabel;
 
+    private boolean isDarkTheme = true; // Thème sombre par défaut
+    private Scene configScene;
+    private Scene gameScene;
+    private BorderPane gameRoot;
+    private VBox configBox;
+
+    private String player1Name = "Player 1 (Red)";
+    private String player2Name = "Player 2 (Yellow)";
+
     @Override
     public void start(Stage primaryStage) {
         createConfigScene(primaryStage);
@@ -74,56 +84,62 @@ public class PuissanceXFX extends Application {
     }
 
     private void createConfigScene(Stage stage) {
-        VBox configBox = new VBox(20);
+        configBox = new VBox(20);
         configBox.setAlignment(Pos.CENTER);
-        configBox.setPadding(new Insets(20));
-        configBox.setStyle("-fx-background-color: #333333;");
+        configBox.setPadding(new Insets(30));
+        // Style appliqué plus bas via applyTheme()
 
-        String labelStyle = "-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: white;";
+        String labelStyle = "-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #f5f5f5; -fx-effect: dropshadow(gaussian, #00000055, 2, 0.2, 0, 1);";
 
-        Label modeLabel = new Label("Game mode");
+        Label modeLabel = new Label("Mode de jeu");
         modeLabel.setStyle(labelStyle);
         ComboBox<String> modeCombo = new ComboBox<>();
         modeCombo.getItems().addAll("Player vs Player", "Player vs Computer", "Computer vs Computer");
         modeCombo.setValue("Player vs Computer");
-        modeCombo.setStyle("-fx-font-size: 14px;");
-        modeCombo.setPrefWidth(300);
+        modeCombo.setStyle("-fx-font-size: 16px; -fx-background-radius: 10px; -fx-border-radius: 10px;");
+        modeCombo.setPrefWidth(320);
 
-        // Level for player 1 (or bot 1)
-        Label levelLabel1 = new Label("Player 1 Level");
+        Label levelLabel1 = new Label("Niveau Joueur 1");
         levelLabel1.setStyle(labelStyle);
         ComboBox<String> levelCombo1 = new ComboBox<>();
-        levelCombo1.getItems().addAll("Human", "Easy Bot", "Medium Bot");
-        levelCombo1.setValue("Human");
-        levelCombo1.setStyle("-fx-font-size: 14px;");
-        levelCombo1.setPrefWidth(300);
-        levelCombo1.setDisable(true); // Disabled by default
+        levelCombo1.setStyle("-fx-font-size: 16px; -fx-background-radius: 10px; -fx-border-radius: 10px;");
+        levelCombo1.setPrefWidth(320);
 
-        // Level for player 2 (or bot 2)
-        Label levelLabel2 = new Label("Player 2 Level");
+        Label levelLabel2 = new Label("Niveau Joueur 2");
         levelLabel2.setStyle(labelStyle);
         ComboBox<String> levelCombo2 = new ComboBox<>();
-        levelCombo2.getItems().addAll("Human", "Easy Bot", "Medium Bot");
-        levelCombo2.setValue("Medium Bot");
-        levelCombo2.setStyle("-fx-font-size: 14px;");
-        levelCombo2.setPrefWidth(300);
+        levelCombo2.setStyle("-fx-font-size: 16px; -fx-background-radius: 10px; -fx-border-radius: 10px;");
+        levelCombo2.setPrefWidth(320);
 
-        // Handle enabling/disabling level combos based on mode
+        levelCombo1.getItems().setAll("Human");
+        levelCombo1.setValue("Human");
+        levelCombo1.setDisable(true);
+
+        levelCombo2.getItems().setAll("Easy Bot", "Medium Bot", "Hard Bot");
+        levelCombo2.setValue("Medium Bot");
+        levelCombo2.setDisable(false);
+
         modeCombo.setOnAction(e -> {
             switch (modeCombo.getValue()) {
                 case "Player vs Player":
+                    levelCombo1.getItems().setAll("Human");
+                    levelCombo2.getItems().setAll("Human");
                     levelCombo1.setValue("Human");
                     levelCombo2.setValue("Human");
                     levelCombo1.setDisable(true);
                     levelCombo2.setDisable(true);
                     break;
                 case "Player vs Computer":
+                    levelCombo1.getItems().setAll("Human");
+                    levelCombo2.getItems().setAll("Easy Bot", "Medium Bot", "Hard Bot");
                     levelCombo1.setValue("Human");
                     levelCombo2.setValue("Medium Bot");
                     levelCombo1.setDisable(true);
                     levelCombo2.setDisable(false);
                     break;
                 case "Computer vs Computer":
+                    levelCombo1.getItems().setAll("Easy Bot", "Medium Bot", "Hard Bot");
+                    levelCombo2.getItems().setAll("Easy Bot", "Medium Bot", "Hard Bot");
                     levelCombo1.setValue("Medium Bot");
                     levelCombo2.setValue("Medium Bot");
                     levelCombo1.setDisable(false);
@@ -132,36 +148,38 @@ public class PuissanceXFX extends Application {
             }
         });
 
-        Label colsLabel = new Label("Number of columns");
+        Label colsLabel = new Label("Nombre de colonnes");
         colsLabel.setStyle(labelStyle);
         Spinner<Integer> colsSpinner = new Spinner<>(4, 12, 7);
-        colsSpinner.setStyle("-fx-font-size: 14px;");
-        colsSpinner.setPrefWidth(300);
+        colsSpinner.setStyle("-fx-font-size: 16px; -fx-background-radius: 10px; -fx-border-radius: 10px;");
+        colsSpinner.setPrefWidth(320);
 
-        Label rowsLabel = new Label("Number of rows");
+        Label rowsLabel = new Label("Nombre de lignes");
         rowsLabel.setStyle(labelStyle);
         Spinner<Integer> rowsSpinner = new Spinner<>(4, 12, 6);
-        rowsSpinner.setStyle("-fx-font-size: 14px;");
-        rowsSpinner.setPrefWidth(300);
+        rowsSpinner.setStyle("-fx-font-size: 16px; -fx-background-radius: 10px; -fx-border-radius: 10px;");
+        rowsSpinner.setPrefWidth(320);
 
-        Label alignLabel = new Label("Number of pieces to align");
+        Label alignLabel = new Label("Pions à aligner");
         alignLabel.setStyle(labelStyle);
         Spinner<Integer> alignSpinner = new Spinner<>(3, 8, 4);
-        alignSpinner.setStyle("-fx-font-size: 14px;");
-        alignSpinner.setPrefWidth(300);
+        alignSpinner.setStyle("-fx-font-size: 16px; -fx-background-radius: 10px; -fx-border-radius: 10px;");
+        alignSpinner.setPrefWidth(320);
 
-        Button startButton = new Button("Start");
-        startButton.setStyle("-fx-font-size: 16px; -fx-padding: 10 20 10 20; -fx-background-color: #444444; -fx-text-fill: white; -fx-border-color: #666666;");
+        Button startButton = new Button("Démarrer la partie");
+        startButton.setStyle("-fx-font-size: 18px; -fx-padding: 12 32 12 32; -fx-background-color: linear-gradient(from 0% 0% to 100% 0%, #ff512f 0%, #dd2476 100%);"
+            + "-fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 20px; -fx-border-radius: 20px; -fx-effect: dropshadow(gaussian, #00000055, 4, 0.2, 0, 2);");
+        startButton.setOnMouseEntered(ev -> startButton.setStyle("-fx-font-size: 18px; -fx-padding: 12 32 12 32; -fx-background-color: linear-gradient(from 0% 0% to 100% 0%, #dd2476 0%, #ff512f 100%);"
+            + "-fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 20px; -fx-border-radius: 20px; -fx-effect: dropshadow(gaussian, #00000099, 8, 0.3, 0, 4);"));
+        startButton.setOnMouseExited(ev -> startButton.setStyle("-fx-font-size: 18px; -fx-padding: 12 32 12 32; -fx-background-color: linear-gradient(from 0% 0% to 100% 0%, #ff512f 0%, #dd2476 100%);"
+            + "-fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 20px; -fx-border-radius: 20px; -fx-effect: dropshadow(gaussian, #00000055, 4, 0.2, 0, 2);"));
         startButton.setOnAction(e -> {
             nbCols = colsSpinner.getValue();
             nbRows = rowsSpinner.getValue();
             nbAlign = alignSpinner.getValue();
-            
-            // Initialize the game with chosen levels
             String mode = modeCombo.getValue();
             String level1 = levelCombo1.getValue();
             String level2 = levelCombo2.getValue();
-            
             initializeGame(mode, level1, level2);
             createGameScene();
         });
@@ -176,16 +194,23 @@ public class PuissanceXFX extends Application {
             startButton
         );
 
-        Scene configScene = new Scene(configBox, 600, 600);
-        configScene.setFill(Color.web("#333333"));
+        Button themeButton = new Button("Thème clair");
+        themeButton.setStyle("-fx-font-size: 14px; -fx-padding: 8 20 8 20; -fx-background-radius: 12px; -fx-background-color: #444; -fx-text-fill: #fff;");
+        themeButton.setOnAction(e -> {
+            isDarkTheme = !isDarkTheme;
+            applyTheme();
+            themeButton.setText(isDarkTheme ? "Thème clair" : "Thème sombre");
+        });
+
+        configBox.getChildren().add(themeButton);
+
+        configScene = new Scene(configBox, 600, 650);
+        applyTheme();
         stage.setTitle("Puissance X");
         stage.setScene(configScene);
-        
-        // Allow resizing and fullscreen
         stage.setResizable(true);
         stage.setMinWidth(500);
         stage.setMinHeight(500);
-        
         stage.show();
     }
 
@@ -205,15 +230,26 @@ public class PuissanceXFX extends Application {
             case "Player vs Player":
                 model.addHumanPlayer("Player 1");
                 model.addHumanPlayer("Player 2");
+                player1Name = "Player 1 (Red)";
+                player2Name = "Player 2 (Yellow)";
                 break;
             case "Player vs Computer":
                 model.addHumanPlayer("Player 1");
+                player1Name = "Player 1 (Red)";
+
+                // Ajout du niveau "Hard Bot"
                 if (level2.equals("Easy Bot")) {
                     computerLevel = 0; // SmartDecider = easy
                     model.addComputerPlayer("Computer (Easy)");
+                    player2Name = "Computer (Easy)";
+                } else if (level2.equals("Hard Bot")) {
+                    computerLevel = 2; // HardDecider = hard
+                    model.addComputerPlayer("Computer (Hard)");
+                    player2Name = "Computer (Hard)";
                 } else {
                     computerLevel = 1; // Decider = medium
                     model.addComputerPlayer("Computer (Medium)");
+                    player2Name = "Computer (Medium)";
                 }
                 break;
             case "Computer vs Computer":
@@ -221,17 +257,29 @@ public class PuissanceXFX extends Application {
                 if (level1.equals("Easy Bot")) {
                     computerLevel = 0; // SmartDecider = easy
                     model.addComputerPlayer("Computer 1 (Easy)");
+                    player1Name = "Computer 1 (Easy)";
+                } else if (level1.equals("Hard Bot")) {
+                    computerLevel = 2; // HardDecider = hard
+                    model.addComputerPlayer("Computer 1 (Hard)");
+                    player1Name = "Computer 1 (Hard)";
                 } else {
                     computerLevel = 1; // Decider = medium
                     model.addComputerPlayer("Computer 1 (Medium)");
+                    player1Name = "Computer 1 (Medium)";
                 }
                 // Second bot
                 if (level2.equals("Easy Bot")) {
                     computerLevel = 0; // SmartDecider = easy
                     model.addComputerPlayer("Computer 2 (Easy)");
+                    player2Name = "Computer 2 (Easy)";
+                } else if (level2.equals("Hard Bot")) {
+                    computerLevel = 2; // HardDecider = hard
+                    model.addComputerPlayer("Computer 2 (Hard)");
+                    player2Name = "Computer 2 (Hard)";
                 } else {
                     computerLevel = 1; // Decider = medium
                     model.addComputerPlayer("Computer 2 (Medium)");
+                    player2Name = "Computer 2 (Medium)";
                 }
                 break;
         }
@@ -263,128 +311,132 @@ public class PuissanceXFX extends Application {
             }
         }
         
-        BorderPane root = new BorderPane();
-        root.setPadding(new Insets(40));
-        root.setStyle("-fx-background-color: #333333;");
+        gameRoot = new BorderPane();
+        gameRoot.setPadding(new Insets(40));
+        // Style appliqué plus bas via applyTheme()
 
-        // Style for labels
-        String labelStyle = "-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: white;";
-        
-        // Top panel (scores and status)
+        String labelStyle = "-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #f5f5f5; -fx-effect: dropshadow(gaussian, #00000055, 2, 0.2, 0, 1);";
+
         VBox topBox = new VBox(15);
         topBox.setAlignment(Pos.CENTER);
-        topBox.setStyle("-fx-background-color: #333333;");
-        
-        scoreLabel = new Label("Score: Player 1 (Red) : " + scoreJoueur1 + " - Player 2 (Yellow) : " + scoreJoueur2);
+        topBox.setStyle("-fx-background-color: transparent;");
+
+        scoreLabel = new Label("Score: " + player1Name + " : " + scoreJoueur1 + " - " + player2Name + " : " + scoreJoueur2);
         scoreLabel.setStyle(labelStyle);
-        
+
         statusLabel = new Label("Next player: " + model.getCurrentPlayer().getName());
         statusLabel.setStyle(labelStyle);
-        
+
         topBox.getChildren().addAll(scoreLabel, statusLabel);
-        root.setTop(topBox);
-        
-        // Center panel (game board)
+        gameRoot.setTop(topBox);
+
         VBox centerBox = new VBox(20);
         centerBox.setAlignment(Pos.CENTER);
-        centerBox.setStyle("-fx-background-color: #333333;");
-        
-        // Create the game board
+        centerBox.setStyle("-fx-background-color: transparent;");
+
         gameBoard = new GridPane();
         gameBoard.setHgap(10);
         gameBoard.setVgap(10);
         gameBoard.setAlignment(Pos.CENTER);
-        gameBoard.setStyle("-fx-background-color: #333333;");
-        
+        gameBoard.setStyle("-fx-background-color: transparent;");
+
         updateBoard();
-        
+
         centerBox.getChildren().add(gameBoard);
-        root.setCenter(centerBox);
-        
-        // Left panel (red pot)
+        gameRoot.setCenter(centerBox);
+
         VBox leftBox = new VBox(20);
         leftBox.setAlignment(Pos.CENTER);
         leftBox.setPadding(new Insets(0, 20, 0, 0));
-        leftBox.setStyle("-fx-background-color: #333333;");
+        leftBox.setStyle("-fx-background-color: transparent;");
         leftBox.setMinWidth(150);
-        
-        Label redLabel = new Label("Player 1 (Red)");
-        redLabel.setStyle(labelStyle + "; -fx-text-fill: red;");
-        
+
+        Label redLabel = new Label(player1Name);
+        redLabel.setStyle(labelStyle + "; -fx-text-fill: #ff4b2b;");
+
         redPot = new PuissanceXPawnPot(80, 80, stageModel, (nbRows * nbCols + 1) / 2);
         stageModel.setRedPot(redPot);
-        
+
         redPotLabel = new Label("Pieces remaining: " + redPot.getRemainingPawns());
-        redPotLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: red;");
-        
+        redPotLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #ff4b2b;");
+
         VBox redPotInfo = new VBox(10);
         redPotInfo.setAlignment(Pos.CENTER);
-        redPotInfo.setStyle("-fx-background-color: #444444; -fx-border-color: #666666; -fx-border-width: 2; -fx-padding: 20;");
+        // Style dynamique appliqué dans applyTheme()
         redPotInfo.setMinHeight(100);
+        redPotInfo.setStyle("-fx-background-color: #2d2d2d; -fx-border-color: #ff4b2b; -fx-border-width: 2; -fx-padding: 20; -fx-background-radius: 15px; -fx-border-radius: 15px;");
         redPotInfo.getChildren().add(redPotLabel);
-        
+
         leftBox.getChildren().addAll(redLabel, redPotInfo);
-        root.setLeft(leftBox);
-        
-        // Right panel (yellow pot)
+        gameRoot.setLeft(leftBox);
+
         VBox rightBox = new VBox(20);
         rightBox.setAlignment(Pos.CENTER);
         rightBox.setPadding(new Insets(0, 0, 0, 20));
-        rightBox.setStyle("-fx-background-color: #333333;");
+        rightBox.setStyle("-fx-background-color: transparent;");
         rightBox.setMinWidth(150);
-        
-        Label yellowLabel = new Label("Player 2 (Yellow)");
-        yellowLabel.setStyle(labelStyle + "; -fx-text-fill: yellow;");
-        
+
+        Label yellowLabel = new Label(player2Name);
+        yellowLabel.setStyle(labelStyle + "; -fx-text-fill: #ffe259;");
+
         yellowPot = new PuissanceXPawnPot(80, 80, stageModel, nbRows * nbCols / 2);
         stageModel.setYellowPot(yellowPot);
-        
+
         yellowPotLabel = new Label("Pieces remaining: " + yellowPot.getRemainingPawns());
-        yellowPotLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: yellow;");
-        
+        yellowPotLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #ffe259;");
+
         VBox yellowPotInfo = new VBox(10);
         yellowPotInfo.setAlignment(Pos.CENTER);
-        yellowPotInfo.setStyle("-fx-background-color: #444444; -fx-border-color: #666666; -fx-border-width: 2; -fx-padding: 20;");
+        // Style dynamique appliqué dans applyTheme()
         yellowPotInfo.setMinHeight(100);
+        yellowPotInfo.setStyle("-fx-background-color: #2d2d2d; -fx-border-color: #ffe259; -fx-border-width: 2; -fx-padding: 20; -fx-background-radius: 15px; -fx-border-radius: 15px;");
         yellowPotInfo.getChildren().add(yellowPotLabel);
-        
+
         rightBox.getChildren().addAll(yellowLabel, yellowPotInfo);
-        root.setRight(rightBox);
-        
-        // Bottom panel (new game button when needed)
+        gameRoot.setRight(rightBox);
+
         VBox bottomBox = new VBox(10);
         bottomBox.setAlignment(Pos.CENTER);
         bottomBox.setPadding(new Insets(20, 0, 0, 0));
-        bottomBox.setStyle("-fx-background-color: #333333;");
-        
-        // Add a button to toggle fullscreen
-        Button fullscreenButton = new Button("Fullscreen (F11)");
-        fullscreenButton.setStyle("-fx-font-size: 14px; -fx-padding: 8 16 8 16; -fx-background-color: #555555; -fx-text-fill: white; -fx-border-color: #777777;");
+        bottomBox.setStyle("-fx-background-color: transparent;");
+
+        Button fullscreenButton = new Button("Plein écran (F11)");
+        fullscreenButton.setStyle("-fx-font-size: 16px; -fx-padding: 10 24 10 24; -fx-background-color: linear-gradient(from 0% 0% to 100% 0%, #36d1c4 0%, #1e90ff 100%);"
+            + "-fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 16px; -fx-border-radius: 16px; -fx-effect: dropshadow(gaussian, #00000055, 4, 0.2, 0, 2);");
+        fullscreenButton.setOnMouseEntered(ev -> fullscreenButton.setStyle("-fx-font-size: 16px; -fx-padding: 10 24 10 24; -fx-background-color: linear-gradient(from 0% 0% to 100% 0%, #1e90ff 0%, #36d1c4 100%);"
+            + "-fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 16px; -fx-border-radius: 16px; -fx-effect: dropshadow(gaussian, #00000099, 8, 0.3, 0, 4);"));
+        fullscreenButton.setOnMouseExited(ev -> fullscreenButton.setStyle("-fx-font-size: 16px; -fx-padding: 10 24 10 24; -fx-background-color: linear-gradient(from 0% 0% to 100% 0%, #36d1c4 0%, #1e90ff 100%);"
+            + "-fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 16px; -fx-border-radius: 16px; -fx-effect: dropshadow(gaussian, #00000055, 4, 0.2, 0, 2);"));
         fullscreenButton.setOnAction(e -> {
             gameStage.setFullScreen(!gameStage.isFullScreen());
-            fullscreenButton.setText(gameStage.isFullScreen() ? "Exit fullscreen (F11)" : "Fullscreen (F11)");
+            fullscreenButton.setText(gameStage.isFullScreen() ? "Quitter le plein écran (F11)" : "Plein écran (F11)");
         });
-        
-        bottomBox.getChildren().add(fullscreenButton);
-        root.setBottom(bottomBox);
-        
-        Scene gameScene = new Scene(root, 1000, 800);
-        gameScene.setFill(Color.web("#333333"));
-        gameStage.setTitle("Puissance X - Game in progress");
+
+        Button themeButton = new Button(isDarkTheme ? "Thème clair" : "Thème sombre");
+        themeButton.setStyle("-fx-font-size: 14px; -fx-padding: 8 20 8 20; -fx-background-radius: 12px; -fx-background-color: #444; -fx-text-fill: #fff;");
+        themeButton.setOnAction(e -> {
+            isDarkTheme = !isDarkTheme;
+            applyTheme();
+            themeButton.setText(isDarkTheme ? "Thème clair" : "Thème sombre");
+        });
+
+        bottomBox.getChildren().addAll(fullscreenButton, themeButton);
+        gameRoot.setBottom(bottomBox);
+
+        gameScene = new Scene(gameRoot, 1000, 800);
+        applyTheme();
+        gameStage.setTitle("Puissance X - Partie en cours");
         gameStage.setScene(gameScene);
-        
-        // Allow resizing and fullscreen
         gameStage.setResizable(true);
         gameStage.setMinWidth(800);
         gameStage.setMinHeight(600);
-        
-        // Add keyboard shortcut to toggle fullscreen (F11)
+
         gameScene.setOnKeyPressed(e -> {
             if (e.getCode() == javafx.scene.input.KeyCode.F11) {
                 gameStage.setFullScreen(!gameStage.isFullScreen());
             }
         });
-        
+
         gameStage.show();
 
         // If it's a computer turn, play automatically after the scene is initialized
@@ -404,40 +456,111 @@ public class PuissanceXFX extends Application {
         }
     }
 
+    // Ajout des références pour le style dynamique
+    private VBox redPotInfo;
+    private VBox yellowPotInfo;
+
+    // Applique le thème sombre ou clair à toutes les scènes et composants principaux
+    private void applyTheme() {
+        // Correction : syntaxe JavaFX pour linear-gradient
+        String darkBg = "-fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #232526 0%, #414345 100%);";
+        String darkBox = "-fx-background-color: #232526;";
+        String darkBorder = "-fx-border-radius: 20px; -fx-background-radius: 20px; -fx-effect: dropshadow(gaussian, #00000088, 30, 0.3, 0, 8);";
+        String lightBg = "-fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #f5f5f5 0%, #e0e0e0 100%);";
+        String lightBox = "-fx-background-color: #f5f5f5;";
+        String lightBorder = "-fx-border-radius: 20px; -fx-background-radius: 20px; -fx-effect: dropshadow(gaussian, #bbbbbb88, 30, 0.3, 0, 8);";
+
+        if (configBox != null) {
+            configBox.setStyle((isDarkTheme ? darkBg : lightBg) + (isDarkTheme ? darkBorder : lightBorder));
+            for (javafx.scene.Node node : configBox.getChildren()) {
+                if (node instanceof Label) {
+                    ((Label) node).setStyle(isDarkTheme
+                        ? "-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #f5f5f5;"
+                        : "-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #232526;");
+                }
+            }
+        }
+        if (configScene != null) {
+            configScene.setFill(isDarkTheme ? Color.web("#232526") : Color.web("#f5f5f5"));
+        }
+        if (gameRoot != null) {
+            gameRoot.setStyle((isDarkTheme ? darkBg : lightBg) + (isDarkTheme ? darkBorder : lightBorder));
+        }
+        if (gameScene != null) {
+            gameScene.setFill(isDarkTheme ? Color.web("#232526") : Color.web("#f5f5f5"));
+        }
+
+        // Garder le fond noir pour les rectangles d'informations des pions restants
+        // mais adapter le reste au thème
+        if (redPotInfo != null) {
+            redPotInfo.setStyle("-fx-background-color: #2d2d2d; -fx-border-color: #ff4b2b; -fx-border-width: 2; -fx-padding: 20; -fx-background-radius: 15px; -fx-border-radius: 15px;");
+        }
+        if (yellowPotInfo != null) {
+            yellowPotInfo.setStyle("-fx-background-color: #2d2d2d; -fx-border-color: #ffe259; -fx-border-width: 2; -fx-padding: 20; -fx-background-radius: 15px; -fx-border-radius: 15px;");
+        }
+
+        // Adapter d'autres éléments selon le thème
+        if (gameRoot != null) {
+            for (javafx.scene.Node node : gameRoot.getChildren()) {
+                if (node instanceof VBox && (node == gameRoot.getTop() || node == gameRoot.getCenter() || node == gameRoot.getBottom())) {
+                    ((VBox) node).setStyle("-fx-background-color: transparent;");
+
+                    // Adapter les textes au thème choisi
+                    for (javafx.scene.Node child : ((VBox) node).getChildren()) {
+                        if (child instanceof Label && child != redPotLabel && child != yellowPotLabel) {
+                            ((Label) child).setStyle(isDarkTheme
+                                ? "-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #f5f5f5;"
+                                : "-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #232526;");
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     private void updateBoard() {
         gameBoard.getChildren().clear();
-        
-        for (int i = 0; i < nbRows; i++) {
-            for (int j = 0; j < nbCols; j++) {
-                // Create a container for the cell
+        int rows = board.getNbRows();
+        int cols = board.getNbCols();
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
                 StackPane cell = new StackPane();
                 cell.setPrefSize(70, 70);
-                cell.setStyle("-fx-background-color: #333333; -fx-border-color: #666666; -fx-border-width: 2;");
-                
-                // Create the circle for the pawn
+                cell.setStyle("-fx-background-color: #232526; -fx-border-color: #888888; -fx-border-width: 2; -fx-background-radius: 50px; -fx-border-radius: 50px;");
+
                 Circle circle = new Circle(30);
-                circle.setFill(Color.WHITE);
-                circle.setStroke(Color.GRAY);
+                circle.setFill(Color.web("#f5f5f5"));
+                circle.setStroke(Color.web("#bbbbbb"));
                 circle.setStrokeWidth(2);
-                
+
+                // Cercle intérieur plus clair
+                Circle innerCircle = new Circle(18);
+                innerCircle.setStrokeWidth(0);
+
                 int value = board.getGrid()[i][j];
                 if (value == Pawn.PAWN_RED) {
-                    circle.setFill(Color.RED);
-                    circle.setStroke(Color.DARKRED);
+                    circle.setFill(Color.web("#ff4b2b"));
+                    circle.setStroke(Color.web("#b22222"));
+                    innerCircle.setFill(Color.web("#ffb3a7")); // rouge clair
                 } else if (value == Pawn.PAWN_YELLOW) {
-                    circle.setFill(Color.YELLOW);
-                    circle.setStroke(Color.GOLDENROD);
+                    circle.setFill(Color.web("#ffe259"));
+                    circle.setStroke(Color.web("#bdb76b"));
+                    innerCircle.setFill(Color.web("#fff9b0")); // jaune clair
+                } else {
+                    innerCircle.setFill(Color.web("#ffffff")); // blanc pour case vide
                 }
-                
-                cell.getChildren().add(circle);
-                
+
+                cell.getChildren().addAll(circle, innerCircle);
+
                 final int col = j;
+                cell.setOnMouseEntered(e -> cell.setStyle("-fx-background-color: #444444; -fx-border-color: #36d1c4; -fx-border-width: 3; -fx-background-radius: 50px; -fx-border-radius: 50px;"));
+                cell.setOnMouseExited(e -> cell.setStyle("-fx-background-color: #232526; -fx-border-color: #888888; -fx-border-width: 2; -fx-background-radius: 50px; -fx-border-radius: 50px;"));
                 cell.setOnMouseClicked(e -> {
                     if (!gameOver && !model.getCurrentPlayer().getName().toLowerCase().contains("computer")) {
                         handlePlayerMove(col);
                     }
                 });
-                
+
                 gameBoard.add(cell, j, i);
             }
         }
@@ -445,43 +568,50 @@ public class PuissanceXFX extends Application {
 
     private void updateBoard(int lastRow, int lastCol, int color) {
         gameBoard.getChildren().clear();
-        
-        for (int i = 0; i < nbRows; i++) {
-            for (int j = 0; j < nbCols; j++) {
-                // Créer un conteneur pour la cellule
+        int rows = board.getNbRows();
+        int cols = board.getNbCols();
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
                 StackPane cell = new StackPane();
                 cell.setPrefSize(70, 70);
-                cell.setStyle("-fx-background-color: #333333; -fx-border-color: #666666; -fx-border-width: 2;");
-                
-                // Créer le cercle pour le pion
+                cell.setStyle("-fx-background-color: #232526; -fx-border-color: #888888; -fx-border-width: 2; -fx-background-radius: 50px; -fx-border-radius: 50px;");
+
                 Circle circle = new Circle(30);
-                circle.setFill(Color.WHITE);
-                circle.setStroke(Color.GRAY);
+                circle.setFill(Color.web("#f5f5f5"));
+                circle.setStroke(Color.web("#bbbbbb"));
                 circle.setStrokeWidth(2);
-                
+
+                // Cercle intérieur plus clair
+                Circle innerCircle = new Circle(18);
+                innerCircle.setStrokeWidth(0);
+
                 int value = board.getGrid()[i][j];
                 if (value == Pawn.PAWN_RED) {
-                    circle.setFill(Color.RED);
-                    circle.setStroke(Color.DARKRED);
+                    circle.setFill(Color.web("#ff4b2b"));
+                    circle.setStroke(Color.web("#b22222"));
+                    innerCircle.setFill(Color.web("#ffb3a7")); // rouge clair
                 } else if (value == Pawn.PAWN_YELLOW) {
-                    circle.setFill(Color.YELLOW);
-                    circle.setStroke(Color.GOLDENROD);
+                    circle.setFill(Color.web("#ffe259"));
+                    circle.setStroke(Color.web("#bdb76b"));
+                    innerCircle.setFill(Color.web("#fff9b0")); // jaune clair
+                } else {
+                    innerCircle.setFill(Color.web("#ffffff")); // blanc pour case vide
                 }
-                
-                cell.getChildren().add(circle);
-                
+
+                cell.getChildren().addAll(circle, innerCircle);
+
                 final int col = j;
+                cell.setOnMouseEntered(e -> cell.setStyle("-fx-background-color: #444444; -fx-border-color: #36d1c4; -fx-border-width: 3; -fx-background-radius: 50px; -fx-border-radius: 50px;"));
+                cell.setOnMouseExited(e -> cell.setStyle("-fx-background-color: #232526; -fx-border-color: #888888; -fx-border-width: 2; -fx-background-radius: 50px; -fx-border-radius: 50px;"));
                 cell.setOnMouseClicked(e -> {
                     if (!gameOver && !model.getCurrentPlayer().getName().toLowerCase().contains("computer")) {
                         handlePlayerMove(col);
                     }
                 });
-                
+
                 gameBoard.add(cell, j, i);
             }
         }
-        
-        // Mettre à jour les labels des pots
         redPotLabel.setText("Pieces remaining: " + redPot.getRemainingPawns());
         yellowPotLabel.setText("Pieces remaining: " + yellowPot.getRemainingPawns());
     }
@@ -518,13 +648,19 @@ public class PuissanceXFX extends Application {
             // Niveau facile = SmartDecider
             decider = new PuissanceXSmartDecider(model, controller);
             ((PuissanceXSmartDecider) decider).setStage(stageModel);
+            System.out.println("IA created: PuissanceXSmartDecider (Level: Easy)");
+        } else if (computerLevel == 2) {
+            // Niveau difficile = HardDecider
+            decider = new PuissanceXHardDecider(model, controller);
+            ((PuissanceXHardDecider) decider).setStage(stageModel);
+            System.out.println("IA created: PuissanceXHardDecider (Level: Hard)");
         } else {
             // Niveau moyen = Decider
             decider = new PuissanceXDecider(model, controller);
             ((PuissanceXDecider) decider).setStage(stageModel);
+            System.out.println("IA created: PuissanceXDecider (Level: Medium)");
         }
-        System.out.println("IA created: " + decider.getClass().getSimpleName() + " (Level: " + (computerLevel == 0 ? "Easy" : "Medium") + ")");
-        
+
         // Vérifier l'état du plateau après création de l'IA
         System.out.println("État du plateau après création de l'IA:");
         System.out.println("- board: " + (board != null ? "non null" : "null"));
@@ -588,13 +724,25 @@ public class PuissanceXFX extends Application {
     private void checkGameStatus(int row, int col, int color) {
         System.out.println("=== START checkGameStatus ===");
         System.out.println("Parameters: row=" + row + ", col=" + col + ", color=" + color);
-        
+
         VBox bottomBox = (VBox) ((BorderPane) gameBoard.getParent().getParent()).getBottom();
-        
-        // Update the console tracker
-        ConsoleGameTracker tracker = ConsoleGameTracker.getInstance(nbRows, nbCols, nbAlign);
-        tracker.updateGrid(board.getGrid());
-        
+
+        // Toujours reset l'instance du tracker pour garantir la bonne taille
+        int rows = board.getNbRows();
+        int cols = board.getNbCols();
+        int align = board.getNbAlign();
+        ConsoleGameTracker.resetInstance();
+        ConsoleGameTracker tracker = ConsoleGameTracker.getInstance(rows, cols, align);
+
+        // Sécurisation : ne pas appeler updateGrid si la taille ne correspond pas
+        int[][] grid = board.getGrid();
+        if (grid.length == rows && grid[0].length == cols) {
+            tracker.updateGrid(grid);
+        } else {
+            System.err.println("Erreur : la taille du plateau ne correspond pas à celle du tracker !");
+            return;
+        }
+
         // Check for victory using both the normal board and console tracker
         boolean winBoard = row != -1 && board.checkWin(row, col, color);
         boolean winTracker = row != -1 && tracker.checkWin(row, col, color);
@@ -613,7 +761,7 @@ public class PuissanceXFX extends Application {
                 scoreJoueur2++;
                 statusLabel.setTextFill(Color.YELLOW);
             }
-            scoreLabel.setText("Score: Player 1 (Red) : " + scoreJoueur1 + " - Player 2 (Yellow) : " + scoreJoueur2);
+            scoreLabel.setText("Score: " + player1Name + " : " + scoreJoueur1 + " - " + player2Name + " : " + scoreJoueur2);
             statusLabel.setText(gagnant + " has won!");
             
             // Propose a new game
@@ -717,8 +865,12 @@ public class PuissanceXFX extends Application {
         // scoreJoueur1 = 0;
         // scoreJoueur2 = 0;
         
-        // Reset the console tracker
-        ConsoleGameTracker tracker = ConsoleGameTracker.getInstance(nbRows, nbCols, nbAlign);
+        // Toujours reset l'instance du tracker pour garantir la bonne taille
+        int rows = (board != null) ? board.getNbRows() : nbRows;
+        int cols = (board != null) ? board.getNbCols() : nbCols;
+        int align = (board != null) ? board.getNbAlign() : nbAlign;
+        ConsoleGameTracker.resetInstance();
+        ConsoleGameTracker tracker = ConsoleGameTracker.getInstance(rows, cols, align);
         if (tracker != null) {
             tracker.reset();
         }
@@ -738,57 +890,66 @@ public class PuissanceXFX extends Application {
         
         // Update score display
         if (scoreLabel != null) {
-            scoreLabel.setText("Score: Player 1 (Red) : " + scoreJoueur1 + " - Player 2 (Yellow) : " + scoreJoueur2);
+            scoreLabel.setText("Score: " + player1Name + " : " + scoreJoueur1 + " - " + player2Name + " : " + scoreJoueur2);
         }
         
         // Reset interface if it exists
         if (gameBoard != null) {
             BorderPane root = (BorderPane) gameBoard.getParent().getParent();
-            
+
             // Recreate left container (red pot)
             VBox leftBox = new VBox(20);
             leftBox.setAlignment(Pos.CENTER);
             leftBox.setPadding(new Insets(0, 20, 0, 0));
-            leftBox.setStyle("-fx-background-color: #333333;");
+            leftBox.setStyle("-fx-background-color: transparent;");
             leftBox.setMinWidth(150);
-            
-            Label redLabel = new Label("Player 1 (Red)");
+
+            Label redLabel = new Label(player1Name);
             redLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: red;");
-            
+
             redPotLabel = new Label("Pieces remaining: " + (redPot != null ? redPot.getRemainingPawns() : 0));
             redPotLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: red;");
-            
+
             VBox redPotInfo = new VBox(10);
             redPotInfo.setAlignment(Pos.CENTER);
-            redPotInfo.setStyle("-fx-background-color: #444444; -fx-border-color: #666666; -fx-border-width: 2; -fx-padding: 20;");
             redPotInfo.setMinHeight(100);
+            // Garder le fond noir pour les rectangles d'informations
+            redPotInfo.setStyle("-fx-background-color: #2d2d2d; -fx-border-color: #ff4b2b; -fx-border-width: 2; -fx-padding: 20; -fx-background-radius: 15px; -fx-border-radius: 15px;");
             redPotInfo.getChildren().add(redPotLabel);
-            
+
             leftBox.getChildren().addAll(redLabel, redPotInfo);
             root.setLeft(leftBox);
-            
+
             // Recreate right container (yellow pot)
             VBox rightBox = new VBox(20);
             rightBox.setAlignment(Pos.CENTER);
             rightBox.setPadding(new Insets(0, 0, 0, 20));
-            rightBox.setStyle("-fx-background-color: #333333;");
+            rightBox.setStyle("-fx-background-color: transparent;");
             rightBox.setMinWidth(150);
-            
-            Label yellowLabel = new Label("Player 2 (Yellow)");
+
+            Label yellowLabel = new Label(player2Name);
             yellowLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: yellow;");
-            
+
             yellowPotLabel = new Label("Pieces remaining: " + (yellowPot != null ? yellowPot.getRemainingPawns() : 0));
             yellowPotLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: yellow;");
-            
+
             VBox yellowPotInfo = new VBox(10);
             yellowPotInfo.setAlignment(Pos.CENTER);
-            yellowPotInfo.setStyle("-fx-background-color: #444444; -fx-border-color: #666666; -fx-border-width: 2; -fx-padding: 20;");
             yellowPotInfo.setMinHeight(100);
+            // Garder le fond noir pour les rectangles d'informations
+            yellowPotInfo.setStyle("-fx-background-color: #2d2d2d; -fx-border-color: #ffe259; -fx-border-width: 2; -fx-padding: 20; -fx-background-radius: 15px; -fx-border-radius: 15px;");
             yellowPotInfo.getChildren().add(yellowPotLabel);
-            
+
             rightBox.getChildren().addAll(yellowLabel, yellowPotInfo);
             root.setRight(rightBox);
-            
+
+            // Stocker les VBox pour le thème
+            this.redPotInfo = redPotInfo;
+            this.yellowPotInfo = yellowPotInfo;
+
+            // Appliquer le thème pour mettre à jour le style des rectangles
+            applyTheme();
+
             // Update the board
             updateBoard();
         }
@@ -821,4 +982,5 @@ public class PuissanceXFX extends Application {
     public static void main(String[] args) {
         launch(args);
     }
-} 
+}
+
